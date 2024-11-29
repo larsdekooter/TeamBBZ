@@ -1,12 +1,9 @@
-import { Text, useColorScheme } from "react-native";
-import Page from "../components/Page";
-import { textColor } from "../constants/functions";
+import { Modal, Text, useColorScheme, View } from "react-native";
+import Page from "../../components/Page";
+import { textColor } from "../../constants/functions";
+import Button from "@/components/Button";
+import { useState } from "react";
 
 export default function Home() {
-  const colorScheme = useColorScheme();
-  return (
-    <Page>
-      <Text style={textColor(colorScheme)}>Hello there</Text>
-    </Page>
-  );
+  return <Page></Page>;
 }
