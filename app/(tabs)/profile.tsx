@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Modal,
@@ -9,15 +10,21 @@ import {
   View,
 } from "react-native";
 import Page from "../../components/Page";
-import { textColor } from "../../constants/functions";
+import { getAthleteData, textColor } from "../../constants/functions";
 import ButtonComponent from "@/components/Button";
 import { useEffect, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
+import { AthleteIdRegex } from "@/constants/regex";
+import { AthleteData } from "@/constants/types";
+import Table from "@/components/Table";
 
 export default function Profile() {
   const colorScheme = useColorScheme();
 
   const [username, setUsername] = useState("");
+  const [athleteData, setAthleteData] = useState(
+    ({} as AthleteData) || { name: undefined }
+  );
   const [modalShown, setModalShown] = useState(false);
   const [usernameSet, setUsernameSet] = useState("");
 
@@ -28,11 +35,33 @@ export default function Profile() {
         setUsername("");
       } else {
         setUsername(response.username);
+        const athleteWithUsername = await (
+          await fetch(
+            `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${response.username.replace(
+              " ",
+              "%20"
+            )}&athlete_firstname=`
+          )
+        ).text();
+        const table = athleteWithUsername.split("<tr");
+        table.splice(0, 2);
+        const athleteId = table
+          .find((t) => !t.includes("*"))
+          ?.match(AthleteIdRegex)![0];
+        if (athleteId) {
+          const athletePage = await (
+            await fetch(
+              `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
+            )
+          ).text();
+          const aData = getAthleteData(athletePage);
+          setAthleteData(aData);
+        }
       }
     };
     getI();
   }, []);
-  console.log("UPDATE", username);
+
   if (!(username.length > 0)) {
     return (
       <Page>
@@ -99,11 +128,40 @@ export default function Profile() {
       </Page>
     );
   } else {
-    return (
-      <Page>
-        <Text style={textColor(colorScheme)}>{username}</Text>
-      </Page>
-    );
+    if (athleteData.name) {
+      return (
+        <Page>
+          <Text
+            style={{
+              ...textColor(colorScheme),
+              position: "absolute",
+              zIndex: 99,
+              top: 50,
+              textAlign: "center",
+            }}
+          >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
+          <Table
+            data={athleteData.pbs.map((pb) => {
+              return {
+                id: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
+                title: {
+                  distance: pb.event,
+                  poolSize: pb.poolSize,
+                  time: pb.time,
+                },
+              };
+            })}
+            athleteData={athleteData}
+          />
+        </Page>
+      );
+    } else {
+      return (
+        <Page>
+          <ActivityIndicator size="large" color="#ef8b22" />
+        </Page>
+      );
+    }
   }
 }
 
