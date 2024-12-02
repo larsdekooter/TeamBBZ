@@ -15,15 +15,17 @@ import {
 } from "react-native";
 import ButtonComponent from "./Button";
 
-export default function Table({
+export default function PbTable({
   data,
   athleteData,
+  top,
 }: {
   data: {
     title: { distance: string; time: string; poolSize: string };
     id: string;
   }[];
   athleteData: AthleteData;
+  top: number;
 }) {
   const colorScheme = useColorScheme();
   const [modalVisible, setModalVisible] = useState(false);
@@ -57,8 +59,6 @@ export default function Table({
           <View
             style={{
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              shadowColor: "black",
-              shadowRadius: 4,
               height: 200,
               width: 400,
               padding: 20,
@@ -183,7 +183,7 @@ export default function Table({
           backgroundColor: "white",
           height: 100,
           width: Dimensions.get("window").width,
-          marginTop: 100,
+          marginTop: top,
         }}
       />
     </>

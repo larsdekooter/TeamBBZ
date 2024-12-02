@@ -4,6 +4,7 @@ export type AthleteData = {
   nation: string;
   club: string;
   pbs: Pb[];
+  meets: MeetData[];
 };
 
 export type Pb = {
@@ -14,4 +15,11 @@ export type Pb = {
   date: Date;
   location: string;
   meet: string;
+};
+
+export type MeetData = {
+  date: Date[];
+  location: string;
+  poolSize: "25m" | "50m" | "OW";
+  club: string;
 };

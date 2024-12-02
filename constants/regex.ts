@@ -26,3 +26,10 @@ export const PoolSizeRegex = /25m|50m/gm;
 
 export const EnglishEventName =
   /Freestyle|Backstroke|Breaststroke|Butterfly|Medley|Lap/gm;
+
+export const MeetTableRegex =
+  /<table\s+class="athleteMeet"[^>]*>(?:[^<]|<(?!\/table>))*<\/table>/gi;
+
+export const MonthRegex = /Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec/g;
+
+export const YearRegex = /\b\d{4}\b/;

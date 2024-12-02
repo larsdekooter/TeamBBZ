@@ -9,10 +9,11 @@ import {
   TableRegex,
   RowRegex,
   DataRegex,
-  PoolSizeRegex,
-  EnglishEventName,
+  MeetTableRegex,
+  MonthRegex,
+  YearRegex,
 } from "./regex";
-import { AthleteData, Pb } from "./types";
+import { AthleteData, MeetData, Pb } from "./types";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -21,11 +22,11 @@ export function textColor(colorScheme: ColorSchemeName | boolean) {
   return { color: colorScheme === "light" ? "#000" : "#FFF" };
 }
 
-export function getAthleteData(page: string): AthleteData {
-  const athleteInfoDiv = page.match(AthleteInfoDivRegex)![0];
-  const nameDiv = page.match(AthleteNameDivRegex)![0];
+function getAthleteInfo(athletePage: string): AthleteData {
+  const athleteInfoDiv = athletePage.match(AthleteInfoDivRegex)![0];
+  const nameDiv = athletePage.match(AthleteNameDivRegex)![0];
 
-  const nationAndClub = page
+  const nationAndClub = athletePage
     .match(NationClubRegex)![0]
     .replace('<div id="nationclub"><br>', "")
     .replace("</div>", "")
@@ -38,12 +39,11 @@ export function getAthleteData(page: string): AthleteData {
 
   const birthYear = nameDiv.split(BirthYearRegex)[1];
 
-  const pbTable = page
+  const pbTable = athletePage
     .replace(/onmouseover="([\s\S]*?)"/gi, "")
     .match(TableRegex)![0];
   const rows = pbTable.match(RowRegex)!;
   rows.splice(0, 1);
-  console.log("Mapping all data");
   const pb = rows.map((row) => {
     const data = row
       .match(DataRegex)
@@ -59,14 +59,51 @@ export function getAthleteData(page: string): AthleteData {
       meet: data[6],
     } as Pb;
   });
-  console.log("Refreshed all data");
   return {
     name,
     birthYear,
     nation: nationAndClub[0],
     club: nationAndClub[1],
     pbs: pb,
+    meets: [],
   };
+}
+
+function getMeetsInfo(meetsPage: string): MeetData[] {
+  const meetTable = meetsPage.match(MeetTableRegex)![0];
+  const rows = meetTable
+    .match(RowRegex)!
+    .map(
+      (meet) =>
+        meet
+          .match(DataRegex)!
+          .map((match) => match.replace("<", "").replace(">", ""))
+          .filter((match) => match.length > 0)!
+    )
+    .filter((row) => row.length > 1);
+  rows.splice(0, 1);
+  const meets = rows.map((row) => {
+    return {
+      date: row[0]
+        .split("&nbsp;-&nbsp;")
+        .map((date) => date.replace(/&nbsp;/g, " "))
+        .map(formatDate)
+        .map(convertToDate),
+      location: row[1],
+      poolSize: row[2],
+      club: row[4],
+    } as MeetData;
+  });
+  return meets;
+}
+
+export function getAthleteData(
+  athletePage: string,
+  meetsPage: string
+): AthleteData {
+  const athleteInfo = getAthleteInfo(athletePage);
+  const meetsInfo = getMeetsInfo(meetsPage);
+  return { ...athleteInfo, meets: meetsInfo };
 }
 
 export function convertToDate(dateString: string) {
@@ -103,4 +140,16 @@ export function translateEvent(event: string) {
     .replace("Butterfly", "vlinderslag")
     .replace("Medley", "wisselslag")
     .replace("Lap", "split");
+}
+
+function formatDate(date: string, i: number, arr: string[]) {
+  if (date.length === 2 || date.length === 1) {
+    const dateCopy = arr[1];
+    const month = dateCopy.match(MonthRegex)!;
+    const year = dateCopy.match(YearRegex)!;
+    return `${date} ${month} ${year}`;
+  } else if (date.match(YearRegex) === null) {
+    const year = arr[1].match(YearRegex)![0];
+    return `${date} ${year}`;
+  } else return date;
 }

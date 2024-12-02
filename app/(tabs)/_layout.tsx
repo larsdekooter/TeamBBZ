@@ -12,6 +12,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colorScheme == "dark" ? "#181c20" : "#FFF",
         },
+        sceneStyle: {
+          backgroundColor: colorScheme === "dark" ? "#181c20" : "#FFF",
+        },
       }}
     >
       <Tabs.Screen
@@ -42,7 +45,6 @@ export default function TabLayout() {
             <FontAwesome size={28} name="cog" color={color} />
           ),
           headerShown: false,
-          href: null,
         }}
       />
     </Tabs>

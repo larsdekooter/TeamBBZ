@@ -3,6 +3,7 @@ import {
   Alert,
   Dimensions,
   Modal,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -12,55 +13,77 @@ import {
 import Page from "../../components/Page";
 import { getAthleteData, textColor } from "../../constants/functions";
 import ButtonComponent from "@/components/Button";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
 import { AthleteIdRegex } from "@/constants/regex";
 import { AthleteData } from "@/constants/types";
-import Table from "@/components/Table";
+import PbTable from "@/components/PbTable";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MeetsTable from "@/components/MeetTable";
+
+enum Tabs {
+  Pbs = 1,
+  Records = 2,
+  Meets = 3,
+  Boigrafy = 4,
+}
 
 export default function Profile() {
   const colorScheme = useColorScheme();
 
   const [username, setUsername] = useState("");
-  const [athleteData, setAthleteData] = useState(
-    ({} as AthleteData) || { name: undefined }
+  const [athleteData, setAthleteData] = useState<AthleteData>(
+    {} as AthleteData
   );
   const [modalShown, setModalShown] = useState(false);
   const [usernameSet, setUsernameSet] = useState("");
+  const [activeTab, setActiveTab] = useState(Tabs.Pbs);
 
-  useEffect(() => {
-    const getI = async () => {
-      const response = await getItem("username");
-      if (response === null) {
-        setUsername("");
-      } else {
-        setUsername(response.username);
-        const athleteWithUsername = await (
+  async function fetchUser() {
+    const response = await getItem("username");
+    if (response === null) {
+      setUsername("");
+    } else {
+      setUsername(response.username);
+      const athleteWithUsername = await (
+        await fetch(
+          `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${response.username.replace(
+            " ",
+            "%20"
+          )}&athlete_firstname=`
+        )
+      ).text();
+      const table = athleteWithUsername.split("<tr");
+      table.splice(0, 2);
+      const athleteId = table
+        .find((t) => !t.includes("*"))
+        ?.match(AthleteIdRegex)![0];
+      if (athleteId) {
+        const athletePage = await (
           await fetch(
-            `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${response.username.replace(
-              " ",
-              "%20"
-            )}&athlete_firstname=`
+            `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
           )
         ).text();
-        const table = athleteWithUsername.split("<tr");
-        table.splice(0, 2);
-        const athleteId = table
-          .find((t) => !t.includes("*"))
-          ?.match(AthleteIdRegex)![0];
-        if (athleteId) {
-          const athletePage = await (
-            await fetch(
-              `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
-            )
-          ).text();
-          const aData = getAthleteData(athletePage);
-          setAthleteData(aData);
-        }
+        const meetsPage = await (
+          await fetch(
+            `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`
+          )
+        ).text();
+        const aData = getAthleteData(athletePage, meetsPage);
+        setAthleteData(aData);
       }
-    };
-    getI();
-  }, []);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      const getI = async () => {
+        await fetchUser();
+      };
+      getI();
+    }, [])
+  );
 
   if (!(username.length > 0)) {
     return (
@@ -117,6 +140,7 @@ export default function Profile() {
                     await setItem("username", { username: usernameSet });
                     setUsername(usernameSet);
                     setModalShown(false);
+                    await fetchUser();
                   }
                 }}
               >
@@ -139,20 +163,57 @@ export default function Profile() {
               top: 50,
               textAlign: "center",
             }}
+            onPress={fetchUser}
           >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
-          <Table
-            data={athleteData.pbs.map((pb) => {
-              return {
-                id: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
-                title: {
-                  distance: pb.event,
-                  poolSize: pb.poolSize,
-                  time: pb.time,
-                },
-              };
-            })}
-            athleteData={athleteData}
-          />
+          <View style={{ marginTop: 100, flexDirection: "row" }}>
+            <ButtonComponent
+              onPress={() => {
+                setActiveTab(Tabs.Pbs);
+              }}
+            >
+              <Text
+                style={{
+                  ...textColor(colorScheme === "dark"),
+                  fontWeight: "bold",
+                }}
+              >
+                PR's
+              </Text>
+            </ButtonComponent>
+            <ButtonComponent onPress={() => setActiveTab(Tabs.Meets)}>
+              <Text
+                style={{
+                  ...textColor(colorScheme === "dark"),
+                  fontWeight: "bold",
+                }}
+              >
+                Wedstrijden
+              </Text>
+            </ButtonComponent>
+          </View>
+          {activeTab === Tabs.Pbs && (
+            <PbTable
+              top={25}
+              data={athleteData.pbs.map((pb) => {
+                return {
+                  id: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
+                  title: {
+                    distance: pb.event,
+                    poolSize: pb.poolSize,
+                    time: pb.time,
+                  },
+                };
+              })}
+              athleteData={athleteData}
+            />
+          )}
+          {activeTab === Tabs.Meets && (
+            <MeetsTable
+              top={25}
+              athleteData={athleteData}
+              data={athleteData.meets}
+            />
+          )}
         </Page>
       );
     } else {
