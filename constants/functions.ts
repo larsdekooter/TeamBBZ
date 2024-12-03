@@ -6,12 +6,13 @@ import {
   ImageRegex,
   BirthYearRegex,
   NationClubRegex,
-  TableRegex,
+  AthleteTableRegex,
   RowRegex,
   DataRegex,
   MeetTableRegex,
   MonthRegex,
-  YearRegex,
+  Number4Regex,
+  ContentRegex,
 } from "./regex";
 import { AthleteData, MeetData, Pb } from "./types";
 
@@ -41,7 +42,7 @@ function getAthleteInfo(athletePage: string): AthleteData {
 
   const pbTable = athletePage
     .replace(/onmouseover="([\s\S]*?)"/gi, "")
-    .match(TableRegex)![0];
+    .match(AthleteTableRegex)![0];
   const rows = pbTable.match(RowRegex)!;
   rows.splice(0, 1);
   const pb = rows.map((row) => {
@@ -146,10 +147,40 @@ function formatDate(date: string, i: number, arr: string[]) {
   if (date.length === 2 || date.length === 1) {
     const dateCopy = arr[1];
     const month = dateCopy.match(MonthRegex)!;
-    const year = dateCopy.match(YearRegex)!;
+    const year = dateCopy.match(Number4Regex)!;
     return `${date} ${month} ${year}`;
-  } else if (date.match(YearRegex) === null) {
-    const year = arr[1].match(YearRegex)![0];
+  } else if (date.match(Number4Regex) === null) {
+    const year = arr[1].match(Number4Regex)![0];
     return `${date} ${year}`;
   } else return date;
+}
+
+export function getSchema(page: string) {
+  const contentDiv = page.match(ContentRegex)![0];
+  if (
+    contentDiv.includes(
+      "<p>Er staan (nog) geen schema&#8217;s in de database voor deze week.</p>"
+    )
+  ) {
+    return "";
+  }
+
+  const schemaTableLook = ["ma", "ma", "di", "woe", "do", "zat"];
+  console.log(contentDiv.match(RowRegex)[2]);
+}
+
+export function getWeekNumber(date: Date): number {
+  // Set to nearest Thursday: current date + 4 - current day number
+  // Make Sunday's day number 7
+  const currentDay = date.getDay() || 7;
+  date.setDate(date.getDate() + 4 - currentDay);
+
+  // Get first day of year
+  const yearStart = new Date(date.getFullYear(), 0, 1);
+  // Calculate full weeks to nearest Thursday
+  const weekNo = Math.ceil(
+    ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+  );
+
+  return weekNo;
 }

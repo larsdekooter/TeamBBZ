@@ -1,6 +1,6 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { StyleSheet, useColorScheme } from "react-native";
+import { Image, StyleSheet, useColorScheme } from "react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -33,6 +33,26 @@ export default function TabLayout() {
           title: "Profiel",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="user" color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="club"
+        options={{
+          title: "TeamBBZ",
+          tabBarIcon: ({ color }) => (
+            <Image
+              source={require("../../assets/images/teambbz.png")}
+              style={{
+                height: 28,
+                width: 28,
+                tintColor:
+                  color === "#8E8E8F" || color === "#7f7f7f"
+                    ? "grey"
+                    : undefined,
+              }}
+            />
           ),
           headerShown: false,
         }}

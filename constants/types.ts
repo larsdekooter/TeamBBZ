@@ -23,3 +23,20 @@ export type MeetData = {
   poolSize: "25m" | "50m" | "OW";
   club: string;
 };
+
+export type Wedstrijd = {
+  startDate: Date;
+  endDate: Date | null;
+  name: string;
+  location: string;
+  country: string;
+  category:
+    | "club"
+    | "minioren"
+    | "master"
+    | "nationaal"
+    | "overig"
+    | "marathon"
+    | "competitie";
+  id: string;
+};
