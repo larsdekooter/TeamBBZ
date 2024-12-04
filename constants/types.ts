@@ -39,4 +39,5 @@ export type Wedstrijd = {
     | "marathon"
     | "competitie";
   id: string;
+  enterable: boolean | undefined;
 };

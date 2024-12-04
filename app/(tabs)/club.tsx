@@ -1,3 +1,4 @@
+import ButtonComponent from "@/components/Button";
 import Page from "@/components/Page";
 import { textColor } from "@/constants/functions";
 import {
@@ -10,8 +11,11 @@ import {
   CellRegex2,
   CarrotRegex,
   IdRegex,
+  DivRegex,
+  DateRegex,
 } from "@/constants/regex";
 import { Wedstrijd } from "@/constants/types";
+import { getItem } from "@/utils/AsyncStorage";
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
@@ -24,6 +28,8 @@ import {
   View,
   ColorSchemeName,
   ActivityIndicator,
+  Modal,
+  Alert,
 } from "react-native";
 
 export default function Club() {
@@ -122,7 +128,6 @@ export default function Club() {
               } as Wedstrijd)
         );
       setWedstrijden(rows);
-      console.log(rows[0]);
     };
     getS();
     getW();
@@ -258,6 +263,9 @@ function WedstrijdenComponent({
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
   const heightAnim = useState(new Animated.Value(0))[0];
+  const [modalShown, setModalShown] = useState(false);
+  const [selectedWedstrijd, setSelectedWedstrijd] = useState({} as Wedstrijd);
+  const [loading, setLoading] = useState(false);
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -282,101 +290,210 @@ function WedstrijdenComponent({
   };
   if (wedstrijden.length > 0) {
     return (
-      <Pressable
-        style={{
-          width: Dimensions.get("window").width,
-          borderColor: "#ef8b22",
-          borderWidth: 1,
-          borderRadius: 6,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-          overflow: "hidden",
-          marginVertical: 10,
-        }}
-        onPress={toggleExpand}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
+      <>
+        <Modal
+          visible={modalShown}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setModalShown(false)}
         >
-          <Text style={{ ...textColor(colorScheme) }}>Wedstrijden</Text>
-          <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
-            <FontAwesome
-              name="arrow-right"
-              size={15}
-              color={colorScheme === "dark" ? "#fff" : "#000"}
-            />
-          </Animated.View>
-        </View>
-
-        <Animated.View
-          style={{
-            maxHeight: heightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 1000],
-            }),
-            opacity: heightAnim,
-            marginTop: heightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 10],
-            }),
-          }}
-        >
-          {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
-            <Pressable
-              key={i}
-              onPress={async (e) => {
-                e.stopPropagation();
-                // const
-                //TODO: Create modal on press, add Inschrijven knop, figure out where data gets send to
-              }}
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <View
               style={{
-                display: "flex",
-                flexDirection: "row",
-                borderColor: "grey",
-                borderWidth: 1,
-                borderRadius: 6,
-                paddingHorizontal: 5,
-                marginHorizontal: 5,
-                paddingVertical: 10,
-                marginVertical: 5,
+                backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                height: 200,
+                width: 400,
+                padding: 20,
+                borderRadius: 10,
               }}
             >
-              <Text
+              <View
                 style={{
-                  ...textColor(colorScheme),
-                  textAlign: "left",
-                  flex: 1.5,
-                }}
-                numberOfLines={1}
-              >
-                {wedstrijd.name}
-              </Text>
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  textAlign: "center",
-                  flex: 1.5,
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                {wedstrijd.startDate.toLocaleDateString()}
-              </Text>
-              <Text
+                <Text style={{ ...textColor(colorScheme), fontWeight: "bold" }}>
+                  {selectedWedstrijd.name}
+                </Text>
+                <Text style={{ ...textColor(colorScheme), fontWeight: "bold" }}>
+                  {!selectedWedstrijd.endDate
+                    ? selectedWedstrijd.startDate?.toLocaleDateString()
+                    : `${selectedWedstrijd.startDate?.toLocaleDateString()} - ${selectedWedstrijd.endDate?.toLocaleDateString()}`}
+                </Text>
+              </View>
+              <View
                 style={{
-                  ...textColor(colorScheme),
-                  textAlign: "right",
-                  flex: 1.5,
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                {wedstrijd.location}
-              </Text>
-            </Pressable>
-          ))}
-        </Animated.View>
-      </Pressable>
+                <Text style={{ ...textColor(colorScheme), fontWeight: "bold" }}>
+                  {`${selectedWedstrijd.location} - ${selectedWedstrijd.country}`}
+                </Text>
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    fontWeight: "bold",
+                  }}
+                >
+                  {selectedWedstrijd.category}
+                </Text>
+              </View>
+
+              <View style={{ height: 10 }} />
+              <ButtonComponent onPress={() => setModalShown(false)}>
+                <Text>Sluit</Text>
+              </ButtonComponent>
+            </View>
+          </View>
+        </Modal>
+
+        <Pressable
+          style={{
+            width: Dimensions.get("window").width,
+            borderColor: "#ef8b22",
+            borderWidth: 1,
+            borderRadius: 6,
+            paddingVertical: 10,
+            paddingHorizontal: 20,
+            overflow: "hidden",
+            marginVertical: 10,
+          }}
+          onPress={toggleExpand}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ ...textColor(colorScheme) }}>Wedstrijden</Text>
+            <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
+              <FontAwesome
+                name="arrow-right"
+                size={15}
+                color={colorScheme === "dark" ? "#fff" : "#000"}
+              />
+            </Animated.View>
+          </View>
+
+          <Animated.View
+            style={{
+              maxHeight: heightAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1000],
+              }),
+              opacity: heightAnim,
+              marginTop: heightAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 10],
+              }),
+            }}
+          >
+            {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
+              <Pressable
+                key={i}
+                onPress={async (e) => {
+                  e.stopPropagation();
+                  //TODO: Create modal on press, add Inschrijven knop, figure out where data gets send to
+                  setSelectedWedstrijd(wedstrijd);
+                  setLoading(true);
+                  const w = await getWe(wedstrijd.id);
+                  // setModalShown(true);
+                }}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  borderColor: "grey",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  paddingHorizontal: 5,
+                  marginHorizontal: 5,
+                  paddingVertical: 10,
+                  marginVertical: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    textAlign: "left",
+                    flex: 1.5,
+                  }}
+                  numberOfLines={1}
+                >
+                  {wedstrijd.name}
+                </Text>
+                {loading && selectedWedstrijd.id === wedstrijd.id && (
+                  <ActivityIndicator color="#ef8b22" />
+                )}
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    textAlign: "center",
+                    flex: 1.5,
+                  }}
+                >
+                  {wedstrijd.startDate.toLocaleDateString()}
+                </Text>
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    textAlign: "right",
+                    flex: 1.5,
+                  }}
+                >
+                  {wedstrijd.location}
+                </Text>
+              </Pressable>
+            ))}
+          </Animated.View>
+        </Pressable>
+      </>
     );
   } else return <ActivityIndicator color="#ef8b22" />;
+}
+
+async function getWe(id: string) {
+  const w = {} as Wedstrijd;
+  const page = await (
+    await fetch(`https://www.b-b-z.nl/kalender/?id=${id}`)
+  ).text();
+  const inschrijfDatumMatch = page
+    .split("\n")
+    .find((l) => l.includes("Inschrijfdatum:"))
+    ?.match(DivRegex)!;
+  const inschrijfDatum = inschrijfDatumMatch[
+    inschrijfDatumMatch.length - 1
+  ]!.match(CarrotRegex)![0]
+    .replace(/>|</g, "")
+    .match(DateRegex)![0];
+  const [day, month, year] = inschrijfDatum.split("-");
+  const entryDate = new Date(+year, +month - 1, +day);
+  if (new Date().getTime() > entryDate.getTime()) {
+    w.enterable = false;
+  } else {
+    w.enterable = true;
+  }
+  const program = page.match(/<pre>([\s\S]*?)<\/pre>/g)![0];
+  console.clear();
+  console.log(
+    (
+      await (
+        await fetch("https://www.b-b-z.nl/kalender/?id=27987#programma", {
+          headers: {},
+        })
+      ).text()
+    )
+      .match(
+        /1\s\s100\swisselslag\sAlle\s25-99([\s\S]*?)Kaarsjesestafette/gm
+      )![0]
+      .split("\r")
+  );
+  //TODO: create better string out of fucked page
 }

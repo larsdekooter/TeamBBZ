@@ -46,3 +46,7 @@ export const CellRegex2 = /<td[^>]*>([\s\S]*?)<\/td>/gi;
 export const CarrotRegex = />([\s\S]*?)</g;
 
 export const IdRegex = /\?id=\d+/;
+
+export const DivRegex = /<div[^>]*>([\s\S]*?)<\/div>/gm;
+
+export const DateRegex = /\d{2}-\d{2}-\d{4}/g;
