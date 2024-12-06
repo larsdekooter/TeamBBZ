@@ -161,19 +161,20 @@ function formatDate(date: string, i: number, arr: string[]) {
 }
 
 export function getWeekNumber(date: Date): number {
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  const currentDay = date.getDay() || 7;
-  date.setDate(date.getDate() + 4 - currentDay);
+  const mutatedDate = new Date(date.getTime());
 
-  // Get first day of year
-  const yearStart = new Date(date.getFullYear(), 0, 1);
-  // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil(
-    ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
-  );
+  // Find Thursday of this week starting on Monday
+  mutatedDate.setDate(mutatedDate.getDate() + 4 - (mutatedDate.getDay() || 7));
+  const thursday = mutatedDate.getTime();
 
-  return weekNo;
+  // Find January 1st
+  mutatedDate.setMonth(0); // January
+  mutatedDate.setDate(1); // 1st
+  const jan1st = mutatedDate.getTime();
+
+  // Round the amount of days to compensate for daylight saving time
+  const days = Math.round((thursday - jan1st) / 86400000); // 1 day = 86400000 ms
+  return Math.floor(days / 7) + 1;
 }
 
 export async function getWedstrijdData(wedstrijd: Wedstrijd) {
@@ -196,22 +197,27 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
   } else {
     wedstrijd.enterable = true;
   }
-  const program = page
-    .match(/<pre>([\s\S]*?)<\/pre>/gm)![0]
-    .replace(/<pre>/g, "")
-    .split("\r");
-  // .toSpliced(0, 1);
-  if (Number.isNaN(parseInt(program[0][0]))) {
-    program.splice(0, 1);
+  try {
+    const program = page
+      .match(/<pre>([\s\S]*?)<\/pre>/gm)![0]
+      .replace(/<pre>/g, "")
+      .split("\r");
+    // .toSpliced(0, 1);
+    if (Number.isNaN(parseInt(program[0][0]))) {
+      program.splice(0, 1);
+    }
+    program.splice(program.length - 1, 1);
+    wedstrijd.program = program;
+    return wedstrijd;
+  } catch {
+    return wedstrijd;
   }
-  program.splice(program.length - 1, 1);
-  wedstrijd.program = program;
-  return wedstrijd;
 }
 
 export async function getSchemaData() {
   const date = new Date();
-  const weekNo = getWeekNumber(date);
+  const weekNo = getWeekNumber(new Date(date.getTime()));
+  console.log(weekNo);
   const res = await (
     await fetch(
       `https://www.b-b-z.nl/training/schema/?jaar=2024&week=${weekNo}`
@@ -221,7 +227,11 @@ export async function getSchemaData() {
   const trs = contentDiv.match(RowRegex)!;
   const tdMatch = trs.find((tr) =>
     tr.includes(
-      `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`
+      `${date.getDate()}-${
+        `${date.getMonth() + 1}`.length == 1
+          ? `0${date.getMonth() + 1}`
+          : `${date.getMonth() + 1}`
+      }-${date.getFullYear()}`
     )
   );
   if (tdMatch) {
