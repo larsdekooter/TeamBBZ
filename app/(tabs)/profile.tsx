@@ -126,6 +126,7 @@ export default function Profile() {
                   marginVertical: 20,
                   borderRadius: 8,
                   paddingHorizontal: 10,
+                  height: 40,
                 }}
                 placeholder="Naam"
                 id="username"
@@ -140,6 +141,7 @@ export default function Profile() {
                   marginVertical: 40,
                   borderRadius: 8,
                   paddingHorizontal: 10,
+                  height: 40,
                 }}
                 placeholder="Email"
                 id="email"
