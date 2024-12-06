@@ -39,6 +39,7 @@ export default function Profile() {
   const [modalShown, setModalShown] = useState(false);
   const [usernameSet, setUsernameSet] = useState("");
   const [activeTab, setActiveTab] = useState(Tabs.Pbs);
+  const [emailSet, setEmailSet] = useState("");
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -132,13 +133,29 @@ export default function Profile() {
                   setUsernameSet(input);
                 }}
               />
+              <TextInput
+                style={{
+                  backgroundColor: "white",
+                  width: 200,
+                  marginVertical: 40,
+                  borderRadius: 8,
+                  paddingHorizontal: 10,
+                }}
+                placeholder="Email"
+                id="email"
+                onChangeText={(input) => setEmailSet(input)}
+              />
               <ButtonComponent
                 onPress={async () => {
                   if (!(usernameSet.length > 0)) {
                     return Alert.alert("Voer een gebruikersnaam in!");
+                  } else if (!(emailSet.length > 0)) {
+                    return Alert.alert("Voor een email address in!");
                   } else {
                     await setItem("username", { username: usernameSet });
                     setUsername(usernameSet);
+                    await setItem("email", { email: emailSet });
+                    setEmailSet(emailSet);
                     setModalShown(false);
                     await fetchUser();
                   }

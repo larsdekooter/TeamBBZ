@@ -9,13 +9,18 @@ import { useFocusEffect } from "@react-navigation/native";
 export default function Settings() {
   const colorScheme = useColorScheme();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {
         const us = await getItem("username");
+        const em = await getItem("email");
         if (us) {
           setUsername(us.username);
+        }
+        if (em) {
+          setEmail(em.email);
         }
       };
       getUsername();
@@ -30,6 +35,8 @@ export default function Settings() {
           onPress={async () => {
             await removeItem("username");
             setUsername("");
+            await removeItem("email");
+            setEmail("");
           }}
         >
           <Text style={textColor(colorScheme === "dark")}>Log uit</Text>

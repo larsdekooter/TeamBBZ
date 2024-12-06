@@ -13,8 +13,13 @@ import {
   MonthRegex,
   Number4Regex,
   ContentRegex,
+  CarrotRegex,
+  DateRegex,
+  DivRegex,
+  CellRegex,
 } from "./regex";
-import { AthleteData, MeetData, Pb } from "./types";
+import { AthleteData, MeetData, Pb, Wedstrijd } from "./types";
+import { getItem } from "@/utils/AsyncStorage";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -155,20 +160,6 @@ function formatDate(date: string, i: number, arr: string[]) {
   } else return date;
 }
 
-export function getSchema(page: string) {
-  const contentDiv = page.match(ContentRegex)![0];
-  if (
-    contentDiv.includes(
-      "<p>Er staan (nog) geen schema&#8217;s in de database voor deze week.</p>"
-    )
-  ) {
-    return "";
-  }
-
-  const schemaTableLook = ["ma", "ma", "di", "woe", "do", "zat"];
-  console.log(contentDiv.match(RowRegex)[2]);
-}
-
 export function getWeekNumber(date: Date): number {
   // Set to nearest Thursday: current date + 4 - current day number
   // Make Sunday's day number 7
@@ -183,4 +174,126 @@ export function getWeekNumber(date: Date): number {
   );
 
   return weekNo;
+}
+
+export async function getWedstrijdData(wedstrijd: Wedstrijd) {
+  const page = await (
+    await fetch(`https://www.b-b-z.nl/kalender/?id=${wedstrijd.id}`)
+  ).text();
+  const inschrijfDatumMatch = page
+    .split("\n")
+    .find((l) => l.includes("Inschrijfdatum:"))
+    ?.match(DivRegex)!;
+  const inschrijfDatum = inschrijfDatumMatch[
+    inschrijfDatumMatch.length - 1
+  ]!.match(CarrotRegex)![0]
+    .replace(/>|</g, "")
+    .match(DateRegex)![0];
+  const [day, month, year] = inschrijfDatum.split("-");
+  const entryDate = new Date(+year, +month - 1, +day);
+  if (new Date().getTime() > entryDate.getTime()) {
+    wedstrijd.enterable = false;
+  } else {
+    wedstrijd.enterable = true;
+  }
+  const program = page
+    .match(/<pre>([\s\S]*?)<\/pre>/gm)![0]
+    .replace(/<pre>/g, "")
+    .split("\r");
+  // .toSpliced(0, 1);
+  if (Number.isNaN(parseInt(program[0][0]))) {
+    program.splice(0, 1);
+  }
+  program.splice(program.length - 1, 1);
+  wedstrijd.program = program;
+  return wedstrijd;
+}
+
+export async function getSchemaData() {
+  const date = new Date();
+  const weekNo = getWeekNumber(date);
+  const res = await (
+    await fetch(
+      `https://www.b-b-z.nl/training/schema/?jaar=2024&week=${weekNo}`
+    )
+  ).text();
+  const contentDiv = res.match(ContentRegex)![0];
+  const trs = contentDiv.match(RowRegex)!;
+  const tdMatch = trs.find((tr) =>
+    tr.includes(
+      `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`
+    )
+  );
+  if (tdMatch) {
+    const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
+    const schemaPage = await (
+      await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
+    ).text();
+    const contentDiv = schemaPage
+      .match(ContentRegex)![0]
+      .replace(/&#8243;/g, '"')
+      .replace(/&#8217;/g, "'")
+      .replace(/&#8221;/g, "'")
+      .replace(/&#8242/g, '"');
+    const schema = contentDiv.split("<br />");
+    schema.splice(0, 1);
+    schema.splice(schema.length - 1, 1);
+    return schema
+      .filter((line) => line.trim() !== "") // Remove empty lines
+      .join("\n")
+      .replace(/\n/g, "\n");
+  } else {
+    return "Geen schema vandaag!";
+  }
+}
+
+export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
+  const soort = wedstrijd.name;
+  let datum = `${wedstrijd.startDate.getFullYear()}`;
+  datum +=
+    `${wedstrijd.startDate.getMonth() + 1}`.length > 1
+      ? `-${wedstrijd.startDate.getMonth() + 1}`
+      : `-0${wedstrijd.startDate.getMonth() + 1}`;
+  datum +=
+    `${wedstrijd.startDate.getDate()}`.length > 1
+      ? `-${wedstrijd.startDate.getDate()}`
+      : `-0${wedstrijd.startDate.getDate()}`;
+  const plaats = wedstrijd.location;
+  const baanlengte = "25";
+  const naam = await getItem("username");
+  if (!naam) {
+    return Alert.alert("Login voordat je jezelf inschrijft!");
+  }
+  const email = await getItem("email");
+  if (!email) {
+    return Alert.alert("Login voordat je jezelf inschrijft!");
+  }
+
+  let params = new URLSearchParams({
+    soort,
+    datum,
+    plaats,
+    baanlengte,
+    naam: naam.username,
+    email: email.email,
+  }).toString();
+
+  if (program.length == 0) {
+    return Alert.alert("Kies programmanummers waar je je op wilt inschrijven!");
+  }
+  for (const p of program) {
+    params +=
+      "&" +
+      new URLSearchParams({
+        "nummers[]": p.toString(),
+      }).toString();
+  }
+
+  await fetch(`https://www.b-b-z.nl/kalender/inschrijven/?id=${wedstrijd.id}`, {
+    method: "POST",
+    body: params,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 }
