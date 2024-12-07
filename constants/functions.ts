@@ -217,7 +217,6 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
 export async function getSchemaData() {
   const date = new Date();
   const weekNo = getWeekNumber(new Date(date.getTime()));
-  console.log(weekNo);
   const res = await (
     await fetch(
       `https://www.b-b-z.nl/training/schema/?jaar=2024&week=${weekNo}`

@@ -445,19 +445,52 @@ function WedstrijdenComponent({
                   )}
                 />
               )}
+              {!selectedWedstrijd.enterable && selectedWedstrijd.program && (
+                <FlatList
+                  data={selectedWedstrijd.program}
+                  style={{
+                    height: 600,
+                    width: Dimensions.get("window").width,
+                    marginTop: 0,
+                    borderRadius: 10,
+                  }}
+                  renderItem={({ item, index }) => (
+                    <View
+                      key={index}
+                      style={{
+                        backgroundColor: "#2a3137",
+
+                        margin: 10,
+                        flex: 1,
+                        borderRadius: 10,
+                        paddingHorizontal: 5,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        paddingVertical: 15,
+                        flexDirection: "row",
+                        minHeight: 10,
+                      }}
+                    >
+                      <Text style={textColor(colorScheme)}>{item}</Text>
+                    </View>
+                  )}
+                />
+              )}
               <View style={{ height: 20 }} />
-              <ButtonComponent
-                onPress={async () => {
-                  setInschrijfLoading(true);
-                  await enterMeet(selectedWedstrijd, chosenProgram);
-                  setInschrijfLoading(false);
-                  setModalShown(false);
-                }}
-              >
-                <Text style={textColor(colorScheme === "dark")}>
-                  Schrijf in
-                </Text>
-              </ButtonComponent>
+              {selectedWedstrijd.enterable && (
+                <ButtonComponent
+                  onPress={async () => {
+                    setInschrijfLoading(true);
+                    await enterMeet(selectedWedstrijd, chosenProgram);
+                    setInschrijfLoading(false);
+                    setModalShown(false);
+                  }}
+                >
+                  <Text style={textColor(colorScheme === "dark")}>
+                    Schrijf in
+                  </Text>
+                </ButtonComponent>
+              )}
               {inschrijfLoading && <ActivityIndicator color="#ef8b22" />}
               <ButtonComponent onPress={() => setModalShown(false)}>
                 <Text style={textColor(colorScheme === "dark")}>Sluit</Text>

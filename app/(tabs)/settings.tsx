@@ -30,7 +30,11 @@ export default function Settings() {
   if (username.length > 0) {
     return (
       <Page>
-        <Text style={textColor(colorScheme)}>Logged in as {username}</Text>
+        <Text style={{ ...textColor(colorScheme), textAlign: "center" }}>
+          Ingelogd als {username}
+          {"\n"}
+          {email}
+        </Text>
         <ButtonComponent
           onPress={async () => {
             await removeItem("username");
