@@ -3,7 +3,8 @@
     "preview": {
       "android": {
         "buildType": "apk"
-      }
+      },
+      "autoIncrement": true
     },
     "preview2": {
       "android": {
@@ -17,5 +18,8 @@
       "distribution": "internal"
     },
     "production": {}
+  },
+  "cli": {
+    "appVersionSource": "remote"
   }
 }
