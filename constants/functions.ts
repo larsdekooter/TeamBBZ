@@ -245,12 +245,11 @@ export async function getSchemaData() {
       .replace(/&#8221;/g, "'")
       .replace(/&#8242/g, '"');
     const schema = contentDiv.split("<br />");
+    console.log(schema.join(""));
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
-    return schema
-      .filter((line) => line.trim() !== "") // Remove empty lines
-      .join("\n")
-      .replace(/\n/g, "\n");
+    return ["A\n", ...schema].join("");
+    // .replace(/\n/g, "\n");
   } else {
     return "Geen schema vandaag!";
   }
