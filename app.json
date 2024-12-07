@@ -2,7 +2,7 @@
   "expo": {
     "name": "TeamBBZ",
     "slug": "TeamBBZ",
-    "version": "1.0.0",
+    "version": "0.0.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#000"
       },
-      "package": "com.ldekooter.TeamBBZ"
+      "package": "com.ldekooter.TeamBBZ",
+      "versionCode": "0.0.7"
     },
     "web": {
       "bundler": "metro",
@@ -45,6 +46,7 @@
       "eas": {
         "projectId": "bc128322-54b1-4178-9bde-45ec4967a666"
       }
-    }
+    },
+    "owner": "ldekooter"
   }
 }
