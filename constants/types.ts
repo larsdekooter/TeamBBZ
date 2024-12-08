@@ -40,5 +40,6 @@ export type Wedstrijd = {
     | "competitie";
   id: string;
   enterable: boolean | undefined;
-  program: string[] | undefined;
+  program: { name: string; no: number }[] | undefined;
+  livetimeLink: string;
 };

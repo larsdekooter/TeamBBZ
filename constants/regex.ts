@@ -50,3 +50,9 @@ export const IdRegex = /\?id=\d+/;
 export const DivRegex = /<div[^>]*>([\s\S]*?)<\/div>/gm;
 
 export const DateRegex = /\d{2}-\d{2}-\d{4}/g;
+
+export const LivetimingRegex = /<a\shref=[^>]*>Livetiming<\/a>/i;
+
+export const HrefRefex = /href\s*=\s*["']([^"']+)["']/i;
+
+export const TripleNumberRegex = /\d{1,3}/g;

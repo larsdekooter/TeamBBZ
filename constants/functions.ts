@@ -17,6 +17,9 @@ import {
   DateRegex,
   DivRegex,
   CellRegex,
+  LivetimingRegex,
+  HrefRefex,
+  TripleNumberRegex,
 } from "./regex";
 import { AthleteData, MeetData, Pb, Wedstrijd } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
@@ -207,7 +210,20 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
       program.splice(0, 1);
     }
     program.splice(program.length - 1, 1);
-    wedstrijd.program = program;
+    wedstrijd.program = program.map((p) => ({
+      name: p,
+      no: Number.parseInt(p.match(TripleNumberRegex)![0]),
+    }));
+    wedstrijd.livetimeLink = `https://b-b-z.nl/livetiming/${wedstrijd.startDate.getFullYear()}-${
+      wedstrijd.startDate.getMonth() + 1 < 10
+        ? `0${wedstrijd.startDate.getMonth() + 1}`
+        : wedstrijd.startDate.getMonth() + 1
+    }-${
+      wedstrijd.startDate.getDate() < 10
+        ? `0${wedstrijd.startDate.getDate()}`
+        : wedstrijd.startDate.getDate()
+    }=${wedstrijd.name.replace(/\s/g, "_")}/`;
+
     return wedstrijd;
   } catch {
     return wedstrijd;
