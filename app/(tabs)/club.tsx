@@ -317,6 +317,7 @@ function WedstrijdenComponent({
                       flex: 1.5,
                       textAlign: "left",
                     }}
+                    numberOfLines={1}
                   >
                     {selectedWedstrijd.name}
                   </Text>
@@ -558,7 +559,6 @@ function WedstrijdenComponent({
                 key={i}
                 onPress={async (e) => {
                   e.stopPropagation();
-                  //TODO: Create modal on press, add Inschrijven knop, figure out where data gets send to
 
                   setProgramLoading(true);
                   setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);

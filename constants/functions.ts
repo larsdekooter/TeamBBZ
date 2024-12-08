@@ -205,17 +205,19 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
       .match(/<pre>([\s\S]*?)<\/pre>/gm)![0]
       .replace(/<pre>/g, "")
       .split("\r");
-    // .toSpliced(0, 1);
+
     if (Number.isNaN(parseInt(program[0][0]))) {
       program.splice(0, 1);
     }
     program.splice(program.length - 1, 1);
+
     wedstrijd.program = program
       .filter((p) => p.length > 1)
       .map((p) => ({
         name: p,
-        no: Number.parseInt(p.match(TripleNumberRegex)![0]),
+        no: Number.parseInt(p.match(TripleNumberRegex)?.[0] ?? "-1"),
       }));
+
     wedstrijd.livetimeLink = `https://b-b-z.nl/livetiming/${wedstrijd.startDate.getFullYear()}-${
       wedstrijd.startDate.getMonth() + 1 < 10
         ? `0${wedstrijd.startDate.getMonth() + 1}`
