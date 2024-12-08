@@ -37,7 +37,7 @@ import {
   Alert,
   FlatList,
 } from "react-native";
-import { openBrowserAsync } from "expo-web-browser";
+import * as WebBrowser from "expo-web-browser";
 import { navigate } from "expo-router/build/global-state/routing";
 import { Link } from "expo-router";
 
@@ -476,10 +476,10 @@ function WedstrijdenComponent({
                         minHeight: 10,
                       }}
                       onPress={async () => {
-                        const pdfUrl = `https://docs.google.com/gview?embedded=true&url=https://b-b-z.nl/livetiming/2024-12-14=Minioren_deel_3/EntryList_${item.no}.pdf`;
+                        const pdfUrl = `https://b-b-z.nl/livetiming/2024-12-14=Minioren_deel_3/EntryList_${item.no}.pdf`;
+                        const docsUrl = `https://docs.google.com/gview?embedded=true&url=${pdfUrl}`;
 
-                        // Open a WebView component instead of using openBrowserAsync
-                        await openBrowserAsync(pdfUrl);
+                        await WebBrowser.openBrowserAsync(docsUrl);
                       }}
                     >
                       <Text style={textColor(colorScheme)}>{item.name}</Text>
