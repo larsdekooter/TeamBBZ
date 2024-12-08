@@ -210,10 +210,12 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
       program.splice(0, 1);
     }
     program.splice(program.length - 1, 1);
-    wedstrijd.program = program.map((p) => ({
-      name: p,
-      no: Number.parseInt(p.match(TripleNumberRegex)![0]),
-    }));
+    wedstrijd.program = program
+      .filter((p) => p.length > 1)
+      .map((p) => ({
+        name: p,
+        no: Number.parseInt(p.match(TripleNumberRegex)![0]),
+      }));
     wedstrijd.livetimeLink = `https://b-b-z.nl/livetiming/${wedstrijd.startDate.getFullYear()}-${
       wedstrijd.startDate.getMonth() + 1 < 10
         ? `0${wedstrijd.startDate.getMonth() + 1}`
