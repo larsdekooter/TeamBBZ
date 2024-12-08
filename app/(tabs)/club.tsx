@@ -477,7 +477,7 @@ function WedstrijdenComponent({
                         minHeight: 10,
                       }}
                       onPress={async () => {
-                        const pdfUrl = `https://b-b-z.nl/livetiming/2024-12-14=Minioren_deel_3/EntryList_${item.no}.pdf`;
+                        const pdfUrl = `${selectedWedstrijd.livetimeLink}/StartList_${item.no}.pdf`;
                         const docsUrl = `https://docs.google.com/gview?embedded=true&url=${pdfUrl}`;
 
                         await WebBrowser.openBrowserAsync(docsUrl);

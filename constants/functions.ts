@@ -226,7 +226,7 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
       wedstrijd.startDate.getDate() < 10
         ? `0${wedstrijd.startDate.getDate()}`
         : wedstrijd.startDate.getDate()
-    }=${wedstrijd.name.replace(/\s/g, "_")}/`;
+    }=${wedstrijd.name.replace(/\s/g, "_")}`;
 
     return wedstrijd;
   } catch {
