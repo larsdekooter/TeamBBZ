@@ -25,7 +25,6 @@
     },
     "plugins": [
       "expo-router",
-      { "origin": "https://www.example.org" },
       [
         "expo-splash-screen",
         {
