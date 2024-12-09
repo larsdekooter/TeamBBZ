@@ -67,6 +67,16 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="test"
+        options={{
+          title: "test",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="exclamation-circle" color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

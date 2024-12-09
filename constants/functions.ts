@@ -1,4 +1,4 @@
-import { Alert, ColorSchemeName, Text, View } from "react-native";
+import { Alert, ColorSchemeName, Platform, Text, View } from "react-native";
 import {
   AthleteInfoDivRegex,
   AthleteNameRegex,
@@ -182,7 +182,7 @@ export function getWeekNumber(date: Date): number {
 
 export async function getWedstrijdData(wedstrijd: Wedstrijd) {
   const page = await (
-    await fetch(`https://www.b-b-z.nl/kalender/?id=${wedstrijd.id}`)
+    await fetchURL(`https://www.b-b-z.nl/kalender/?id=${wedstrijd.id}`)
   ).text();
   const inschrijfDatumMatch = page
     .split("\n")
@@ -238,7 +238,7 @@ export async function getSchemaData() {
   const date = new Date();
   const weekNo = getWeekNumber(new Date(date.getTime()));
   const res = await (
-    await fetch(
+    await fetchURL(
       `https://www.b-b-z.nl/training/schema/?jaar=2024&week=${weekNo}`
     )
   ).text();
@@ -256,7 +256,9 @@ export async function getSchemaData() {
   if (tdMatch) {
     const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
     const schemaPage = await (
-      await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
+      await fetchURL(
+        `https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`
+      )
     ).text();
     const contentDiv = schemaPage
       .match(ContentRegex)![0]
@@ -316,11 +318,28 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
       }).toString();
   }
 
-  await fetch(`https://www.b-b-z.nl/kalender/inschrijven/?id=${wedstrijd.id}`, {
-    method: "POST",
-    body: params,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
+  await fetchURL(
+    `https://www.b-b-z.nl/kalender/inschrijven/?id=${wedstrijd.id}`,
+    {
+      method: "POST",
+      body: params,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+}
+
+export async function fetchURL(
+  input: RequestInfo | URL,
+  options?: RequestInit
+) {
+  if (Platform.OS === "web") {
+    return await fetch("/api", {
+      body: JSON.stringify({ input, options }),
+      method: "POST",
+    });
+  } else {
+    return await fetch(input, options);
+  }
 }

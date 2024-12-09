@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import Page from "../../components/Page";
-import { getAthleteData, textColor } from "../../constants/functions";
+import { fetchURL, getAthleteData, textColor } from "../../constants/functions";
 import ButtonComponent from "@/components/Button";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -48,7 +48,7 @@ export default function Profile() {
     } else {
       setUsername(response.username);
       const athleteWithUsername = await (
-        await fetch(
+        await fetchURL(
           `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${response.username.replace(
             " ",
             "%20"
@@ -62,12 +62,12 @@ export default function Profile() {
         ?.match(AthleteIdRegex)![0];
       if (athleteId) {
         const athletePage = await (
-          await fetch(
+          await fetchURL(
             `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
           )
         ).text();
         const meetsPage = await (
-          await fetch(
+          await fetchURL(
             `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`
           )
         ).text();
