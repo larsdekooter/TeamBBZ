@@ -2,6 +2,7 @@ import ButtonComponent from "@/components/Button";
 import Page from "@/components/Page";
 import {
   enterMeet,
+  fetchApi,
   getSchemaData,
   getWedstrijdData,
   textColor,
@@ -52,7 +53,7 @@ export default function Club() {
     };
     const getW = async () => {
       const wedstrijdenPage = await (
-        await fetch("https://www.b-b-z.nl/kalender/?actie=volledig")
+        await fetchApi("https://www.b-b-z.nl/kalender/?actie=volledig")
       ).text();
       const table = wedstrijdenPage.match(TableRegex)![0];
       const rows = table
