@@ -6,7 +6,7 @@ export default function Home() {
   const colorScheme = useColorScheme();
   return (
     <Page>
-      <Text style={textColor(colorScheme)}>Home pagina</Text>
+      <Text style={textColor(colorScheme)}>Jansje de ridder clubkampioen</Text>
     </Page>
   );
 }
