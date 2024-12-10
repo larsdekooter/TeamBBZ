@@ -182,7 +182,7 @@ export function getWeekNumber(date: Date): number {
 
 export async function getWedstrijdData(wedstrijd: Wedstrijd) {
   const page = await (
-    await fetchApi(`https://www.b-b-z.nl/kalender/?id=${wedstrijd.id}`)
+    await fetch(`https://www.b-b-z.nl/kalender/?id=${wedstrijd.id}`)
   ).text();
   const inschrijfDatumMatch = page
     .split("\n")
@@ -238,7 +238,7 @@ export async function getSchemaData() {
   const date = new Date();
   const weekNo = getWeekNumber(new Date(date.getTime()));
   const res = await (
-    await fetchApi(
+    await fetch(
       `https://www.b-b-z.nl/training/schema/?jaar=2024&week=${weekNo}`
     )
   ).text();
@@ -256,9 +256,7 @@ export async function getSchemaData() {
   if (tdMatch) {
     const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
     const schemaPage = await (
-      await fetchApi(
-        `https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`
-      )
+      await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
     ).text();
     const contentDiv = schemaPage
       .match(ContentRegex)![0]
@@ -318,31 +316,11 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
       }).toString();
   }
 
-  await fetchApi(
-    `https://www.b-b-z.nl/kalender/inschrijven/?id=${wedstrijd.id}`,
-    {
-      method: "POST",
-      body: params,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
-}
-
-export async function fetchApi(
-  resource: string | URL | Request,
-  options?: RequestInit
-) {
-  if (Platform.OS === "web") {
-    return await fetch("/api", {
-      method: "POST",
-      body: JSON.stringify({
-        input: resource,
-        options,
-      }),
-    });
-  } else {
-    return await fetch(resource, options);
-  }
+  await fetch(`https://www.b-b-z.nl/kalender/inschrijven/?id=${wedstrijd.id}`, {
+    method: "POST",
+    body: params,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 }
