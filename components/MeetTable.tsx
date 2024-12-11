@@ -93,7 +93,6 @@ export default function MeetsTable({
       <FlatList
         data={data}
         style={{
-          backgroundColor: "white",
           height: 100,
           width: Dimensions.get("window").width,
           marginTop: top,

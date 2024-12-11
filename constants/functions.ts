@@ -20,8 +20,13 @@ import {
   LivetimingRegex,
   HrefRefex,
   TripleNumberRegex,
+  PostRegex,
+  PostImageRegex,
+  PostImageSourceRegex,
+  PostTitleRegexFromImage,
+  PostTitleRegexFromLink,
 } from "./regex";
-import { AthleteData, MeetData, Pb, Wedstrijd } from "./types";
+import { AthleteData, MeetData, Pb, Post, Wedstrijd } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
@@ -323,4 +328,25 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
+}
+
+export async function getPosts() {
+  const page = await (await fetch("https://www.b-b-z.nl/")).text();
+  const posts = page.match(PostRegex)!.map((post) => ({
+    image: post
+      .match(PostImageRegex)![0]
+      .match(PostImageSourceRegex)![0]
+      .replace('src="', ""),
+    link: post.match(HrefRefex)![0].replace('href="', "").replace('"', ""),
+    title:
+      post
+        .match(PostTitleRegexFromLink)![0]
+        .replace('aria-label="', "")
+        .replace('"', "") ||
+      post
+        .match(PostTitleRegexFromImage)![0]
+        .replace('alt="', "")
+        .replace('"', ""),
+  }));
+  return posts as Post[];
 }

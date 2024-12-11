@@ -56,3 +56,13 @@ export const LivetimingRegex = /<a\shref=[^>]*>Livetiming<\/a>/i;
 export const HrefRefex = /href\s*=\s*["']([^"']+)["']/i;
 
 export const TripleNumberRegex = /\d{1,3}/g;
+
+export const PostRegex =
+  /<div\sclass="lp-box\sbox\d{1,2}[^>]">([\s\S]*?)<\/div>/gm;
+
+export const PostImageRegex = /<img[^>]*>/gm;
+
+export const PostImageSourceRegex = /src="[^"]*/gm;
+
+export const PostTitleRegexFromImage = /alt="[^"]*/gm;
+export const PostTitleRegexFromLink = /aria-label="[^"]*/gm;

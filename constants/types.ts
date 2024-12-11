@@ -43,3 +43,9 @@ export type Wedstrijd = {
   program: { name: string; no: number }[] | undefined;
   livetimeLink: string;
 };
+
+export type Post = {
+  title: string;
+  link: string;
+  image: string;
+};
