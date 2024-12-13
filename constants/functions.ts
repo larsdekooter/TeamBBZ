@@ -25,9 +25,13 @@ import {
   PostImageSourceRegex,
   PostTitleRegexFromImage,
   PostTitleRegexFromLink,
+  TimeTableRegex,
+  OnMouseOverRegex,
+  CellRegex2,
 } from "./regex";
 import { AthleteData, MeetData, Pb, Post, Wedstrijd } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
+import { SwimrakingEventId } from "./enums";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -36,7 +40,7 @@ export function textColor(colorScheme: ColorSchemeName | boolean) {
   return { color: colorScheme === "light" ? "#000" : "#FFF" };
 }
 
-function getAthleteInfo(athletePage: string): AthleteData {
+function getAthleteInfo(athletePage: string, athleteId: string): AthleteData {
   const athleteInfoDiv = athletePage.match(AthleteInfoDivRegex)![0];
   const nameDiv = athletePage.match(AthleteNameDivRegex)![0];
 
@@ -80,6 +84,7 @@ function getAthleteInfo(athletePage: string): AthleteData {
     club: nationAndClub[1],
     pbs: pb,
     meets: [],
+    id: athleteId,
   };
 }
 
@@ -113,9 +118,10 @@ function getMeetsInfo(meetsPage: string): MeetData[] {
 
 export function getAthleteData(
   athletePage: string,
-  meetsPage: string
+  meetsPage: string,
+  athleteId: string
 ): AthleteData {
-  const athleteInfo = getAthleteInfo(athletePage);
+  const athleteInfo = getAthleteInfo(athletePage, athleteId);
   const meetsInfo = getMeetsInfo(meetsPage);
   return { ...athleteInfo, meets: meetsInfo };
 }
@@ -349,4 +355,42 @@ export async function getPosts() {
         .replace('"', ""),
   }));
   return posts as Post[];
+}
+
+export async function getHistory(
+  event: SwimrakingEventId,
+  athleteId: string,
+  poolSize: "25m" | "50m"
+) {
+  const page = (
+    await (
+      await fetch(
+        `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&styleId=${event}`
+      )
+    ).text()
+  ).replace(OnMouseOverRegex, "");
+  const tables = page.match(TimeTableRegex)!;
+  const table = poolSize === "50m" ? tables[0] : tables[1];
+  const rows = table
+    .match(RowRegex)!
+    .toSpliced(0, 1)
+    .map((row) =>
+      row
+        .match(/>([\s\S]*?)</gi)!
+        .filter((m) => m.length > 2)
+        .map((m) => m.replace(/>|</g, ""))
+    )
+    .map((row) => ({
+      time: row[0],
+      points: row[1],
+      date: convertToDate(row[2].replace(/&nbsp;/g, " ")),
+      location: row[3].replace(/&nbsp;/g, " "),
+    }));
+  return rows;
+}
+
+function wait(duration: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, duration);
+  });
 }

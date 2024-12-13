@@ -5,11 +5,12 @@ export type AthleteData = {
   club: string;
   pbs: Pb[];
   meets: MeetData[];
+  id: string;
 };
 
 export type Pb = {
   event: string;
-  poolSize: string;
+  poolSize: "25m" | "50m";
   time: string;
   points: string;
   date: Date;

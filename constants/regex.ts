@@ -65,4 +65,8 @@ export const PostImageRegex = /<img[^>]*>/gm;
 export const PostImageSourceRegex = /src="[^"]*/gm;
 
 export const PostTitleRegexFromImage = /alt="[^"]*/gm;
+
 export const PostTitleRegexFromLink = /aria-label="[^"]*/gm;
+
+export const TimeTableRegex =
+  /<table\sclass="athleteRanking"[^>]*>([\s\S]*?<\/table>)/gi;

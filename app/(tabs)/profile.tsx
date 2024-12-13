@@ -21,6 +21,7 @@ import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MeetsTable from "@/components/MeetTable";
+import { SwimrakingEventId } from "@/constants/enums";
 
 enum Tabs {
   Pbs = 1,
@@ -71,7 +72,7 @@ export default function Profile() {
             `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`
           )
         ).text();
-        const aData = getAthleteData(athletePage, meetsPage);
+        const aData = getAthleteData(athletePage, meetsPage, athleteId);
         setAthleteData(aData);
       }
     }
@@ -215,12 +216,15 @@ export default function Profile() {
               top={25}
               data={athleteData.pbs.map((pb) => {
                 return {
-                  id: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
+                  key: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
                   title: {
                     distance: pb.event,
                     poolSize: pb.poolSize,
                     time: pb.time,
                   },
+                  id: SwimrakingEventId[
+                    pb.event as keyof typeof SwimrakingEventId
+                  ],
                 };
               })}
               athleteData={athleteData}

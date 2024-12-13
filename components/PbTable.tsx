@@ -1,8 +1,9 @@
-import { textColor } from "@/constants/functions";
+import { getHistory, textColor } from "@/constants/functions";
 import { AthleteData } from "@/constants/types";
 import { getItem } from "@/utils/AsyncStorage";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   ColorSchemeName,
   Dimensions,
@@ -14,6 +15,8 @@ import {
   View,
 } from "react-native";
 import ButtonComponent from "./Button";
+import { SwimrakingEventId } from "@/constants/enums";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function PbTable({
   data,
@@ -21,17 +24,25 @@ export default function PbTable({
   top,
 }: {
   data: {
-    title: { distance: string; time: string; poolSize: string };
-    id: string;
+    title: { distance: string; time: string; poolSize: "25m" | "50m" };
+    key: string;
+    id: number;
   }[];
   athleteData: AthleteData;
   top: number;
 }) {
   const colorScheme = useColorScheme();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [title, setTitle] = useState(
-    {} as { distance: string; time: string; poolSize: string }
+  const [quickViewModalShown, setQuickViewModalShown] = useState(false);
+  const [historyModalShown, setHistoryModalShown] = useState(
+    SwimrakingEventId.None
   );
+  const [title, setTitle] = useState(
+    {} as { distance: string; time: string; poolSize: "25m" | "50m" }
+  );
+  const [sData, setSData] = useState(
+    [] as { time: string; date: Date; points: string; location: string }[]
+  );
+  const [loading, setLoading] = useState(false);
 
   const findPb = (event: string, poolSize: string, time: string) => {
     return athleteData.pbs.find(
@@ -44,9 +55,9 @@ export default function PbTable({
       <Modal
         animationType="slide"
         transparent
-        visible={modalVisible}
+        visible={quickViewModalShown}
         onRequestClose={() => {
-          setModalVisible(false);
+          setQuickViewModalShown(false);
         }}
       >
         <View
@@ -59,7 +70,7 @@ export default function PbTable({
           <View
             style={{
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              height: 200,
+              height: 300,
               width: 400,
               padding: 20,
               borderRadius: 10,
@@ -79,11 +90,8 @@ export default function PbTable({
                   ...textColor(colorScheme),
                 }}
               >
-                {
-                  athleteData.pbs.find((pb) => pb.event === title.distance)
-                    ?.event
-                }{" "}
-                {athleteData.pbs.find((pb) => pb.event === title.distance)
+                {findPb(title.distance, title.poolSize, title.time)?.event}{" "}
+                {findPb(title.distance, title.poolSize, title.time)
                   ?.poolSize === "25m"
                   ? "SC"
                   : "LC"}
@@ -131,11 +139,121 @@ export default function PbTable({
                 {findPb(title.distance, title.poolSize, title.time)?.location}
               </Text>
             </View>
-
-            <ButtonComponent onPress={() => setModalVisible(false)}>
-              <Text>Sluit</Text>
+            <ButtonComponent
+              onPress={async () => {
+                setLoading(true);
+                const id =
+                  SwimrakingEventId[
+                    title.distance as keyof typeof SwimrakingEventId
+                  ];
+                const data = await getHistory(
+                  id,
+                  athleteData.id,
+                  title.poolSize
+                );
+                setHistoryModalShown(id);
+                setSData(data);
+                setQuickViewModalShown(false);
+                setLoading(false);
+              }}
+              paddingVertical={10}
+            >
+              <Text style={{ fontWeight: "bold" }}>Bekijk geschiedenis</Text>
+              {loading && <ActivityIndicator size="small" color="black" />}
+            </ButtonComponent>
+            <View style={{ height: 20 }} />
+            <ButtonComponent
+              onPress={() => setQuickViewModalShown(false)}
+              paddingVertical={10}
+            >
+              <Text style={{ fontWeight: "bold" }}>Sluit</Text>
             </ButtonComponent>
           </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={historyModalShown !== SwimrakingEventId.None}
+        animationType="slide"
+        transparent
+        onRequestClose={() => {
+          setHistoryModalShown(SwimrakingEventId.None);
+          setQuickViewModalShown(true);
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
+            height: Dimensions.get("window").height,
+            width: Dimensions.get("window").width,
+            flex: 1,
+            justifyContent: "center",
+          }}
+        >
+          <Pressable
+            style={{
+              flexDirection: "row",
+              top: 25,
+              width: Dimensions.get("window").width,
+            }}
+            onPress={() => {
+              setHistoryModalShown(SwimrakingEventId.None);
+              // setQuickViewModalShown(true);
+            }}
+          >
+            <FontAwesome
+              name="arrow-left"
+              color="white"
+              size={30}
+              style={{ left: 10, position: "absolute" }}
+            />
+            <Text
+              style={{
+                ...textColor(colorScheme),
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 20,
+                zIndex: 1,
+                width: Dimensions.get("window").width,
+              }}
+            >
+              {title.distance} - {title.time} -{" "}
+              {title.poolSize === "25m" ? "SC" : "LC"}
+            </Text>
+          </Pressable>
+          <FlatList
+            data={sData}
+            style={{ top: 50, marginBottom: 50 }}
+            renderItem={({ item, index }) => (
+              <View
+                key={index}
+                style={{
+                  borderWidth: 1,
+                  borderColor: "grey",
+                  paddingVertical: 15,
+                  // marginVertical: 5,
+                  flex: 1,
+                  flexDirection: "row",
+                  // justifyContent: "space-between",
+                  alignContent: "space-between",
+                  paddingHorizontal: 10,
+                }}
+              >
+                <Text style={{ ...textColor(colorScheme), flex: 1 }}>
+                  {item.time}
+                </Text>
+                <Text style={{ ...textColor(colorScheme), flex: 1 }}>
+                  {item.points}
+                </Text>
+                <Text style={{ ...textColor(colorScheme), flex: 1 }}>
+                  {item.date.toLocaleDateString()}
+                </Text>
+                <Text style={{ ...textColor(colorScheme), flex: 1 }}>
+                  {item.location}
+                </Text>
+              </View>
+            )}
+          />
         </View>
       </Modal>
 
@@ -155,7 +273,7 @@ export default function PbTable({
             }}
             onPress={() => {
               setTitle(item.title);
-              setModalVisible(true);
+              setQuickViewModalShown(true);
             }}
           >
             <Text
