@@ -147,6 +147,7 @@ export default function Profile() {
                 placeholder="Email"
                 id="email"
                 onChangeText={(input) => setEmailSet(input)}
+                autoComplete="email"
               />
               <ButtonComponent
                 onPress={async () => {

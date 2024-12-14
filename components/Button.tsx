@@ -13,10 +13,12 @@ export default function ButtonComponent({
   children,
   onPress,
   paddingVertical,
+  marginVertical,
 }: {
   children?: React.ReactNode;
   onPress: (event: GestureResponderEvent) => void;
   paddingVertical?: number;
+  marginVertical?: number;
 }) {
   const colorScheme = useColorScheme();
   return (
@@ -33,6 +35,7 @@ export default function ButtonComponent({
         borderColor: "#000",
         borderWidth: 1,
         flexDirection: "row",
+        marginVertical: marginVertical,
       }}
     >
       {children}
