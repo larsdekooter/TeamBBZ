@@ -477,7 +477,9 @@ function WedstrijdenComponent({
                         minHeight: 10,
                       }}
                       onPress={async () => {
+                        if (item.no < 0) return;
                         const pdfUrl = `${selectedWedstrijd.livetimeLink}/StartList_${item.no}.pdf`;
+                        console.log(pdfUrl);
                         const docsUrl = `https://docs.google.com/gview?embedded=true&url=${pdfUrl}`;
 
                         await WebBrowser.openBrowserAsync(docsUrl);
