@@ -1,12 +1,12 @@
 import { Dimensions, Text, useColorScheme, View } from "react-native";
 import Page from "../../components/Page";
 import { textColor } from "@/constants/functions";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { getItem, removeItem } from "@/utils/AsyncStorage";
 import ButtonComponent from "@/components/Button";
 import { useFocusEffect } from "@react-navigation/native";
-
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
+import Socials from "@/components/Socials";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -38,7 +38,6 @@ export default function Settings() {
             borderWidth: 1,
             borderRadius: 6,
             width: Dimensions.get("window").width * 0.95,
-            // display: "flex",
             paddingHorizontal: 15,
             paddingVertical: 10,
           }}
@@ -86,6 +85,7 @@ export default function Settings() {
         >
           Build: {nativeApplicationVersion} - {nativeBuildVersion}
         </Text>
+        <Socials />
       </Page>
     );
   } else {
