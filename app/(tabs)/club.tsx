@@ -7,20 +7,13 @@ import {
   textColor,
 } from "@/constants/functions";
 import {
-  CellRegex,
-  ContentRegex,
   RowRegex,
-  Number4Regex,
-  AthleteTableRegex,
   TableRegex,
   CellRegex2,
   CarrotRegex,
   IdRegex,
-  DivRegex,
-  DateRegex,
 } from "@/constants/regex";
 import { Wedstrijd } from "@/constants/types";
-import { getItem } from "@/utils/AsyncStorage";
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
@@ -29,17 +22,13 @@ import {
   Text,
   useColorScheme,
   Animated,
-  ScrollView,
   View,
   ColorSchemeName,
   ActivityIndicator,
   Modal,
-  Alert,
   FlatList,
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import { navigate } from "expo-router/build/global-state/routing";
-import { Link } from "expo-router";
 
 export default function Club() {
   const [schema, setSchema] = useState("");
@@ -64,9 +53,6 @@ export default function Club() {
             .map((m) => m.replace(/<td>/g, "").replace(/<\/td>/g, ""))
             .filter((m) => m.length > 0)
             .map((m) => {
-              // return m.includes("<a")
-              //   ? m.match(CarrotRegex)![0].replace(/>/g, "").replace(/</g, "")
-              //   : m;
               if (m.includes("<a")) {
                 let r = m
                   .match(CarrotRegex)![0]

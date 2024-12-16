@@ -72,3 +72,5 @@ export const TimeTableRegex =
   /<table\sclass="athleteRanking"[^>]*>([\s\S]*?<\/table>)/gi;
 
 export const ProgramNumberCheckRegex = /^\d{1,3}m/gm;
+
+export const CanvasRegex = /<canvas[^>]*>/gi;

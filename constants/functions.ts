@@ -29,6 +29,7 @@ import {
   OnMouseOverRegex,
   CellRegex2,
   ProgramNumberCheckRegex,
+  CanvasRegex,
 } from "./regex";
 import { AthleteData, MeetData, Pb, Post, Wedstrijd } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
@@ -384,6 +385,50 @@ export async function getHistory(
       location: row[3].replace(/&nbsp;/g, " "),
     }));
   return rows;
+}
+
+export function getSpecialityData(athleteData: AthleteData) {
+  const points = athleteData.pbs
+    .map(({ points, event, poolSize }) => ({
+      event: event,
+      points: parseInt(points),
+      poolSize,
+    }))
+    .sort((a, b) => b.points - a.points)
+    .filter(({ points }) => !Number.isNaN(points));
+
+  const pointsPerStroke = {
+    butterfly: { count: 0, amount: 0 },
+    backstroke: { count: 0, amount: 0 },
+    breaststroke: { count: 0, amount: 0 },
+    freestyle: { count: 0, amount: 0 },
+    im: { count: 0, amount: 0 },
+  };
+
+  points.forEach(({ points, event }) => {
+    if (event.includes("split")) {
+    } else if (event.includes("vlinderslag")) {
+      pointsPerStroke.butterfly.count += points;
+      pointsPerStroke.butterfly.amount++;
+    } else if (event.includes("rugslag")) {
+      pointsPerStroke.backstroke.count += points;
+      pointsPerStroke.backstroke.amount++;
+    } else if (event.includes("schoolslag")) {
+      pointsPerStroke.breaststroke.count += points;
+      pointsPerStroke.breaststroke.amount++;
+    } else if (event.includes("vrije slag")) {
+      pointsPerStroke.freestyle.count += points;
+      pointsPerStroke.freestyle.amount++;
+    } else if (event.includes("wisselslag")) {
+      pointsPerStroke.im.count += points;
+      pointsPerStroke.im.amount++;
+    }
+  });
+  Object.entries(pointsPerStroke).forEach((p) => {
+    pointsPerStroke[p[0] as keyof typeof pointsPerStroke].count =
+      p[1].count / p[1].amount / points[0].points;
+  });
+  return Object.values(pointsPerStroke).map(({ count }) => count);
 }
 
 function wait(duration: number) {

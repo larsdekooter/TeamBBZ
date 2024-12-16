@@ -11,7 +11,11 @@ import {
   View,
 } from "react-native";
 import Page from "../../components/Page";
-import { getAthleteData, textColor } from "../../constants/functions";
+import {
+  getAthleteData,
+  getSpecialityData,
+  textColor,
+} from "../../constants/functions";
 import ButtonComponent from "@/components/Button";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -22,12 +26,14 @@ import PbTable from "@/components/PbTable";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MeetsTable from "@/components/MeetTable";
 import { SwimrakingEventId } from "@/constants/enums";
+import RadarChart from "@/components/RadarChart";
 
 enum Tabs {
   Pbs = 1,
   Records = 2,
   Meets = 3,
-  Boigrafy = 4,
+  Biografy = 4,
+  Speciality = 5,
 }
 
 export default function Profile() {
@@ -41,6 +47,13 @@ export default function Profile() {
   const [usernameSet, setUsernameSet] = useState("");
   const [activeTab, setActiveTab] = useState(Tabs.Pbs);
   const [emailSet, setEmailSet] = useState("");
+  const [chartData, setChartData] = useState(
+    [] as Array<{
+      value: number;
+      color: string;
+      label: string;
+    }>
+  );
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -211,6 +224,21 @@ export default function Profile() {
                 Wedstrijden
               </Text>
             </ButtonComponent>
+            <ButtonComponent
+              onPress={async () => {
+                setActiveTab(Tabs.Speciality);
+                getSpecialityData(athleteData);
+              }}
+            >
+              <Text
+                style={{
+                  ...textColor(colorScheme === "dark"),
+                  fontWeight: "bold",
+                }}
+              >
+                Specialiteit
+              </Text>
+            </ButtonComponent>
           </View>
           {activeTab === Tabs.Pbs && (
             <PbTable
@@ -238,6 +266,14 @@ export default function Profile() {
               data={athleteData.meets}
             />
           )}
+          {activeTab === Tabs.Speciality && (
+            <RadarChart
+              data={getSpecialityData(athleteData)}
+              size={300}
+              axes={["Vlinder", "Rug", "Schoool", "Vrij", "Wissel"]}
+              rings={4}
+            />
+          )}
         </Page>
       );
     } else {
@@ -249,6 +285,22 @@ export default function Profile() {
     }
   }
 }
+
+function randomNumber() {
+  return Math.floor(Math.random() * 26) + 125;
+}
+function generateRandomColor(): string {
+  // Generating a random number between 0 and 0xFFFFFF
+  const randomColor = Math.floor(Math.random() * 0xffffff);
+  // Converting the number to a hexadecimal string and padding with zeros
+  return `#${randomColor.toString(16).padStart(6, "0")}`;
+}
+const DATA = (numberPoints = 5) =>
+  Array.from({ length: numberPoints }, (_, index) => ({
+    value: randomNumber(),
+    color: generateRandomColor(),
+    label: `Label ${index + 1}`,
+  }));
 
 const styles = StyleSheet.create({
   centeredView: {
