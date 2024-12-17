@@ -4,6 +4,7 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  SectionList,
   StyleSheet,
   Text,
   TextInput,
@@ -12,13 +13,14 @@ import {
 } from "react-native";
 import Page from "../../components/Page";
 import {
+  calculateProgression,
   getAthleteData,
   getSpecialityData,
   textColor,
 } from "../../constants/functions";
 import ButtonComponent from "@/components/Button";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
 import { AthleteIdRegex } from "@/constants/regex";
 import { AthleteData } from "@/constants/types";
@@ -27,6 +29,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MeetsTable from "@/components/MeetTable";
 import { SwimrakingEventId } from "@/constants/enums";
 import RadarChart from "@/components/RadarChart";
+import LineChart from "@/components/LineChart";
 
 enum Tabs {
   Pbs = 1,
@@ -267,12 +270,26 @@ export default function Profile() {
             />
           )}
           {activeTab === Tabs.Speciality && (
-            <RadarChart
-              data={getSpecialityData(athleteData)}
-              size={300}
-              axes={["Vlinder", "Rug", "Schoool", "Vrij", "Wissel"]}
-              rings={4}
-            />
+            <Fragment>
+              <RadarChart
+                data={getSpecialityData(athleteData)}
+                size={300}
+                axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
+                rings={4}
+                fillColor="rgba(162, 94, 23, 0.5)"
+                strokeColor="#ef8b22"
+              />
+              {/* <LineChart
+                data={[
+                  calculateProgression(3 * 60 + 10.3, 2 * 60 + 45.03),
+                  calculateProgression(2 * 60 + 45.03, 2 * 60 + 36.65),
+                  calculateProgression(2 * 60 + 36.65, 2 * 60 + 32.65),
+                ]}
+                labels={["2020", "2021", "2022"]}
+                size={{ width: Dimensions.get("window").width, height: 300 }}
+              /> */}
+              {/* <SectionList data={[{title: 'peter', data: ['']}]}/> */}
+            </Fragment>
           )}
         </Page>
       );

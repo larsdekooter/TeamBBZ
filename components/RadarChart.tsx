@@ -7,6 +7,8 @@ interface RadarChartProps {
   size: number;
   axes: string[];
   rings?: number;
+  fillColor: string;
+  strokeColor: string;
 }
 
 interface Coordinate {
@@ -19,6 +21,8 @@ const RadarChart: React.FC<RadarChartProps> = ({
   size,
   axes,
   rings = 5,
+  fillColor,
+  strokeColor,
 }) => {
   const colorScheme = useColorScheme();
   const center: number = size / 2;
@@ -101,8 +105,8 @@ const RadarChart: React.FC<RadarChartProps> = ({
         })}
         <Polygon
           points={points}
-          fill="rgba(0, 150, 200, 0.5)"
-          stroke="rgb(0, 150, 200)"
+          fill={fillColor}
+          stroke={strokeColor}
           strokeWidth="2"
         />
       </Svg>

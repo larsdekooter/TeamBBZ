@@ -431,6 +431,13 @@ export function getSpecialityData(athleteData: AthleteData) {
   return Object.values(pointsPerStroke).map(({ count }) => count);
 }
 
+export function calculateProgression(
+  previousYear: number,
+  currentYear: number
+) {
+  return ((previousYear - currentYear) / previousYear) * 100;
+}
+
 function wait(duration: number) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, duration);
