@@ -7,6 +7,8 @@ interface LineChartProps {
   labels: string[];
   size: { width: number; height: number };
   yAxisTicks?: number;
+  pointColor?: string;
+  lineColor?: string;
 }
 
 const LineChart: React.FC<LineChartProps> = ({
@@ -14,6 +16,8 @@ const LineChart: React.FC<LineChartProps> = ({
   labels,
   size,
   yAxisTicks = 5,
+  pointColor = "rgb(0, 150, 200)",
+  lineColor = "rgb(0, 150, 200)",
 }) => {
   const colorScheme = useColorScheme();
   const { width, height } = size;
@@ -35,18 +39,45 @@ const LineChart: React.FC<LineChartProps> = ({
       x: getX(index),
       y: getY(value),
     }));
+    const tension = 0.5; // Adjust this value to control the smoothness (0.0 to 1.0)
+
+    const catmullRomSpline = (
+      p0: any,
+      p1: any,
+      p2: any,
+      p3: any,
+      t: number
+    ) => {
+      const t2 = t * t;
+      const t3 = t2 * t;
+      return {
+        x:
+          0.5 *
+          (2 * p1.x +
+            (-p0.x + p2.x) * t +
+            (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+            (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3),
+        y:
+          0.5 *
+          (2 * p1.y +
+            (-p0.y + p2.y) * t +
+            (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+            (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3),
+      };
+    };
+
     let path = `M ${points[0].x} ${points[0].y}`;
 
     for (let i = 0; i < points.length - 1; i++) {
-      const x1 = points[i].x;
-      const y1 = points[i].y;
-      const x2 = points[i + 1].x;
-      const y2 = points[i + 1].y;
+      const p0 = points[Math.max(0, i - 1)];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[Math.min(points.length - 1, i + 2)];
 
-      const controlX1 = x1 + (x2 - x1) / 3;
-      const controlX2 = x2 - (x2 - x1) / 3;
-
-      path += ` C ${controlX1} ${y1}, ${controlX2} ${y2}, ${x2} ${y2}`;
+      for (let t = 0; t <= 1; t += 0.1) {
+        const pt = catmullRomSpline(p0, p1, p2, p3, t);
+        path += ` L ${pt.x} ${pt.y}`;
+      }
     }
 
     return path;
@@ -96,17 +127,12 @@ const LineChart: React.FC<LineChartProps> = ({
         <Path
           d={createSmoothPath()}
           fill="none"
-          stroke="rgb(0, 150, 200)"
+          stroke={lineColor}
           strokeWidth="2"
         />
         {data.map((value, index) => (
           <React.Fragment key={`point-${index}`}>
-            <Circle
-              cx={getX(index)}
-              cy={getY(value)}
-              r="4"
-              fill="rgb(0, 150, 200)"
-            />
+            <Circle cx={getX(index)} cy={getY(value)} r="4" fill={pointColor} />
             <Text
               x={getX(index)}
               y={height - padding.bottom + 20}

@@ -4,6 +4,7 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  ScrollView,
   SectionList,
   StyleSheet,
   Text,
@@ -15,6 +16,7 @@ import Page from "../../components/Page";
 import {
   calculateProgression,
   getAthleteData,
+  getProgression,
   getSpecialityData,
   textColor,
 } from "../../constants/functions";
@@ -30,6 +32,7 @@ import MeetsTable from "@/components/MeetTable";
 import { SwimrakingEventId } from "@/constants/enums";
 import RadarChart from "@/components/RadarChart";
 import LineChart from "@/components/LineChart";
+import Dropdown from "@/components/Dropdown";
 
 enum Tabs {
   Pbs = 1,
@@ -50,13 +53,9 @@ export default function Profile() {
   const [usernameSet, setUsernameSet] = useState("");
   const [activeTab, setActiveTab] = useState(Tabs.Pbs);
   const [emailSet, setEmailSet] = useState("");
-  const [chartData, setChartData] = useState(
-    [] as Array<{
-      value: number;
-      color: string;
-      label: string;
-    }>
-  );
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([] as number[]);
+  const [labels, setLabels] = useState([] as string[]);
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -90,6 +89,15 @@ export default function Profile() {
         ).text();
         const aData = getAthleteData(athletePage, meetsPage, athleteId);
         setAthleteData(aData);
+        const history25mFreestyle = await getProgression(
+          SwimrakingEventId["25m vrije slag"],
+          athleteId,
+          "25m"
+        );
+        setData(
+          history25mFreestyle.map(({ points }) => parseInt(points.points))
+        );
+        setLabels(history25mFreestyle.map(({ year }) => year));
       }
     }
   }
@@ -270,7 +278,14 @@ export default function Profile() {
             />
           )}
           {activeTab === Tabs.Speciality && (
-            <Fragment>
+            <ScrollView
+              contentContainerStyle={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              nestedScrollEnabled
+            >
               <RadarChart
                 data={getSpecialityData(athleteData)}
                 size={300}
@@ -279,17 +294,55 @@ export default function Profile() {
                 fillColor="rgba(162, 94, 23, 0.5)"
                 strokeColor="#ef8b22"
               />
-              {/* <LineChart
-                data={[
-                  calculateProgression(3 * 60 + 10.3, 2 * 60 + 45.03),
-                  calculateProgression(2 * 60 + 45.03, 2 * 60 + 36.65),
-                  calculateProgression(2 * 60 + 36.65, 2 * 60 + 32.65),
-                ]}
-                labels={["2020", "2021", "2022"]}
+              <LineChart
+                data={data}
+                labels={labels}
                 size={{ width: Dimensions.get("window").width, height: 300 }}
-              /> */}
-              {/* <SectionList data={[{title: 'peter', data: ['']}]}/> */}
-            </Fragment>
+                lineColor="rgba(162, 94, 23, 0.8)"
+                pointColor="#ef8b22"
+              />
+              <Dropdown
+                data={athleteData.pbs.map(
+                  (pb) => pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC")
+                )}
+                onPress={async (item) => {
+                  setLoading(true);
+                  const progression = await getProgression(
+                    SwimrakingEventId[
+                      item
+                        .match(/[^LC|SC]/gm)!
+                        .join("")
+                        .trim() as keyof typeof SwimrakingEventId
+                    ],
+                    athleteData.id,
+                    item.includes("LC") ? "50m" : "25m"
+                  );
+                  setData(
+                    progression.map(({ points }) => parseInt(points.points))
+                  );
+                  setLabels(progression.map(({ year }) => year));
+                  setLoading(false);
+                }}
+                renderItem={({ item, index }) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "grey",
+                        paddingVertical: 5,
+                        paddingHorizontal: 10,
+                        margin: 5,
+                        borderRadius: 6,
+                      }}
+                    >
+                      <Text style={textColor(colorScheme)}>{item}</Text>
+                    </View>
+                  );
+                }}
+                shouldLoad={loading}
+              />
+            </ScrollView>
           )}
         </Page>
       );
@@ -302,22 +355,6 @@ export default function Profile() {
     }
   }
 }
-
-function randomNumber() {
-  return Math.floor(Math.random() * 26) + 125;
-}
-function generateRandomColor(): string {
-  // Generating a random number between 0 and 0xFFFFFF
-  const randomColor = Math.floor(Math.random() * 0xffffff);
-  // Converting the number to a hexadecimal string and padding with zeros
-  return `#${randomColor.toString(16).padStart(6, "0")}`;
-}
-const DATA = (numberPoints = 5) =>
-  Array.from({ length: numberPoints }, (_, index) => ({
-    value: randomNumber(),
-    color: generateRandomColor(),
-    label: `Label ${index + 1}`,
-  }));
 
 const styles = StyleSheet.create({
   centeredView: {

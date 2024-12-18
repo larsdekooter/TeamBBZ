@@ -406,7 +406,7 @@ export function getSpecialityData(athleteData: AthleteData) {
   };
 
   points.forEach(({ points, event }) => {
-    if (event.includes("split")) {
+    if (event.includes("split") || event.includes("25m")) {
     } else if (event.includes("vlinderslag")) {
       pointsPerStroke.butterfly.count += points;
       pointsPerStroke.butterfly.amount++;
@@ -436,6 +436,30 @@ export function calculateProgression(
   currentYear: number
 ) {
   return ((previousYear - currentYear) / previousYear) * 100;
+}
+
+export async function getProgression(
+  event: SwimrakingEventId,
+  athleteId: string,
+  poolSize: "25m" | "50m"
+) {
+  const history = await getHistory(event, athleteId, poolSize);
+
+  const groupedPoints = history.reduce((acc, item) => {
+    const year = item.date.getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(item);
+    return acc;
+  }, {} as Record<number, typeof history>);
+
+  const result = Object.keys(groupedPoints).map((year) => {
+    const points = groupedPoints[parseInt(year) as keyof typeof groupedPoints];
+    points.sort((a, b) => parseInt(b.points) - parseInt(a.points));
+    return { year, points: points[0] };
+  });
+  return result;
 }
 
 function wait(duration: number) {
