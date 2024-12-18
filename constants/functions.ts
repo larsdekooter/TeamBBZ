@@ -387,7 +387,10 @@ export async function getHistory(
   return rows;
 }
 
-export function getSpecialityData(athleteData: AthleteData) {
+export function getSpecialityData(
+  athleteData: AthleteData,
+  shouldShow25?: boolean
+) {
   const points = athleteData.pbs
     .map(({ points, event, poolSize }) => ({
       event: event,
@@ -406,7 +409,7 @@ export function getSpecialityData(athleteData: AthleteData) {
   };
 
   points.forEach(({ points, event }) => {
-    if (event.includes("split") || event.includes("25m")) {
+    if (event.includes("split") || (!shouldShow25 && event.includes("25m"))) {
     } else if (event.includes("vlinderslag")) {
       pointsPerStroke.butterfly.count += points;
       pointsPerStroke.butterfly.amount++;

@@ -33,6 +33,7 @@ import { SwimrakingEventId } from "@/constants/enums";
 import RadarChart from "@/components/RadarChart";
 import LineChart from "@/components/LineChart";
 import Dropdown from "@/components/Dropdown";
+import CheckBox from "@/components/Checkbox";
 
 enum Tabs {
   Pbs = 1,
@@ -56,6 +57,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([] as number[]);
   const [labels, setLabels] = useState([] as string[]);
+  const [shouldShow25, setShouldShow25] = useState(false);
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -210,7 +212,18 @@ export default function Profile() {
             }}
             onPress={fetchUser}
           >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
-          <View style={{ marginTop: 100, flexDirection: "row" }}>
+          <View
+            style={{
+              marginTop: 100,
+              flexDirection: "row",
+              borderBottomWidth: 1,
+              borderColor: "grey",
+              width: Dimensions.get("window").width,
+              display: "flex",
+              justifyContent: "space-around",
+              paddingBottom: 5,
+            }}
+          >
             <ButtonComponent
               onPress={() => {
                 setActiveTab(Tabs.Pbs);
@@ -253,7 +266,7 @@ export default function Profile() {
           </View>
           {activeTab === Tabs.Pbs && (
             <PbTable
-              top={25}
+              top={0}
               data={athleteData.pbs.map((pb) => {
                 return {
                   key: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
@@ -272,7 +285,7 @@ export default function Profile() {
           )}
           {activeTab === Tabs.Meets && (
             <MeetsTable
-              top={25}
+              top={0}
               athleteData={athleteData}
               data={athleteData.meets}
             />
@@ -287,13 +300,30 @@ export default function Profile() {
               nestedScrollEnabled
             >
               <RadarChart
-                data={getSpecialityData(athleteData)}
+                data={getSpecialityData(athleteData, shouldShow25)}
                 size={300}
                 axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
                 rings={4}
                 fillColor="rgba(162, 94, 23, 0.5)"
                 strokeColor="#ef8b22"
               />
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: Dimensions.get("window").width,
+                  paddingHorizontal: 20,
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <CheckBox
+                  onPress={() => setShouldShow25(!shouldShow25)}
+                  checked={shouldShow25}
+                />
+                <View style={{ width: 10 }} />
+                <Text style={textColor(colorScheme)}>Bevat 25m's</Text>
+              </View>
+
               <LineChart
                 data={data}
                 labels={labels}
