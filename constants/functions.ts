@@ -276,7 +276,7 @@ export async function getSchemaData() {
     const schema = contentDiv.split("<br />");
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
-    return ["A\n", ...schema].join("");
+    return ["A", ...schema].join("");
     // .replace(/\n/g, "\n");
   } else {
     return "Geen schema vandaag!";
