@@ -100,6 +100,8 @@ export default function Profile() {
           history25mFreestyle.map(({ points }) => parseInt(points.points))
         );
         setLabels(history25mFreestyle.map(({ year }) => year));
+      } else {
+        Alert.alert(`'${username}' is niet gevonden in SwimRankings!`);
       }
     }
   }
