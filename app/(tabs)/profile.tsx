@@ -307,7 +307,7 @@ export default function Profile() {
                 fillColor="rgba(162, 94, 23, 0.5)"
                 strokeColor="#ef8b22"
               />
-              <View
+              <Pressable
                 style={{
                   flexDirection: "row",
                   width: Dimensions.get("window").width,
@@ -315,14 +315,12 @@ export default function Profile() {
                   display: "flex",
                   alignItems: "center",
                 }}
+                onPress={() => setShouldShow25(!shouldShow25)}
               >
-                <CheckBox
-                  onPress={() => setShouldShow25(!shouldShow25)}
-                  checked={shouldShow25}
-                />
+                <CheckBox checked={shouldShow25} />
                 <View style={{ width: 10 }} />
-                <Text style={textColor(colorScheme)}>Bevat 25m's</Text>
-              </View>
+                <Text style={textColor(colorScheme)}>Inclusief 25m tijden</Text>
+              </Pressable>
 
               <LineChart
                 data={data}
@@ -332,9 +330,13 @@ export default function Profile() {
                 pointColor="#ef8b22"
               />
               <Dropdown
-                data={athleteData.pbs.map(
-                  (pb) => pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC")
-                )}
+                data={athleteData.pbs
+                  .filter(({ points }) => points !== "-")
+                  .map(
+                    (pb) =>
+                      pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC")
+                  )
+                  .filter((e) => !e.includes("split"))}
                 onPress={async (item) => {
                   setLoading(true);
                   const progression = await getProgression(

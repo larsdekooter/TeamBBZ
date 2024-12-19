@@ -29,12 +29,28 @@ const LineChart: React.FC<LineChartProps> = ({
   const minValue = Math.min(...data);
   const valueRange = maxValue - minValue;
 
+  const allSameValue = valueRange === 0 || data.length === 1;
+
   const getX = (index: number) =>
-    padding.left + (index / (data.length - 1)) * chartWidth;
+    data.length === 1
+      ? width / 2
+      : padding.left + (index / (data.length - 1)) * chartWidth;
+
   const getY = (value: number) =>
-    height - padding.bottom - ((value - minValue) / valueRange) * chartHeight;
+    allSameValue
+      ? height / 2
+      : height -
+        padding.bottom -
+        ((value - minValue) / valueRange) * chartHeight;
 
   const createSmoothPath = () => {
+    if (data.length === 1) {
+      // If there's only one point, draw a small horizontal line
+      const x = getX(0);
+      const y = getY(data[0]);
+      return `M ${x} ${y} L ${x} ${y}`;
+    }
+
     const points = data.map((value, index) => ({
       x: getX(index),
       y: getY(value),
@@ -86,7 +102,14 @@ const LineChart: React.FC<LineChartProps> = ({
   const renderYAxisTicks = () => {
     return Array.from({ length: yAxisTicks }).map((_, i) => {
       const y = height - padding.bottom - (i / (yAxisTicks - 1)) * chartHeight;
-      const value = minValue + (i / (yAxisTicks - 1)) * valueRange;
+
+      let value: number;
+      if (allSameValue) {
+        const range = maxValue * 0.2; // 20% range
+        value = maxValue - range + (i / (yAxisTicks - 1)) * (2 * range);
+      } else {
+        value = minValue + (i / (yAxisTicks - 1)) * valueRange;
+      }
       return (
         <React.Fragment key={`y-axis-${i}`}>
           <Line
