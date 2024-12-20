@@ -28,3 +28,11 @@ export enum SwimrakingEventId {
   "50m vlinderslag split" = 64,
   "None" = 0,
 }
+
+export enum Strokes {
+  "vlinderslag" = 0,
+  "rugslag" = 1,
+  "schoolslag" = 2,
+  "vrije slag" = 3,
+  "wisselslag" = 4,
+}
