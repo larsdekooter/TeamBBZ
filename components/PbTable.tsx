@@ -451,7 +451,7 @@ function HistoryModal({
         >
           <FontAwesome
             name="arrow-left"
-            color="white"
+            color="#ef8b22"
             size={30}
             style={{ left: 10, position: "absolute" }}
           />
@@ -472,6 +472,11 @@ function HistoryModal({
         <FlatList
           data={sData}
           style={{ top: 50, marginBottom: 50 }}
+          contentContainerStyle={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
           renderItem={({ item, index }) => (
             <View
               key={index}
@@ -479,24 +484,42 @@ function HistoryModal({
                 borderWidth: 1,
                 borderColor: "grey",
                 paddingVertical: 15,
-                // marginVertical: 5,
-                flex: 1,
                 flexDirection: "row",
-                // justifyContent: "space-between",
                 alignContent: "space-between",
                 paddingHorizontal: 10,
+                borderRadius: 6,
+                marginVertical: 10,
+                width: "95%",
               }}
             >
               <Text style={{ ...textColor(colorScheme), flex: 1 }}>
                 {item.time}
               </Text>
-              <Text style={{ ...textColor(colorScheme), flex: 1 }}>
-                {item.points}
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  flex: 1,
+                  textAlign: "center",
+                }}
+              >
+                {item.points} punten
               </Text>
-              <Text style={{ ...textColor(colorScheme), flex: 1 }}>
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  flex: 1,
+                  textAlign: "center",
+                }}
+              >
                 {item.date.toLocaleDateString()}
               </Text>
-              <Text style={{ ...textColor(colorScheme), flex: 1 }}>
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  flex: 1,
+                  textAlign: "right",
+                }}
+              >
                 {item.location}
               </Text>
             </View>
