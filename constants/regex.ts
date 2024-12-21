@@ -73,4 +73,19 @@ export const TimeTableRegex =
 
 export const ProgramNumberCheckRegex = /^\d{1,3}m/gm;
 
-export const CanvasRegex = /<canvas[^>]*>/gi;
+export class ClubRecordRegex {
+  static TableRowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>)/gi;
+
+  static CellReplacementRegex =
+    /<td[^>]*>|<\/td>|<font[^>]*>.*<\/font>|<a\s.*?(?=title\=)title="|"\sdata-.*?(?=>)|<\/a>/gm;
+
+  static SwimmerRegex = /^.*?(?=&#013;)/gm;
+
+  static DateRegex = /(?<=&#013;).+?(?=&#013;)/gm;
+
+  static LocationRegex = ClubRecordRegex.DateRegex;
+
+  static MeetRegex = /(?<=&#013;)(?:(?!&#013;).)+?(?=\.\/\.)/gim;
+
+  static TimeRegex = /(?<=.\/.).+/gm;
+}

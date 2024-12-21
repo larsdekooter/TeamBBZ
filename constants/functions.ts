@@ -29,9 +29,17 @@ import {
   OnMouseOverRegex,
   CellRegex2,
   ProgramNumberCheckRegex,
-  CanvasRegex,
+  TableRegex,
+  ClubRecordRegex,
 } from "./regex";
-import { AthleteData, MeetData, Pb, Post, Wedstrijd } from "./types";
+import {
+  AthleteData,
+  Clubrecord,
+  MeetData,
+  Pb,
+  Post,
+  Wedstrijd,
+} from "./types";
 import { getItem } from "@/utils/AsyncStorage";
 import { SwimrakingEventId } from "./enums";
 
@@ -469,4 +477,78 @@ function wait(duration: number) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, duration);
   });
+}
+
+export function mapClubrecords(page: string) {
+  const table = page.match(TableRegex)![0];
+  const rs = table.match(ClubRecordRegex.TableRowRegex)!;
+  rs.splice(0, 2);
+  const rows = rs
+    .map((row) =>
+      row
+        .match(CellRegex2)!
+        .map((cell) =>
+          cell
+            .replace(ClubRecordRegex.CellReplacementRegex, "")
+            .replace(/>/g, "./.")
+            .replace(/&#013;(?=.\/.)/gm, "")
+        )
+        .filter((cell) => cell.length > 0)
+    )
+    .map((row) => {
+      const data = {
+        distance: row[0],
+        event: row[1],
+        swimmers: [],
+        dates: [],
+        locations: [],
+        meets: [],
+        times: [],
+      } as Clubrecord;
+      for (let i = 2; i < row.length; i++) {
+        const index = i - 2;
+        if (row[i].includes("0000")) {
+          data.swimmers[index] = null;
+          data.dates[index] = null;
+          data.locations[index] = null;
+          data.meets[index] = null;
+          data.times[index] = null;
+        } else {
+          data.swimmers[index] = row[i].match(ClubRecordRegex.SwimmerRegex)![0];
+          data.dates[index] = row[i].match(ClubRecordRegex.DateRegex)![0];
+          data.locations[index] = !row[i].includes("()")
+            ? row[i].match(ClubRecordRegex.LocationRegex)![1]
+            : null;
+          data.meets[index] = !row[i].includes("()")
+            ? row[i].match(ClubRecordRegex.MeetRegex)![0]
+            : null;
+          data.times[index] = row[i].match(ClubRecordRegex.TimeRegex)![0];
+
+          if (data.locations[index] === undefined) {
+            data.locations[index] = data.meets[index];
+            data.meets[index] = null;
+          }
+        }
+      }
+      return data;
+    });
+  return rows;
+}
+
+export async function getClubRecords() {
+  const femalePage = await (
+    await fetch(
+      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Dames&estafette=1"
+    )
+  ).text();
+  const malePage = await (
+    await fetch(
+      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=1"
+    )
+  ).text();
+
+  const female = mapClubrecords(femalePage);
+  const male = mapClubrecords(malePage);
+
+  return { male, female };
 }

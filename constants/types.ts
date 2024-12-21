@@ -50,3 +50,13 @@ export type Post = {
   link: string;
   image: string;
 };
+
+export type Clubrecord = {
+  distance: string;
+  event: string;
+  swimmers: (string | null)[];
+  dates: (string | null)[] | (Date | null)[];
+  locations: (string | null)[];
+  meets: (string | null)[];
+  times: (string | null)[];
+};
