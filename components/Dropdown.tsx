@@ -87,7 +87,7 @@ export default function Dropdown<T extends ReactNode>({
       >
         <Text
           style={{
-            width: 150,
+            width: "92%",
             ...textColor(colorScheme),
             textTransform: "capitalize",
           }}
@@ -95,7 +95,7 @@ export default function Dropdown<T extends ReactNode>({
           {selected}
         </Text>
         {shouldLoad && <ActivityIndicator color="#ef8b22" size={"small"} />}
-        <Animated.View style={{ transform: [{ rotate }] /*marginLeft: 10*/ }}>
+        <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
           <FontAwesome
             name="arrow-right"
             size={15}
