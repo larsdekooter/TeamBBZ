@@ -261,7 +261,7 @@ function WedstrijdenComponent({
         <Modal
           visible={modalShown}
           // transparent={false}
-          onRequestClose={() => setModalShown(false)}
+          onRequestClose={() => {setModalShown(false); setChosenProgram([]);}}
           animationType="slide"
           style={{
             width: Dimensions.get("window").width,
@@ -491,7 +491,7 @@ function WedstrijdenComponent({
                 </ButtonComponent>
               )}
               {inschrijfLoading && <ActivityIndicator color="#ef8b22" />}
-              <ButtonComponent onPress={() => setModalShown(false)}>
+              <ButtonComponent onPress={() => {setModalShown(false); setChosenProgram([]);}}>
                 <Text style={textColor(colorScheme === "dark")}>Sluit</Text>
               </ButtonComponent>
               <View style={{ height: 20 }} />
