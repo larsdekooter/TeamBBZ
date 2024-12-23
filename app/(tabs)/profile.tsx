@@ -319,7 +319,7 @@ export default function Profile() {
                 }}
                 onPress={() => setShouldShow25(!shouldShow25)}
               >
-                <CheckBox checked={shouldShow25} />
+                <CheckBox checked={shouldShow25} onPress={() => setShouldShow25(!setShouldShow25)}/>
                 <View style={{ width: 10 }} />
                 <Text style={textColor(colorScheme)}>Inclusief 25m tijden</Text>
               </Pressable>
