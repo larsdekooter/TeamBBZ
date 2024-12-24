@@ -31,6 +31,9 @@ import {
   ProgramNumberCheckRegex,
   TableRegex,
   ClubRecordRegex,
+  MeetIdRegex,
+  ClubIdRegex,
+  ResultTableRegex,
 } from "./regex";
 import {
   AthleteData,
@@ -111,7 +114,12 @@ function getMeetsInfo(meetsPage: string): MeetData[] {
     )
     .filter((row) => row.length > 1);
   rows.splice(0, 1);
-  const meets = rows.map((row) => {
+  const ids = meetTable
+    .match(RowRegex)!
+    .toSpliced(0, 1)
+    .filter((x) => !x.includes("separator"))
+    .map((row) => [row.match(MeetIdRegex)![0], row.match(ClubIdRegex)![0]]);
+  const meets = rows.map((row, index) => {
     return {
       date: row[0]
         .split("&nbsp;-&nbsp;")
@@ -121,6 +129,8 @@ function getMeetsInfo(meetsPage: string): MeetData[] {
       location: row[1],
       poolSize: row[2],
       club: row[4],
+      id: ids[index][0],
+      clubId: ids[index][1],
     } as MeetData;
   });
   return meets;
@@ -275,7 +285,6 @@ export async function getSchemaData() {
     if (tdMatch.includes("GEEN TRAINEN")) {
       return "Geen trainen vandaag!";
     }
-    console.log(tdMatch);
     const schemaPage = await (
       await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
     ).text();
@@ -557,4 +566,76 @@ export async function getClubRecords() {
   const male = mapClubrecords(malePage);
 
   return { male, female };
+}
+
+export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
+  const page = (
+    await (
+      await fetch(
+        `https://www.swimrankings.net/index.php?page=meetDetail&meetId=${meet.id}&clubId=${meet.clubId}`
+      )
+    ).text()
+  ).replace(OnMouseOverRegex, "");
+  const resultsTable = page.match(ResultTableRegex)![0];
+  const rows = resultsTable.match(RowRegex)!.toSpliced(0, 1);
+  const idRows = rows.filter((row) => row.includes("athleteId"));
+  const idRowIndexes = idRows.map((id) => rows.findIndex((x) => x === id));
+
+  if (idRowIndexes.length === 1) {
+    rows.splice(0, 1);
+    const cells = rows.map((row) =>
+      row.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
+    );
+    return mapMeet(cells);
+  } else {
+    const startIndex = rows.findIndex(
+      (y) => y === idRows.find((x) => x.includes(athleteData.id))
+    );
+    rows.splice(0, startIndex);
+    const endIndex = rows.findIndex(
+      (y, i) => i != 0 && y.includes("athleteId")
+    );
+    const data = rows.slice(0, endIndex);
+    data.splice(0, 1);
+    const cells = data.map((d) =>
+      d.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
+    );
+    console.log(mapMeet(cells));
+  }
+}
+
+function mapMeet(cells: string[][]) {
+  const obj = {
+    events: [] as string[],
+    places: [] as string[],
+    types: [] as string[],
+    times: [] as string[],
+    points: [] as string[],
+    courses: [] as string[],
+    pbs: [] as string[],
+    percentages: [] as string[],
+  };
+  for (let i = 0; i < cells.length; i++) {
+    const cel = cells[i];
+    const data = cel
+      .map(
+        (x) =>
+          x
+            .match(DataRegex)!
+            .map((y) => y.replace(/<|>/g, ""))
+            .filter((z) => z.length > 0)[0]
+      )
+      .filter((x) => x.length > 0);
+    if (data.length > 0) {
+      obj.events[i] = data[0];
+      obj.types[i] = data[1];
+      obj.places[i] = data[2];
+      obj.times[i] = data[3];
+      obj.points[i] = data[4];
+      obj.courses[i] = data[5];
+      obj.pbs[i] = data[6];
+      obj.percentages[i] = data[7];
+    }
+  }
+  return obj;
 }

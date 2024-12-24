@@ -23,6 +23,8 @@ export type MeetData = {
   location: string;
   poolSize: "25m" | "50m" | "OW";
   club: string;
+  id: string;
+  clubId: string;
 };
 
 export type Wedstrijd = {

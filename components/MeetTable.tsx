@@ -1,7 +1,8 @@
-import { textColor } from "@/constants/functions";
+import { getMeetData, textColor } from "@/constants/functions";
 import { AthleteData, MeetData } from "@/constants/types";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   FlatList,
@@ -25,6 +26,8 @@ export default function MeetsTable({
   const colorScheme = useColorScheme();
   const [modalShown, setModalShown] = useState(false);
   const [currentItem, setCurrentItem] = useState({} as MeetData);
+  const [loading, setLoading] = useState(-1);
+
   return (
     <>
       <Modal
@@ -109,9 +112,11 @@ export default function MeetsTable({
               justifyContent: "center",
               flexDirection: "row",
             }}
-            onPress={() => {
-              setModalShown(true);
-              setCurrentItem(item);
+            onPress={async () => {
+              setLoading(index);
+              await getMeetData(item, athleteData);
+              // setModalShown(true);
+              // setCurrentItem(item);
             }}
           >
             <Text
@@ -119,6 +124,7 @@ export default function MeetsTable({
             >
               {mapDates(item.date)}
             </Text>
+            {loading === index && <ActivityIndicator color="#ef8b22" />}
             <Text
               style={{
                 textAlign: "center",

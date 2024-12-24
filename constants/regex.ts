@@ -73,6 +73,13 @@ export const TimeTableRegex =
 
 export const ProgramNumberCheckRegex = /^\d{1,3}m/gm;
 
+export const MeetIdRegex = /(?<=meetId=)\d*/gm;
+
+export const ClubIdRegex = /(?<=clubId=)\d*/gm;
+
+export const ResultTableRegex =
+  /(?<=<table\s.*class="meetResult"[^>]*>)[\s\S]*?(?=<\/table>)/gm;
+
 export class ClubRecordRegex {
   static TableRowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>)/gi;
 
