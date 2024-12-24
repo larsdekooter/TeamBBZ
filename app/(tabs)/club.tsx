@@ -13,9 +13,9 @@ import {
   CarrotRegex,
   IdRegex,
 } from "@/constants/regex";
-import { Wedstrijd } from "@/constants/types";
+import { Clubrecord, Wedstrijd } from "@/constants/types";
 import { FontAwesome } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   Dimensions,
   Pressable,
@@ -29,6 +29,7 @@ import {
   FlatList,
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import SectionComponent from "@/components/SectionComponent";
 
 export default function Club() {
   const [schema, setSchema] = useState("");
@@ -109,23 +110,6 @@ export default function Club() {
       />
     </Page>
   );
-}
-
-// Helper function to get week number (can be placed outside the component)
-function getWeekNumber(date: Date): number {
-  // Set to nearest Thursday: current date + 4 - current day number
-  // Make Sunday's day number 7
-  const currentDay = date.getDay() || 7;
-  date.setDate(date.getDate() + 4 - currentDay);
-
-  // Get first day of year
-  const yearStart = new Date(date.getFullYear(), 0, 1);
-  // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil(
-    ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
-  );
-  date.setDate(date.getDate() - 4 + currentDay);
-  return weekNo;
 }
 
 function SchemaComponent({
@@ -257,11 +241,14 @@ function WedstrijdenComponent({
   };
   if (wedstrijden.length > 0) {
     return (
-      <>
+      <Fragment>
         <Modal
           visible={modalShown}
           // transparent={false}
-          onRequestClose={() => {setModalShown(false); setChosenProgram([]);}}
+          onRequestClose={() => {
+            setModalShown(false);
+            setChosenProgram([]);
+          }}
           animationType="slide"
           style={{
             width: Dimensions.get("window").width,
@@ -491,7 +478,12 @@ function WedstrijdenComponent({
                 </ButtonComponent>
               )}
               {inschrijfLoading && <ActivityIndicator color="#ef8b22" />}
-              <ButtonComponent onPress={() => {setModalShown(false); setChosenProgram([]);}}>
+              <ButtonComponent
+                onPress={() => {
+                  setModalShown(false);
+                  setChosenProgram([]);
+                }}
+              >
                 <Text style={textColor(colorScheme === "dark")}>Sluit</Text>
               </ButtonComponent>
               <View style={{ height: 20 }} />
@@ -601,7 +593,41 @@ function WedstrijdenComponent({
             ))}
           </Animated.View>
         </Pressable>
-      </>
+      </Fragment>
     );
   } else return <ActivityIndicator color="#ef8b22" />;
+}
+
+function ClubrecordsComponent({
+  clubrecords,
+  colorScheme,
+}: {
+  clubrecords: { male: Clubrecord[]; female: Clubrecord[] };
+  colorScheme: ColorSchemeName;
+}) {
+  return (
+    <SectionComponent title="clubrecords">
+      <FlatList
+        data={clubrecords.male}
+        renderItem={({ item, index }) => (
+          <Pressable
+            key={index}
+            style={{
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              borderColor: "grey",
+              borderWidth: 1,
+              borderRadius: 6,
+              marginVertical: 5,
+              flexDirection: "row",
+            }}
+          >
+            <Text style={textColor(colorScheme)}>
+              {item.distance} {item.event}
+            </Text>
+          </Pressable>
+        )}
+      />
+    </SectionComponent>
+  );
 }
