@@ -100,7 +100,16 @@ export default function Dropdown<T extends ReactNode>({
           {selected}
         </Text>
         {shouldLoad && <ActivityIndicator color="#ef8b22" size={"small"} />}
-        <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
+        <Animated.View
+          style={{
+            transform: [{ rotate }],
+            marginLeft: 10,
+            width: 15,
+            height: 15,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <FontAwesome
             name="chevron-down"
             size={15}
