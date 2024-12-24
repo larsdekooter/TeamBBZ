@@ -1,15 +1,30 @@
-import { Animated, Pressable, Dimensions, View, Text, useColorScheme,  } from 'react-native";
-import { useState } from 'react';
+import {
+  Animated,
+  Pressable,
+  Dimensions,
+  View,
+  Text,
+  useColorScheme,
+} from "react-native";
+import { useState } from "react";
 import { textColor } from "@/constants/functions";
+import { FontAwesome } from "@expo/vector-icons";
 
-export default function SectionComponent({children, title}: {children: React.ReactNode, title: string}) {
+export default function SectionComponent({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
   const heightAnim = useState(new Animated.Value(0))[0];
+  const colorScheme = useColorScheme();
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '90deg'],
+    outputRange: ["0deg", "90deg"],
   });
 
   const toggleExpand = () => {
@@ -32,28 +47,36 @@ export default function SectionComponent({children, title}: {children: React.Rea
   return (
     <Pressable
       style={{
-        width: Dimensions.get('window').width,
-        borderColor: '#ef8b22',
+        width: Dimensions.get("window").width,
+        borderColor: "#ef8b22",
         borderWidth: 1,
         borderRadius: 6,
         paddingVertical: 10,
         paddingHorizontal: 20,
-        overflow: 'hidden',
+        overflow: "hidden",
         marginVertical: 10,
       }}
-      onPress={toggleExpand}>
+      onPress={toggleExpand}
+    >
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-        <Text style={{ color: 'white', textTransform: 'capitalize' }}>
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{ ...textColor(colorScheme), textTransform: "capitalize" }}
+        >
           {title}
         </Text>
-        <Animated.Text style={{ transform: [{ rotate }], color: 'white' }}>
-          >
-        </Animated.Text>
+        <Animated.View style={{ transform: [{ rotate }] }}>
+          <FontAwesome
+            name="arrow-right"
+            size={15}
+            color={colorScheme === "dark" ? "#fff" : "#000"}
+          />
+        </Animated.View>
       </View>
       <Animated.View
         style={{
@@ -66,7 +89,8 @@ export default function SectionComponent({children, title}: {children: React.Rea
             inputRange: [0, 1],
             outputRange: [0, 10],
           }),
-        }}>
+        }}
+      >
         {children}
       </Animated.View>
     </Pressable>
