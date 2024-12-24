@@ -618,30 +618,45 @@ function ClubrecordsComponent({
   clubrecords: { male: Clubrecord[]; female: Clubrecord[] };
   colorScheme: ColorSchemeName;
 }) {
+  const [selected, setSelected] = useState({} as Clubrecord);
+
   return (
-    <SectionComponent title="clubrecords">
-      <FlatList
-        data={clubrecords.male}
-        style={{ height: 350 }}
-        renderItem={({ item, index }) => (
-          <Pressable
-            key={index}
-            style={{
-              paddingHorizontal: 10,
-              paddingVertical: 5,
-              borderColor: "grey",
-              borderWidth: 1,
-              borderRadius: 6,
-              marginVertical: 5,
-              flexDirection: "row",
-            }}
-          >
-            <Text style={textColor(colorScheme)}>
-              {item.distance} {item.event}
-            </Text>
-          </Pressable>
-        )}
-      />
-    </SectionComponent>
+    <Fragment>
+      <Modal
+        animationType="slide"
+        visible={!!selected.distance && selected.distance.length > 0}
+      ></Modal>
+      <SectionComponent title="clubrecords">
+        <FlatList
+          data={clubrecords.male}
+          style={{ height: 350 }}
+          renderItem={({ item, index }) => (
+            <Pressable
+              key={index}
+              style={{
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                borderColor: "grey",
+                borderWidth: 1,
+                borderRadius: 6,
+                marginVertical: 5,
+                flexDirection: "row",
+              }}
+            >
+              <Text style={{ ...textColor(colorScheme), textAlign: "left" }}>
+                {item.distance} {item.event}
+              </Text>
+              `
+              <Text style={{ ...textColor(colorScheme), textAlign: "center" }}>
+                {item.times[item.times.length - 1]}
+              </Text>
+              <Text style={{ ...textColor(colorScheme), textAlign: "right" }}>
+                {item.swimmers[item.swimmers.length - 1]}
+              </Text>
+            </Pressable>
+          )}
+        />
+      </SectionComponent>
+    </Fragment>
   );
 }
