@@ -37,9 +37,10 @@ import { getItem } from "@/utils/AsyncStorage";
 export default function Club() {
   const [schema, setSchema] = useState("");
   const [wedstrijden, setWedstrijden] = useState([] as Wedstrijd[]);
-  const [clubrecords, setClubrecords] = useState(
-    {} as { male: Clubrecord[]; female: Clubrecord[] }
-  );
+  const [clubrecords, setClubrecords] = useState({ male: [], female: [] } as {
+    male: Clubrecord[];
+    female: Clubrecord[];
+  });
 
   useEffect(() => {
     const getS = async () => {
@@ -529,6 +530,9 @@ function ClubrecordsComponent({
     locations: [],
     meets: [],
   } as Clubrecord);
+  if (!(clubrecords.male.length > 0)) {
+    return <ActivityIndicator color="#ef8b22" size="small" />;
+  }
   return (
     <Fragment>
       <Modal
