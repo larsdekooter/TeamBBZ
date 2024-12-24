@@ -2,6 +2,7 @@ import ButtonComponent from "@/components/Button";
 import Page from "@/components/Page";
 import {
   enterMeet,
+  getClubRecords,
   getSchemaData,
   getWedstrijdData,
   textColor,
@@ -34,6 +35,9 @@ import SectionComponent from "@/components/SectionComponent";
 export default function Club() {
   const [schema, setSchema] = useState("");
   const [wedstrijden, setWedstrijden] = useState([] as Wedstrijd[]);
+  const [clubrecords, setClubrecords] = useState(
+    {} as { male: Clubrecord[]; female: Clubrecord[] }
+  );
 
   useEffect(() => {
     const getS = async () => {
@@ -95,8 +99,13 @@ export default function Club() {
         );
       setWedstrijden(rows);
     };
+    const getC = async () => {
+      const clubrecords = await getClubRecords();
+      setClubrecords(clubrecords);
+    };
     getS();
     getW();
+    getC();
   }, []);
 
   const colorScheme = useColorScheme();
@@ -107,6 +116,10 @@ export default function Club() {
       <WedstrijdenComponent
         colorScheme={colorScheme}
         wedstrijden={wedstrijden}
+      />
+      <ClubrecordsComponent
+        colorScheme={colorScheme}
+        clubrecords={clubrecords}
       />
     </Page>
   );
