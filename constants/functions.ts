@@ -272,6 +272,10 @@ export async function getSchemaData() {
   );
   if (tdMatch) {
     const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
+    if (tdMatch.includes("GEEN TRAINEN")) {
+      return "Geen trainen vandaag!";
+    }
+    console.log(tdMatch);
     const schemaPage = await (
       await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
     ).text();
