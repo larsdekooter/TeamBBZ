@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import ButtonComponent from "./Button";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function MeetsTable({
   top,
@@ -42,53 +43,116 @@ export default function MeetsTable({
           <View
             style={{
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              height: 200,
+              height: 500,
               width: 400,
               padding: 20,
               borderRadius: 10,
+              justifyContent: "space-between",
             }}
           >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text
+            <View style={{}}>
+              <View
                 style={{
-                  textAlign: "left",
-                  fontWeight: "bold",
-                  ...textColor(colorScheme),
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                {currentItem.date ? mapDates(currentItem.date) : ""}
-              </Text>
-              <Text
+                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                  {currentItem.date ? mapDates(currentItem.date) : ""}
+                </Text>
+                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                  {currentItem.location?.replace(/&nbsp;/g, " ")}
+                </Text>
+              </View>
+              <View
                 style={{
-                  ...textColor(colorScheme),
-                  textAlign: "right",
-                  fontWeight: "bold",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                {currentItem.location}
-              </Text>
+                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                  {currentItem.club}
+                </Text>
+                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                  {currentItem.poolSize}
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderColor: "grey",
+                  borderWidth: 1,
+                  margin: 10,
+                  padding: 10,
+                  borderRadius: 6,
+                }}
+              >
+                {currentItem.data?.events?.map((event, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      borderWidth: 1,
+                      borderColor: "#ef8b22",
+                      borderRadius: 6,
+                      margin: 5,
+                      padding: 5,
+                    }}
+                  >
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textAlign: "center", width: "30%" },
+                      ]}
+                    >
+                      {event
+                        .replace("Breaststroke", "schoolslag")
+                        .replace("Freestyle", "vrije slag")
+                        .replace("Medley", "wisselslag")
+                        .replace("Backstroke", "rugslag")
+                        .replace("Butterfly", "vlinderslag")}
+                    </Text>
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        {
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          width: "30%",
+                        },
+                      ]}
+                    >
+                      {currentItem.data.places[index]}
+                    </Text>
+                    <View style={{ width: "30%" }}>
+                      <Text
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "center" },
+                        ]}
+                      >
+                        {currentItem.data.times[index]}
+                      </Text>
+                      <Text
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "center" },
+                        ]}
+                      >
+                        {currentItem.data.percentages[index]}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
             </View>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
+            <ButtonComponent
+              onPress={() => setModalShown(false)}
+              marginVertical={10}
+              paddingVertical={10}
             >
-              <Text style={{ textAlign: "right", ...textColor(colorScheme) }}>
-                {currentItem.club}
-              </Text>
-              <Text style={textColor(colorScheme)}>{currentItem.poolSize}</Text>
-            </View>
-
-            <ButtonComponent onPress={() => setModalShown(false)}>
-              <Text>Sluit</Text>
+              <Text style={{ fontWeight: "bold" }}>Sluit</Text>
             </ButtonComponent>
           </View>
         </View>
@@ -114,9 +178,11 @@ export default function MeetsTable({
             }}
             onPress={async () => {
               setLoading(index);
-              await getMeetData(item, athleteData);
-              // setModalShown(true);
-              // setCurrentItem(item);
+              const data = await getMeetData(item, athleteData);
+              item.data = data;
+              setLoading(-1);
+              setModalShown(true);
+              setCurrentItem(item);
             }}
           >
             <Text
@@ -132,7 +198,7 @@ export default function MeetsTable({
                 flex: 1,
               }}
             >
-              {item.location.replace(/&nbsp;/g, " ")}
+              {item.location?.replace(/&nbsp;/g, " ")}
             </Text>
             <Text
               style={{ textAlign: "right", ...textColor(colorScheme), flex: 1 }}

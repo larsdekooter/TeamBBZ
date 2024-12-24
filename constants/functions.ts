@@ -39,6 +39,7 @@ import {
   AthleteData,
   Clubrecord,
   MeetData,
+  MeetResultData,
   Pb,
   Post,
   Wedstrijd,
@@ -586,7 +587,7 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     const cells = rows.map((row) =>
       row.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
     );
-    return mapMeet(cells);
+    return mapMeet(cells) as MeetResultData;
   } else {
     const startIndex = rows.findIndex(
       (y) => y === idRows.find((x) => x.includes(athleteData.id))
@@ -600,7 +601,7 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     const cells = data.map((d) =>
       d.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
     );
-    console.log(mapMeet(cells));
+    return mapMeet(cells) as MeetResultData;
   }
 }
 

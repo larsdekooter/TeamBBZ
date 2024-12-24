@@ -25,6 +25,18 @@ export type MeetData = {
   club: string;
   id: string;
   clubId: string;
+  data: MeetResultData;
+};
+
+export type MeetResultData = {
+  events: string[];
+  places: string[];
+  types: string[];
+  times: string[];
+  points: string[];
+  courses: string[];
+  pbs: string[];
+  percentages: string[];
 };
 
 export type Wedstrijd = {
