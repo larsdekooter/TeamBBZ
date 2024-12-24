@@ -5,6 +5,10 @@ import {
   View,
   Text,
   useColorScheme,
+  StyleProp,
+  ViewStyle,
+  PressableStateCallbackType,
+  RegisteredStyle,
 } from "react-native";
 import { useState } from "react";
 import { textColor } from "@/constants/functions";
@@ -13,9 +17,11 @@ import { FontAwesome } from "@expo/vector-icons";
 export default function SectionComponent({
   children,
   title,
+  style,
 }: {
   children: React.ReactNode;
   title: string;
+  style?: StyleProp<ViewStyle>;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -24,7 +30,7 @@ export default function SectionComponent({
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
+    outputRange: ["0deg", "180deg"],
   });
 
   const toggleExpand = () => {
@@ -65,31 +71,30 @@ export default function SectionComponent({
           justifyContent: "space-between",
         }}
       >
-        <Text
-          style={{ ...textColor(colorScheme), textTransform: "capitalize" }}
-        >
-          {title}
-        </Text>
+        <Text style={{ ...textColor(colorScheme) }}>{title}</Text>
         <Animated.View style={{ transform: [{ rotate }] }}>
           <FontAwesome
-            name="arrow-right"
+            name="chevron-down"
             size={15}
             color={colorScheme === "dark" ? "#fff" : "#000"}
           />
         </Animated.View>
       </View>
       <Animated.View
-        style={{
-          maxHeight: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1000],
-          }),
-          opacity: heightAnim,
-          marginTop: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 10],
-          }),
-        }}
+        style={[
+          {
+            maxHeight: heightAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1000],
+            }),
+            opacity: heightAnim,
+            marginTop: heightAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 10],
+            }),
+          },
+          style,
+        ]}
       >
         {children}
       </Animated.View>

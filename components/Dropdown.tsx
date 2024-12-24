@@ -6,9 +6,11 @@ import {
   Animated,
   GestureResponderEvent,
   Pressable,
+  StyleProp,
   Text,
   useColorScheme,
   View,
+  ViewStyle,
 } from "react-native";
 
 interface DropdownProps<T extends ReactNode> {
@@ -27,6 +29,7 @@ interface DropdownProps<T extends ReactNode> {
     | null
     | ((item: T, event: GestureResponderEvent) => void)
     | undefined;
+  style?: StyleProp<ViewStyle>;
 }
 
 export default function Dropdown<T extends ReactNode>({
@@ -34,6 +37,7 @@ export default function Dropdown<T extends ReactNode>({
   renderItem,
   shouldLoad,
   onPress,
+  style,
 }: DropdownProps<T>) {
   const [isOpened, setOpened] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -42,7 +46,7 @@ export default function Dropdown<T extends ReactNode>({
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
+    outputRange: ["0deg", "180deg"],
   });
 
   const toggleExpand = () => {
@@ -56,7 +60,7 @@ export default function Dropdown<T extends ReactNode>({
       }),
       Animated.timing(heightAnim, {
         toValue: isOpened ? 0 : 1,
-        duration: isOpened ? 100 : 500,
+        duration: isOpened ? 200 : 500,
         useNativeDriver: false,
       }),
     ]).start();
@@ -67,15 +71,17 @@ export default function Dropdown<T extends ReactNode>({
   return (
     <Pressable
       onPress={toggleExpand}
-      style={{
-        width: "95%",
-        borderColor: "grey",
-        borderWidth: 1,
-        padding: 10,
-        borderRadius: 8,
-        maxHeight: 300,
-        marginBottom: 50,
-      }}
+      style={[
+        {
+          width: "95%",
+          borderColor: "grey",
+          borderWidth: 1,
+          padding: 10,
+          borderRadius: 8,
+          maxHeight: 300,
+        },
+        style,
+      ]}
     >
       <View
         style={{
@@ -89,7 +95,6 @@ export default function Dropdown<T extends ReactNode>({
           style={{
             width: "92%",
             ...textColor(colorScheme),
-            textTransform: "capitalize",
           }}
         >
           {selected}
@@ -97,7 +102,7 @@ export default function Dropdown<T extends ReactNode>({
         {shouldLoad && <ActivityIndicator color="#ef8b22" size={"small"} />}
         <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
           <FontAwesome
-            name="arrow-right"
+            name="chevron-down"
             size={15}
             color={colorScheme === "dark" ? "#fff" : "#000"}
           />

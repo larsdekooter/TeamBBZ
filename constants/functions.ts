@@ -522,7 +522,9 @@ export function mapClubrecords(page: string) {
           data.meets[index] = !row[i].includes("()")
             ? row[i].match(ClubRecordRegex.MeetRegex)![0]
             : null;
-          data.times[index] = row[i].match(ClubRecordRegex.TimeRegex)![0];
+          data.times[index] = row[i]
+            .match(ClubRecordRegex.TimeRegex)![0]
+            .replace(/(\.\/\.)|<strong|<i|<\/i|<\/strong/g, "");
 
           if (data.locations[index] === undefined) {
             data.locations[index] = data.meets[index];

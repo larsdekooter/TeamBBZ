@@ -31,6 +31,8 @@ import {
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import SectionComponent from "@/components/SectionComponent";
+import Dropdown from "@/components/Dropdown";
+import { getItem } from "@/utils/AsyncStorage";
 
 export default function Club() {
   const [schema, setSchema] = useState("");
@@ -161,57 +163,13 @@ function SchemaComponent({
   };
 
   return (
-    <Pressable
-      style={{
-        width: Dimensions.get("window").width,
-        borderColor: "#ef8b22",
-        borderWidth: 1,
-        borderRadius: 6,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        overflow: "hidden",
-        marginVertical: 10,
-      }}
-      onPress={toggleExpand}
+    <SectionComponent
+      title={`Schema van ${currentDate.getDate()}-${
+        currentDate.getMonth() + 1
+      }-${currentDate.getFullYear()}`}
     >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text style={{ ...textColor(colorScheme) }}>
-          Schema van{" "}
-          {`${currentDate.getDate()}-${
-            currentDate.getMonth() + 1
-          }-${currentDate.getFullYear()}`}
-        </Text>
-        <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
-          <FontAwesome
-            name="arrow-right"
-            size={15}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
-          />
-        </Animated.View>
-      </View>
-
-      <Animated.View
-        style={{
-          maxHeight: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1000],
-          }),
-          opacity: heightAnim,
-          marginTop: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 10],
-          }),
-        }}
-      >
-        <Text style={textColor(colorScheme)}>{schema}</Text>
-      </Animated.View>
-    </Pressable>
+      <Text style={textColor(colorScheme)}>{schema}</Text>
+    </SectionComponent>
   );
 }
 
@@ -222,36 +180,12 @@ function WedstrijdenComponent({
   colorScheme: ColorSchemeName;
   wedstrijden: Wedstrijd[];
 }) {
-  const [isExpanded, setExpanded] = useState(false);
-  const rotateAnim = useState(new Animated.Value(0))[0];
-  const heightAnim = useState(new Animated.Value(0))[0];
   const [modalShown, setModalShown] = useState(false);
   const [selectedWedstrijd, setSelectedWedstrijd] = useState({} as Wedstrijd);
   const [programLoading, setProgramLoading] = useState(false);
   const [chosenProgram, setChosenProgram] = useState([] as number[]);
   const [inschrijfLoading, setInschrijfLoading] = useState(false);
 
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
-  });
-
-  const toggleExpand = () => {
-    setExpanded(!isExpanded);
-
-    Animated.parallel([
-      Animated.timing(rotateAnim, {
-        toValue: isExpanded ? 0 : 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(heightAnim, {
-        toValue: isExpanded ? 0 : 1,
-        duration: isExpanded ? 200 : 500,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
   if (wedstrijden.length > 0) {
     return (
       <Fragment>
@@ -503,109 +437,66 @@ function WedstrijdenComponent({
             </View>
           </View>
         </Modal>
-        <Pressable
-          style={{
-            width: Dimensions.get("window").width,
-            borderColor: "#ef8b22",
-            borderWidth: 1,
-            borderRadius: 6,
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            overflow: "hidden",
-            marginVertical: 10,
-          }}
-          onPress={toggleExpand}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ ...textColor(colorScheme) }}>Wedstrijden</Text>
-            <Animated.View style={{ transform: [{ rotate }], marginLeft: 10 }}>
-              <FontAwesome
-                name="arrow-right"
-                size={15}
-                color={colorScheme === "dark" ? "#fff" : "#000"}
-              />
-            </Animated.View>
-          </View>
+        <SectionComponent title="Wedstrijden">
+          {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
+            <Pressable
+              key={i}
+              onPress={async (e) => {
+                e.stopPropagation();
 
-          <Animated.View
-            style={{
-              maxHeight: heightAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 1000],
-              }),
-              opacity: heightAnim,
-              marginTop: heightAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 10],
-              }),
-            }}
-          >
-            {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
-              <Pressable
-                key={i}
-                onPress={async (e) => {
-                  e.stopPropagation();
-
-                  setProgramLoading(true);
-                  setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
-                  const w = await getWedstrijdData(wedstrijd);
-                  setProgramLoading(false);
-                  setSelectedWedstrijd(w);
-                  setModalShown(true);
-                }}
+                setProgramLoading(true);
+                setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
+                const w = await getWedstrijdData(wedstrijd);
+                setProgramLoading(false);
+                setSelectedWedstrijd(w);
+                setModalShown(true);
+              }}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                borderColor: "grey",
+                borderWidth: 1,
+                borderRadius: 6,
+                paddingHorizontal: 5,
+                marginHorizontal: 5,
+                paddingVertical: 10,
+                marginVertical: 5,
+              }}
+            >
+              <Text
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  borderColor: "grey",
-                  borderWidth: 1,
-                  borderRadius: 6,
-                  paddingHorizontal: 5,
-                  marginHorizontal: 5,
-                  paddingVertical: 10,
-                  marginVertical: 5,
+                  ...textColor(colorScheme),
+                  textAlign: "left",
+                  flex: 1.5,
+                }}
+                numberOfLines={1}
+              >
+                {wedstrijd.name}
+              </Text>
+              {programLoading && selectedWedstrijd.id === wedstrijd.id && (
+                <ActivityIndicator color="#ef8b22" />
+              )}
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  textAlign: "center",
+                  flex: 1.5,
                 }}
               >
-                <Text
-                  style={{
-                    ...textColor(colorScheme),
-                    textAlign: "left",
-                    flex: 1.5,
-                  }}
-                  numberOfLines={1}
-                >
-                  {wedstrijd.name}
-                </Text>
-                {programLoading && selectedWedstrijd.id === wedstrijd.id && (
-                  <ActivityIndicator color="#ef8b22" />
-                )}
-                <Text
-                  style={{
-                    ...textColor(colorScheme),
-                    textAlign: "center",
-                    flex: 1.5,
-                  }}
-                >
-                  {wedstrijd.startDate.toLocaleDateString()}
-                </Text>
-                <Text
-                  style={{
-                    ...textColor(colorScheme),
-                    textAlign: "right",
-                    flex: 1.5,
-                  }}
-                >
-                  {wedstrijd.location}
-                </Text>
-              </Pressable>
-            ))}
-          </Animated.View>
-        </Pressable>
+                {wedstrijd.startDate.toLocaleDateString()}
+              </Text>
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  textAlign: "right",
+                  flex: 1.5,
+                }}
+              >
+                {wedstrijd.location}
+              </Text>
+            </Pressable>
+          ))}
+        </SectionComponent>
       </Fragment>
     );
   } else return <ActivityIndicator color="#ef8b22" />;
@@ -618,44 +509,230 @@ function ClubrecordsComponent({
   clubrecords: { male: Clubrecord[]; female: Clubrecord[] };
   colorScheme: ColorSchemeName;
 }) {
-  const [selected, setSelected] = useState({} as Clubrecord);
-
+  const ages = [
+    "onder 8",
+    "onder 10",
+    "onder 12",
+    "onder 14",
+    "onder 16",
+    "onder 18",
+    "onder 20",
+    "Senioren",
+  ];
+  const [selected, setSelected] = useState("Mannen" as "Mannen" | "Vrouwen");
+  const [selectedClubrecord, setSelectedClubrecord] = useState({
+    distance: "",
+    times: [],
+    swimmers: [],
+    event: "",
+    dates: [],
+    locations: [],
+    meets: [],
+  } as Clubrecord);
   return (
     <Fragment>
       <Modal
         animationType="slide"
-        visible={!!selected.distance && selected.distance.length > 0}
-      ></Modal>
-      <SectionComponent title="clubrecords">
-        <FlatList
-          data={clubrecords.male}
-          style={{ height: 350 }}
-          renderItem={({ item, index }) => (
-            <Pressable
-              key={index}
+        visible={selectedClubrecord.distance.length > 0}
+        transparent
+        onRequestClose={() =>
+          setSelectedClubrecord({ distance: "" } as Clubrecord)
+        }
+      >
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <View
+            style={{
+              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+              height: 700,
+              width: 400,
+              padding: 20,
+              borderRadius: 10,
+            }}
+          >
+            <View
               style={{
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                borderColor: "grey",
-                borderWidth: 1,
-                borderRadius: 6,
-                marginVertical: 5,
-                flexDirection: "row",
+                flex: 1,
+                justifyContent: "space-between",
               }}
             >
-              <Text style={{ ...textColor(colorScheme), textAlign: "left" }}>
-                {item.distance} {item.event}
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  { fontWeight: "bold", textAlign: "center", fontSize: 25 },
+                ]}
+              >
+                {selectedClubrecord.distance} {selectedClubrecord.event}
               </Text>
-              `
-              <Text style={{ ...textColor(colorScheme), textAlign: "center" }}>
-                {item.times[item.times.length - 1]}
+              <View>
+                {selectedClubrecord.times.map((time, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      borderRadius: 6,
+                      borderColor: "grey",
+                      borderWidth: 1,
+                      margin: 5,
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                    }}
+                  >
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textTransform: "capitalize", flex: 1 },
+                      ]}
+                    >
+                      {ages[index]}
+                    </Text>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "center" },
+                        ]}
+                      >
+                        {time}
+                      </Text>
+                      <Text
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "center" },
+                        ]}
+                      >
+                        {selectedClubrecord.swimmers[index]}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+              <ButtonComponent
+                marginVertical={10}
+                paddingVertical={10}
+                onPress={() =>
+                  setSelectedClubrecord({
+                    distance: "",
+                    times: [],
+                    swimmers: [],
+                    event: "",
+                    dates: [],
+                    locations: [],
+                    meets: [],
+                  })
+                }
+              >
+                <Text
+                  style={[
+                    textColor(colorScheme === "dark"),
+                    { fontWeight: "bold" },
+                  ]}
+                >
+                  Sluit
+                </Text>
+              </ButtonComponent>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <SectionComponent title="Clubrecords">
+        <View
+          style={{ display: "flex", alignItems: "center", marginBottom: 10 }}
+        >
+          <Dropdown
+            style={{ borderColor: "#ef8b22" }}
+            onPress={(item) => setSelected(item)}
+            data={["Mannen", "Vrouwen"]}
+            renderItem={({ item, index }) => (
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  borderColor: "grey",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  paddingVertical: 5,
+                  paddingHorizontal: 10,
+                  marginVertical: 5,
+                }}
+              >
+                {item}
               </Text>
-              <Text style={{ ...textColor(colorScheme), textAlign: "right" }}>
-                {item.swimmers[item.swimmers.length - 1]}
-              </Text>
-            </Pressable>
-          )}
-        />
+            )}
+          />
+        </View>
+        <View
+          style={{
+            borderColor: "#ef8b22",
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 6,
+          }}
+        >
+          <FlatList
+            data={selected === "Mannen" ? clubrecords.male : clubrecords.female}
+            style={{ height: 350 }}
+            renderItem={({ item, index }) => (
+              <Pressable
+                key={index}
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderColor: "grey",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                  marginVertical: 5,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+                onPress={() => setSelectedClubrecord(item)}
+              >
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    width: "25%",
+                    textAlign: "left",
+                  }}
+                >
+                  {item.distance} {item.event}
+                </Text>
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    width: "35%",
+                    textAlign: "center",
+                  }}
+                >
+                  {
+                    item.times[
+                      item.times.findLastIndex(
+                        (swimmer) => swimmer?.length && swimmer.length > 0
+                      )
+                    ]
+                  }
+                </Text>
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    width: "30%",
+                    textAlign: "center",
+                  }}
+                >
+                  {
+                    item.swimmers[
+                      item.swimmers.findLastIndex(
+                        (swimmer) => swimmer?.length && swimmer.length > 0
+                      )
+                    ]
+                  }
+                </Text>
+              </Pressable>
+            )}
+          />
+        </View>
       </SectionComponent>
     </Fragment>
   );

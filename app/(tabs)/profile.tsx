@@ -319,7 +319,13 @@ export default function Profile() {
                 }}
                 onPress={() => setShouldShow25(!shouldShow25)}
               >
-                <CheckBox checked={shouldShow25} onPress={(e) => {e.stopPropagation(); setShouldShow25(!setShouldShow25); }} />
+                <CheckBox
+                  checked={shouldShow25}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setShouldShow25(!setShouldShow25);
+                  }}
+                />
                 <View style={{ width: 10 }} />
                 <Text style={textColor(colorScheme)}>Inclusief 25m tijden</Text>
               </Pressable>
@@ -376,6 +382,7 @@ export default function Profile() {
                 }}
                 shouldLoad={loading}
               />
+              <View style={{ height: 50 }} />
             </ScrollView>
           )}
         </Page>

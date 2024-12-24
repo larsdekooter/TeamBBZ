@@ -21,6 +21,7 @@ import {
 import ButtonComponent from "./Button";
 import { Strokes, SwimrakingEventId } from "@/constants/enums";
 import { FontAwesome } from "@expo/vector-icons";
+import SectionComponent from "./SectionComponent";
 
 export default function PbTable({
   data,
@@ -182,101 +183,55 @@ function StrokeComponent({
     ]).start();
   };
   return (
-    <Pressable
-      style={{
-        width: Dimensions.get("window").width,
-        borderColor: "#ef8b22",
-        borderWidth: 1,
-        borderRadius: 6,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        overflow: "hidden",
-        marginVertical: 10,
-      }}
-      onPress={toggleExpand}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text
-          style={{ ...textColor(colorScheme), textTransform: "capitalize" }}
-        >
-          {stroke}
-        </Text>
-        <Animated.View style={{ transform: [{ rotate }] }}>
-          <FontAwesome
-            name="arrow-right"
-            size={15}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
-          />
-        </Animated.View>
-      </View>
-      <Animated.View
-        style={{
-          maxHeight: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1000],
-          }),
-          opacity: heightAnim,
-          marginTop: heightAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 10],
-          }),
-        }}
-      >
-        <FlatList
-          data={strokeData}
-          style={{ height: 350 }}
-          renderItem={({ item, index }) => (
-            <Pressable
-              key={index}
+    <SectionComponent title={stroke.charAt(0).toUpperCase() + stroke.slice(1)}>
+      <FlatList
+        data={strokeData}
+        style={{ height: 350 }}
+        renderItem={({ item, index }) => (
+          <Pressable
+            key={index}
+            style={{
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              borderColor: "grey",
+              borderWidth: 1,
+              borderRadius: 6,
+              marginVertical: 5,
+              flexDirection: "row",
+            }}
+            onPress={(e) => (onItemPress ? onItemPress(item, e) : null)}
+          >
+            <Text
               style={{
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-                borderColor: "grey",
-                borderWidth: 1,
-                borderRadius: 6,
-                marginVertical: 5,
-                flexDirection: "row",
+                ...textColor(colorScheme),
+                flex: 1,
+                textAlign: "left",
               }}
-              onPress={(e) => (onItemPress ? onItemPress(item, e) : null)}
             >
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  flex: 1,
-                  textAlign: "left",
-                }}
-              >
-                {item.title.distance}
-              </Text>
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  flex: 1,
-                  textAlign: "center",
-                }}
-              >
-                {item.title.time}
-              </Text>
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  flex: 1,
-                  textAlign: "right",
-                }}
-              >
-                {item.title.poolSize}
-              </Text>
-            </Pressable>
-          )}
-        />
-      </Animated.View>
-    </Pressable>
+              {item.title.distance}
+            </Text>
+            <Text
+              style={{
+                ...textColor(colorScheme),
+                flex: 1,
+                textAlign: "center",
+              }}
+            >
+              {item.title.time}
+            </Text>
+            <Text
+              style={{
+                ...textColor(colorScheme),
+                flex: 1,
+                textAlign: "right",
+              }}
+            >
+              {item.title.poolSize}
+            </Text>
+          </Pressable>
+        )}
+      />
+    </SectionComponent>
   );
 }
 
