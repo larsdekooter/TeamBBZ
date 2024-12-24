@@ -622,6 +622,7 @@ function ClubrecordsComponent({
     <SectionComponent title="clubrecords">
       <FlatList
         data={clubrecords.male}
+        style={{ height: 350 }}
         renderItem={({ item, index }) => (
           <Pressable
             key={index}
