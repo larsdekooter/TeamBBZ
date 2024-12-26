@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import ButtonComponent from "./Button";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 
 export default function MeetsTable({
   top,
@@ -43,7 +43,7 @@ export default function MeetsTable({
           <View
             style={{
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              minHeight: 500,
+              height: 550,
               width: 400,
               padding: 20,
               borderRadius: 10,
@@ -101,65 +101,113 @@ export default function MeetsTable({
                   borderRadius: 6,
                 }}
               >
-                {currentItem.data?.events?.map((event, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderWidth: 1,
-                      borderColor: "#ef8b22",
-                      borderRadius: 6,
-                      margin: 5,
-                      padding: 5,
-                    }}
-                  >
-                    <Text
-                      style={[
-                        textColor(colorScheme),
-                        { textAlign: "center", width: "30%" },
-                      ]}
+                <FlatList
+                  data={currentItem.data?.events}
+                  style={{ maxHeight: 300 }}
+                  renderItem={({ index, item: event }) => (
+                    <View
+                      key={index}
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        borderWidth: 1,
+                        borderColor: "#ef8b22",
+                        borderRadius: 6,
+                        margin: 5,
+                        padding: 5,
+                      }}
                     >
-                      {event
-                        .replace("Breaststroke", "schoolslag")
-                        .replace("Freestyle", "vrije slag")
-                        .replace("Medley", "wisselslag")
-                        .replace("Backstroke", "rugslag")
-                        .replace("Butterfly", "vlinderslag")}
-                    </Text>
-                    <Text
-                      style={[
-                        textColor(colorScheme),
-                        {
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          width: "30%",
-                        },
-                      ]}
-                    >
-                      {currentItem.data.places[index]}
-                    </Text>
-                    <View style={{ width: "30%" }}>
                       <Text
                         style={[
                           textColor(colorScheme),
-                          { textAlign: "center" },
+                          { textAlign: "left", width: "33%" },
                         ]}
                       >
-                        {currentItem.data.times[index]}
+                        {event
+                          .replace("Breaststroke", "schoolslag")
+                          .replace("Freestyle", "vrije slag")
+                          .replace("Medley", "wisselslag")
+                          .replace("Backstroke", "rugslag")
+                          .replace("Butterfly", "vlinderslag")}
                       </Text>
-                      <Text
-                        style={[
-                          textColor(colorScheme),
-                          { textAlign: "center" },
-                        ]}
+                      <View
+                        style={{
+                          width: "33%",
+                          flex: 1,
+                          justifyContent: "center",
+
+                          alignItems: "center",
+                        }}
                       >
-                        {currentItem.data.percentages[index]}
-                      </Text>
+                        {(() => {
+                          const place = currentItem.data.places[index].trim();
+                          const name = "medal";
+                          const size = 17;
+                          switch (place) {
+                            case "1.":
+                              return (
+                                <FontAwesome6
+                                  name={name}
+                                  color="#D4af37"
+                                  size={size}
+                                />
+                              );
+                            case "2.":
+                              return (
+                                <FontAwesome5
+                                  name={name}
+                                  color="#C0c0c0"
+                                  size={size}
+                                />
+                              );
+                            case "3.":
+                              return (
+                                <FontAwesome6
+                                  name={name}
+                                  color="#Cd7f32"
+                                  size={size}
+                                />
+                              );
+                            default:
+                              return (
+                                <Text
+                                  style={[
+                                    textColor(colorScheme),
+                                    {
+                                      fontWeight: !place.includes("Split")
+                                        ? "bold"
+                                        : "normal",
+                                    },
+                                  ]}
+                                >
+                                  {place}
+                                </Text>
+                              );
+                          }
+                        })()}
+                      </View>
+                      <View style={{ width: "33%" }}>
+                        <Text
+                          style={[
+                            textColor(colorScheme),
+                            { textAlign: "right" },
+                          ]}
+                        >
+                          {currentItem.data.times[index]}
+                        </Text>
+                        <Text
+                          style={[
+                            textColor(colorScheme),
+                            { textAlign: "right" },
+                          ]}
+                        >
+                          {currentItem.data.percentages[index]}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  )}
+                />
               </View>
             </View>
             <ButtonComponent
