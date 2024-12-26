@@ -51,6 +51,21 @@ export default function MeetsTable({
             }}
           >
             <View style={{}}>
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  {
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    borderColor: "grey",
+                    borderWidth: 1,
+                    padding: 2,
+                    borderRadius: 6,
+                  },
+                ]}
+              >
+                {currentItem.data.name}
+              </Text>
               <View
                 style={{
                   flexDirection: "row",

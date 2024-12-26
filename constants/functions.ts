@@ -577,6 +577,9 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
       )
     ).text()
   ).replace(OnMouseOverRegex, "");
+  const meetTitle = page.match(
+    /(?<=<td\sclass="titleLeft">).*?(?=<\/td>)/gm
+  )![0];
   const resultsTable = page.match(ResultTableRegex)![0];
   const rows = resultsTable.match(RowRegex)!.toSpliced(0, 1);
   const idRows = rows.filter((row) => row.includes("athleteId"));
@@ -587,7 +590,7 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     const cells = rows.map((row) =>
       row.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
     );
-    return mapMeet(cells) as MeetResultData;
+    return mapMeet(cells, meetTitle) as MeetResultData;
   } else {
     const startIndex = rows.findIndex(
       (y) => y === idRows.find((x) => x.includes(athleteData.id))
@@ -601,11 +604,11 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     const cells = data
       .filter((d) => !d.includes("height=15") && !d.includes("meetResultHead"))
       .map((d) => d.match(CellRegex2)!.filter((cell) => cell !== "<td></td>"));
-    return mapMeet(cells);
+    return mapMeet(cells, meetTitle);
   }
 }
 
-function mapMeet(cells: string[][]): MeetResultData {
+function mapMeet(cells: string[][], name: string): MeetResultData {
   const obj = {
     events: [] as string[],
     places: [] as string[],
@@ -615,6 +618,7 @@ function mapMeet(cells: string[][]): MeetResultData {
     courses: [] as string[],
     pbs: [] as string[],
     percentages: [] as string[],
+    name,
   };
   for (let i = 0; i < cells.length; i++) {
     const cel = cells[i];

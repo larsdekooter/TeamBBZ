@@ -37,6 +37,7 @@ export type MeetResultData = {
   courses: string[];
   pbs: string[];
   percentages: string[];
+  name: string;
 };
 
 export type Wedstrijd = {
