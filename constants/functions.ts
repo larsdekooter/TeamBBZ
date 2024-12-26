@@ -598,14 +598,14 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     );
     const data = rows.slice(0, endIndex);
     data.splice(0, 1);
-    const cells = data.map((d) =>
-      d.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
-    );
-    return mapMeet(cells) as MeetResultData;
+    const cells = data
+      .filter((d) => !d.includes("height=15") && !d.includes("meetResultHead"))
+      .map((d) => d.match(CellRegex2)!.filter((cell) => cell !== "<td></td>"));
+    return mapMeet(cells);
   }
 }
 
-function mapMeet(cells: string[][]) {
+function mapMeet(cells: string[][]): MeetResultData {
   const obj = {
     events: [] as string[],
     places: [] as string[],
@@ -626,6 +626,7 @@ function mapMeet(cells: string[][]) {
             .map((y) => y.replace(/<|>/g, ""))
             .filter((z) => z.length > 0)[0]
       )
+      .map((x) => (typeof x === "undefined" ? "-" : x))
       .filter((x) => x.length > 0);
     if (data.length > 0) {
       obj.events[i] = data[0];

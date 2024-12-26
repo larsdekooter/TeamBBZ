@@ -43,7 +43,7 @@ export default function MeetsTable({
           <View
             style={{
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              height: 500,
+              minHeight: 500,
               width: 400,
               padding: 20,
               borderRadius: 10,
@@ -159,6 +159,10 @@ export default function MeetsTable({
       </Modal>
       <FlatList
         data={data}
+        contentContainerStyle={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
         style={{
           height: 100,
           width: Dimensions.get("window").width,
@@ -167,14 +171,17 @@ export default function MeetsTable({
         renderItem={({ item, index }) => (
           <Pressable
             style={{
-              padding: 10,
               backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
-              borderBottomWidth: 1,
-              borderBottomColor: "grey",
-              borderTopWidth: 1,
+              borderWidth: 1,
+              borderColor: "grey",
               display: "flex",
               justifyContent: "center",
               flexDirection: "row",
+              paddingVertical: 10,
+              paddingHorizontal: 10,
+              width: "95%",
+              margin: 5,
+              borderRadius: 6,
             }}
             onPress={async () => {
               setLoading(index);
