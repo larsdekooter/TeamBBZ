@@ -64,7 +64,7 @@ export default function MeetsTable({
                   },
                 ]}
               >
-                {currentItem.data.name}
+                {currentItem.data?.name}
               </Text>
               <View
                 style={{
