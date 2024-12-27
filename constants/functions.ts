@@ -167,7 +167,7 @@ export function convertToDate(dateString: string) {
 
   if (monthIndex === -1) {
     // throw new Error("Invalid month format");
-    Alert.alert(`Invalid date format, ${dateString}`);
+    console.log(`Invalid date format, ${dateString}`);
   }
 
   return new Date(parseInt(year), monthIndex, parseInt(day));
