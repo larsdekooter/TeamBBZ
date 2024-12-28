@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Page from "../../components/Page";
 import {
+  calculateAveragePoints,
   calculateProgression,
   getAthleteData,
   getProgression,
@@ -309,6 +310,10 @@ export default function Profile() {
                 fillColor="rgba(162, 94, 23, 0.5)"
                 strokeColor="#ef8b22"
               />
+              <Text style={[textColor(colorScheme), { fontStyle: "italic" }]}>
+                Gemiddeld aantal punten:{" "}
+                {calculateAveragePoints(athleteData, !shouldShow25)}
+              </Text>
               <Pressable
                 style={{
                   flexDirection: "row",

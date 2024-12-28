@@ -645,3 +645,15 @@ function mapMeet(cells: string[][], name: string): MeetResultData {
   }
   return obj;
 }
+
+export function calculateAveragePoints(
+  { pbs }: AthleteData,
+  exclude25: boolean = true
+) {
+  pbs = pbs
+    .filter((pb) => pb.points !== "-")
+    .filter((pb) => (exclude25 ? !pb.event.includes("25m") : true));
+  return (
+    pbs.reduce((acc, current) => acc + parseInt(current.points), 0) / pbs.length
+  ).toFixed(2);
+}

@@ -11,12 +11,12 @@ export default function CheckBox({ onPress, checked = false }: CheckBoxProps) {
     <Pressable
       onPress={onPress}
       style={{
-        backgroundColor: !checked ? "#2a3137" : "#90ea93",
+        backgroundColor: !checked ? "#2a3137" : "#ef8b22",
         width: 30,
         height: 30,
         borderRadius: 6,
-        borderWidth: 1,
-        borderColor: "grey",
+        borderWidth: 2,
+        borderColor: !checked ? "grey" : "#ff9f40",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

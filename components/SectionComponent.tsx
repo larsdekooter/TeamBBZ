@@ -44,7 +44,7 @@ export default function SectionComponent({
       }),
       Animated.timing(heightAnim, {
         toValue: isExpanded ? 0 : 1,
-        duration: isExpanded ? 200 : 500,
+        duration: 500,
         useNativeDriver: false,
       }),
     ]).start();
