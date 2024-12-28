@@ -163,6 +163,7 @@ export default function Profile() {
                 onChangeText={(input) => {
                   setUsernameSet(input);
                 }}
+                autoComplete="name"
               />
               <TextInput
                 style={{
@@ -176,7 +177,8 @@ export default function Profile() {
                 placeholder="Email"
                 id="email"
                 onChangeText={(input) => setEmailSet(input)}
-                autoComplete="email"
+                // autoComplete="email"
+                inputMode="email"
               />
               <ButtonComponent
                 onPress={async () => {
@@ -410,44 +412,25 @@ const styles = StyleSheet.create({
   },
   modalLightView: {
     margin: 20,
-    backgroundColor: "#ef8b22",
+    backgroundColor: "#f3f5f6",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    borderColor: "#ef8b22",
+    borderWidth: 1,
   },
   modalDarkView: {
     margin: 20,
-    backgroundColor: "#ef8b22",
+    backgroundColor: "#2a3137",
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    shadowColor: "#fff",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    borderColor: "#ef8b22",
+    borderWidth: 1,
   },
   button: {
     borderRadius: 20,
     padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
   },
   textStyle: {
     color: "white",
