@@ -55,7 +55,6 @@ export function textColor(colorScheme: ColorSchemeName | boolean) {
 }
 
 function getAthleteInfo(athletePage: string, athleteId: string): AthleteData {
-  const athleteInfoDiv = athletePage.match(AthleteInfoDivRegex)![0];
   const nameDiv = athletePage.match(AthleteNameDivRegex)![0];
 
   const nationAndClub = athletePage
@@ -79,7 +78,7 @@ function getAthleteInfo(athletePage: string, athleteId: string): AthleteData {
   const pb = rows.map((row) => {
     const data = row
       .match(DataRegex)
-      ?.map((data) => data.replace(">", "").replace("<", ""))
+      ?.map((data) => data.replace(/<|>|M(?!\w)/g, ""))
       .filter((d) => d.length > 0)!;
     return {
       event: translateEvent(data[0]),
@@ -167,7 +166,7 @@ export function convertToDate(dateString: string) {
 
   if (monthIndex === -1) {
     // throw new Error("Invalid month format");
-    console.log(`Invalid date format, ${dateString}`);
+    console.error(`Invalid date format, ${dateString}`);
   }
 
   return new Date(parseInt(year), monthIndex, parseInt(day));
@@ -397,8 +396,8 @@ export async function getHistory(
     .map((row) =>
       row
         .match(/>([\s\S]*?)</gi)!
-        .filter((m) => m.length > 2)
-        .map((m) => m.replace(/>|</g, ""))
+        .map((m) => m.replace(/<|>|M(?!\w)/g, ""))
+        .filter((m) => m.length > 0)
     )
     .map((row) => ({
       time: row[0],
@@ -407,6 +406,11 @@ export async function getHistory(
       location: row[3].replace(/&nbsp;/g, " "),
     }));
   return rows;
+}
+
+function log<T>(val: T, index: number, array: T[]) {
+  console.log({ val, index });
+  return val;
 }
 
 export function getSpecialityData(
