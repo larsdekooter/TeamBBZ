@@ -53,7 +53,7 @@ export default function SectionComponent({
   return (
     <Pressable
       style={{
-        width: Dimensions.get("window").width,
+        width: Dimensions.get("window").width * 0.95,
         borderColor: "#ef8b22",
         borderWidth: 1,
         borderRadius: 6,
