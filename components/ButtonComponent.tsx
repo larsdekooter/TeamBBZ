@@ -20,7 +20,6 @@ export default function ButtonComponent({
   paddingVertical?: number;
   marginVertical?: number;
 }) {
-  const colorScheme = useColorScheme();
   return (
     <Pressable
       onPress={onPress}
@@ -32,8 +31,6 @@ export default function ButtonComponent({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        borderColor: "#000",
-        borderWidth: 1,
         flexDirection: "row",
         marginVertical: marginVertical,
       }}

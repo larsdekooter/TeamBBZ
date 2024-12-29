@@ -4,7 +4,6 @@ import { getItem } from "@/utils/AsyncStorage";
 import { Fragment, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Animated,
   ColorSchemeName,
   Dimensions,
@@ -13,12 +12,11 @@ import {
   Modal,
   NativeSyntheticEvent,
   Pressable,
-  ScrollView,
   Text,
   useColorScheme,
   View,
 } from "react-native";
-import ButtonComponent from "./Button";
+import ButtonComponent from "./ButtonComponent";
 import { Strokes, SwimrakingEventId } from "@/constants/enums";
 import { FontAwesome } from "@expo/vector-icons";
 import SectionComponent from "./SectionComponent";
@@ -275,11 +273,13 @@ function QuickViewModal({
       >
         <View
           style={{
-            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f4f4f4",
             height: 300,
             width: 400,
             padding: 20,
             borderRadius: 10,
+            borderColor: "#ef8b22",
+            borderWidth: 2,
           }}
         >
           <View

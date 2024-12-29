@@ -1,5 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
-import { GestureResponderEvent, Pressable } from "react-native";
+import { GestureResponderEvent, Pressable, useColorScheme } from "react-native";
 
 interface CheckBoxProps {
   onPress?: null | ((event: GestureResponderEvent) => void) | undefined;
@@ -7,11 +7,17 @@ interface CheckBoxProps {
 }
 
 export default function CheckBox({ onPress, checked = false }: CheckBoxProps) {
+  const colorScheme = useColorScheme();
+
   return (
     <Pressable
       onPress={onPress}
       style={{
-        backgroundColor: !checked ? "#2a3137" : "#ef8b22",
+        backgroundColor: !checked
+          ? colorScheme === "dark"
+            ? "#2a3137"
+            : "#fff"
+          : "#ef8b22",
         width: 30,
         height: 30,
         borderRadius: 6,

@@ -1,5 +1,12 @@
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
-import { Image, Pressable, Linking, StyleProp, ViewStyle } from "react-native";
+import {
+  Image,
+  Pressable,
+  Linking,
+  StyleProp,
+  ViewStyle,
+  useColorScheme,
+} from "react-native";
 import { PressableStateCallbackType } from "react-native/Libraries/Components/Pressable/Pressable";
 
 export default function SocialLink({
@@ -17,6 +24,7 @@ export default function SocialLink({
     | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
   version?: number;
 }) {
+  const colorScheme = useColorScheme();
   if (version === 6) {
     return (
       <Pressable
@@ -25,7 +33,11 @@ export default function SocialLink({
         }}
         style={style}
       >
-        <FontAwesome6 name={icon as any} size={size} color="white" />
+        <FontAwesome6
+          name={icon as any}
+          size={size}
+          color={colorScheme === "light" ? "#000" : "#fff"}
+        />
       </Pressable>
     );
   }
@@ -36,7 +48,11 @@ export default function SocialLink({
       }}
       style={style}
     >
-      <FontAwesome name={icon as any} size={size} color="white" />
+      <FontAwesome
+        name={icon as any}
+        size={size}
+        color={colorScheme === "light" ? "#000" : "#fff"}
+      />
     </Pressable>
   );
 }

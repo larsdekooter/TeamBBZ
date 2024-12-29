@@ -41,19 +41,23 @@ export default function TabLayout() {
         name="club"
         options={{
           title: "TeamBBZ",
-          tabBarIcon: ({ color }) => (
-            <Image
-              source={require("../../assets/images/teambbz.png")}
-              style={{
-                height: 28,
-                width: 28,
-                tintColor:
-                  color === "#8E8E8F" || color === "#7f7f7f"
-                    ? "grey"
-                    : undefined,
-              }}
-            />
-          ),
+          tabBarIcon: ({ color, focused }) => {
+            console.log(color);
+            return (
+              <Image
+                source={
+                  colorScheme === "dark"
+                    ? require("../../assets/images/teambbz.png")
+                    : require("../../assets/images/teambbz-dark.png")
+                }
+                style={{
+                  height: 28,
+                  width: 28,
+                  tintColor: !focused ? "grey" : undefined,
+                }}
+              />
+            );
+          },
           headerShown: false,
         }}
       />

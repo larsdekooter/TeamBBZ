@@ -1,4 +1,4 @@
-import ButtonComponent from "@/components/Button";
+import ButtonComponent from "@/components/ButtonComponent";
 import Page from "@/components/Page";
 import {
   enterMeet,
@@ -272,7 +272,9 @@ function WedstrijdenComponent({
                         backgroundColor: !chosenProgram.includes(
                           parseInt(item.name.split(/\s/)[0])
                         )
-                          ? "#2a3137"
+                          ? colorScheme === "dark"
+                            ? "#2a3137"
+                            : "#d6d6d6"
                           : "#133914",
                         margin: 10,
                         flex: 1,
@@ -310,7 +312,9 @@ function WedstrijdenComponent({
                           backgroundColor: !chosenProgram.includes(
                             parseInt(item.name.split(/\s/)[0])
                           )
-                            ? "#2a3137"
+                            ? colorScheme === "dark"
+                              ? "#2a3137"
+                              : "#fff"
                             : "#90ea93",
                           borderColor: "#fff",
                           borderWidth: 1,
@@ -358,8 +362,8 @@ function WedstrijdenComponent({
                     <Pressable
                       key={index}
                       style={{
-                        backgroundColor: "#2a3137",
-
+                        backgroundColor:
+                          colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
                         margin: 10,
                         flex: 1,
                         borderRadius: 10,
@@ -526,6 +530,8 @@ function ClubrecordsComponent({
               width: 400,
               padding: 20,
               borderRadius: 10,
+              borderColor: "#ef8b22",
+              borderWidth: 2,
             }}
           >
             <View

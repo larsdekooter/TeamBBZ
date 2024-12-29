@@ -12,7 +12,7 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import ButtonComponent from "./Button";
+import ButtonComponent from "./ButtonComponent";
 import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 
 export default function MeetsTable({

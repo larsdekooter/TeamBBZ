@@ -21,7 +21,7 @@ import {
   getSpecialityData,
   textColor,
 } from "../../constants/functions";
-import ButtonComponent from "@/components/Button";
+import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
 import { Fragment, useCallback, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
@@ -177,7 +177,6 @@ export default function Profile() {
                 placeholder="Email"
                 id="email"
                 onChangeText={(input) => setEmailSet(input)}
-                // autoComplete="email"
                 inputMode="email"
               />
               <ButtonComponent
@@ -236,7 +235,7 @@ export default function Profile() {
             >
               <Text
                 style={{
-                  ...textColor(colorScheme === "dark"),
+                  color: "#000",
                   fontWeight: "bold",
                 }}
               >
@@ -246,7 +245,7 @@ export default function Profile() {
             <ButtonComponent onPress={() => setActiveTab(Tabs.Meets)}>
               <Text
                 style={{
-                  ...textColor(colorScheme === "dark"),
+                  color: "#000",
                   fontWeight: "bold",
                 }}
               >
@@ -261,7 +260,7 @@ export default function Profile() {
             >
               <Text
                 style={{
-                  ...textColor(colorScheme === "dark"),
+                  color: "#000",
                   fontWeight: "bold",
                 }}
               >

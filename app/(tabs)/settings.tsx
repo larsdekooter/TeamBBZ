@@ -3,7 +3,7 @@ import Page from "../../components/Page";
 import { textColor } from "@/constants/functions";
 import { useState, useCallback } from "react";
 import { getItem, removeItem } from "@/utils/AsyncStorage";
-import ButtonComponent from "@/components/Button";
+import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
