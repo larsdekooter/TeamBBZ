@@ -123,7 +123,7 @@ export default function Profile() {
           Login om statistieken te zien
         </Text>
         <ButtonComponent onPress={() => setModalShown(true)}>
-          <Text style={textColor(colorScheme === "dark")}>Login</Text>
+          <Text style={textColor(colorScheme)}>Login</Text>
         </ButtonComponent>
 
         <Modal
@@ -195,7 +195,7 @@ export default function Profile() {
                   }
                 }}
               >
-                <Text>Login</Text>
+                <Text style={textColor(colorScheme)}>Login</Text>
               </ButtonComponent>
             </View>
           </View>
@@ -234,21 +234,18 @@ export default function Profile() {
               }}
             >
               <Text
-                style={{
-                  color: "#000",
-                  fontWeight: "bold",
-                }}
+                style={[
+                  textColor(colorScheme),
+                  {
+                    fontWeight: "bold",
+                  },
+                ]}
               >
                 PR's
               </Text>
             </ButtonComponent>
             <ButtonComponent onPress={() => setActiveTab(Tabs.Meets)}>
-              <Text
-                style={{
-                  color: "#000",
-                  fontWeight: "bold",
-                }}
-              >
+              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
                 Wedstrijden
               </Text>
             </ButtonComponent>
@@ -259,10 +256,12 @@ export default function Profile() {
               }}
             >
               <Text
-                style={{
-                  color: "#000",
-                  fontWeight: "bold",
-                }}
+                style={[
+                  textColor(colorScheme),
+                  {
+                    fontWeight: "bold",
+                  },
+                ]}
               >
                 Specialiteit
               </Text>

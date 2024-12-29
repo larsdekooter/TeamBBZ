@@ -349,7 +349,9 @@ function QuickViewModal({
             onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
             paddingVertical={10}
           >
-            <Text style={{ fontWeight: "bold" }}>Bekijk geschiedenis</Text>
+            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+              Bekijk geschiedenis
+            </Text>
             {loading && <ActivityIndicator size="small" color="black" />}
           </ButtonComponent>
           <View style={{ height: 20 }} />
@@ -357,7 +359,9 @@ function QuickViewModal({
             onPress={(e) => (onPressClose ? onPressClose(e) : null)}
             paddingVertical={10}
           >
-            <Text style={{ fontWeight: "bold" }}>Sluit</Text>
+            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+              Sluit
+            </Text>
           </ButtonComponent>
         </View>
       </View>

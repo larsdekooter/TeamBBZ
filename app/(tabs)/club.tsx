@@ -397,9 +397,7 @@ function WedstrijdenComponent({
                     setModalShown(false);
                   }}
                 >
-                  <Text style={textColor(colorScheme === "dark")}>
-                    Schrijf in
-                  </Text>
+                  <Text style={textColor(colorScheme)}>Schrijf in</Text>
                 </ButtonComponent>
               )}
               {inschrijfLoading && <ActivityIndicator color="#ef8b22" />}
@@ -409,7 +407,7 @@ function WedstrijdenComponent({
                   setChosenProgram([]);
                 }}
               >
-                <Text style={textColor(colorScheme === "dark")}>Sluit</Text>
+                <Text style={textColor(colorScheme)}>Sluit</Text>
               </ButtonComponent>
               <View style={{ height: 20 }} />
             </View>
@@ -609,12 +607,7 @@ function ClubrecordsComponent({
                   })
                 }
               >
-                <Text
-                  style={[
-                    textColor(colorScheme === "dark"),
-                    { fontWeight: "bold" },
-                  ]}
-                >
+                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
                   Sluit
                 </Text>
               </ButtonComponent>

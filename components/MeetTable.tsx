@@ -215,7 +215,9 @@ export default function MeetsTable({
               marginVertical={10}
               paddingVertical={10}
             >
-              <Text style={{ fontWeight: "bold" }}>Sluit</Text>
+              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                Sluit
+              </Text>
             </ButtonComponent>
           </View>
         </View>

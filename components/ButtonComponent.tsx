@@ -20,11 +20,12 @@ export default function ButtonComponent({
   paddingVertical?: number;
   marginVertical?: number;
 }) {
+  const colorScheme = useColorScheme();
   return (
     <Pressable
       onPress={onPress}
       style={{
-        backgroundColor: "#ef8b22",
+        backgroundColor: colorScheme === "light" ? "#fff" : "#181c20",
         paddingHorizontal: 10,
         paddingVertical: paddingVertical ?? 5,
         borderRadius: 8,
@@ -33,6 +34,8 @@ export default function ButtonComponent({
         justifyContent: "center",
         flexDirection: "row",
         marginVertical: marginVertical,
+        borderColor: "#ef8b22",
+        borderWidth: 1,
       }}
     >
       {children}

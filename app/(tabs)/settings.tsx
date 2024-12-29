@@ -72,7 +72,9 @@ export default function Settings() {
             marginVertical={10}
             paddingVertical={10}
           >
-            <Text style={{ fontWeight: "bold" }}>Log uit</Text>
+            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+              Log uit
+            </Text>
           </ButtonComponent>
         </View>
         <Text
