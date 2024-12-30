@@ -42,7 +42,6 @@ export default function TabLayout() {
         options={{
           title: "TeamBBZ",
           tabBarIcon: ({ color, focused }) => {
-            console.log(color);
             return (
               <Image
                 source={
