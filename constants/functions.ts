@@ -525,7 +525,7 @@ export function mapClubrecords(page: string) {
       } as Clubrecord;
       for (let i = 2; i < row.length; i++) {
         const index = i - 2;
-        if (row[i].includes("0000")) {
+        if (row[i].includes("0000") && row[i].length === 43) {
           data.swimmers[index] = null;
           data.dates[index] = null;
           data.locations[index] = null;

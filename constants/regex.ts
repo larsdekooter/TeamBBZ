@@ -81,7 +81,7 @@ export const ResultTableRegex =
   /(?<=<table\s.*class="meetResult"[^>]*>)[\s\S]*?(?=<\/table>)/gm;
 
 export class ClubRecordRegex {
-  static TableRowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>)/gi;
+  static TableRowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>|<\/tr>)/gi;
 
   static CellReplacementRegex =
     /<td[^>]*>|<\/td>|<font[^>]*>.*<\/font>|<a\s.*?(?=title\=)title="|"\sdata-.*?(?=>)|<\/a>/gm;
