@@ -348,6 +348,7 @@ function QuickViewModal({
           <ButtonComponent
             onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
             paddingVertical={10}
+            style={{ backgroundColor: "#2a3137" }}
           >
             <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
               Bekijk geschiedenis
@@ -358,6 +359,7 @@ function QuickViewModal({
           <ButtonComponent
             onPress={(e) => (onPressClose ? onPressClose(e) : null)}
             paddingVertical={10}
+            style={{ backgroundColor: "#2a3137" }}
           >
             <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
               Sluit
