@@ -94,5 +94,5 @@ export class ClubRecordRegex {
 
   static MeetRegex = /(?<=&#013;)(?:(?!&#013;).)+?(?=\.\/\.)/gim;
 
-  static TimeRegex = /(?<=.\/.).+/gm;
+  static TimeRegex = /(?<=\.\/\.).+/gm;
 }
