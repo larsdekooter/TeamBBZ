@@ -20,6 +20,7 @@ import ButtonComponent from "./ButtonComponent";
 import { Strokes, SwimrakingEventId } from "@/constants/enums";
 import { FontAwesome } from "@expo/vector-icons";
 import SectionComponent from "./SectionComponent";
+import SwipeModal from "./SwipeModal";
 
 export default function PbTable({
   data,
@@ -250,7 +251,7 @@ function QuickViewModal({
   colorScheme: ColorSchemeName;
   onPressChoose: null | ((event: GestureResponderEvent) => void) | undefined;
   loading: boolean;
-  onPressClose: null | ((event: GestureResponderEvent) => void) | undefined;
+  onPressClose: null | ((event?: GestureResponderEvent) => void) | undefined;
 }) {
   const findPb = (event: string, poolSize: string, time: string) => {
     return athleteData.pbs.find(
@@ -258,116 +259,110 @@ function QuickViewModal({
     );
   };
   return (
-    <Modal
-      animationType="slide"
-      transparent
+    <SwipeModal
       visible={visible}
       onRequestClose={onRequestClose}
+      height={300}
+      onClose={() => onPressClose?.()}
     >
-      <View
+      {/* <View
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
         }}
+      > */}
+      <View
+        style={{
+          flex: 1,
+          padding: 20,
+        }}
       >
         <View
           style={{
-            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f4f4f4",
-            height: 300,
-            width: 400,
-            padding: 20,
-            borderRadius: 10,
-            borderColor: "#ef8b22",
-            borderWidth: 2,
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
         >
-          <View
+          <Text
             style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
+              textAlign: "left",
+              fontWeight: "bold",
+              ...textColor(colorScheme),
             }}
           >
-            <Text
-              style={{
-                textAlign: "left",
-                fontWeight: "bold",
-                ...textColor(colorScheme),
-              }}
-            >
-              {findPb(title.distance, title.poolSize, title.time)?.event}{" "}
-              {findPb(title.distance, title.poolSize, title.time)?.poolSize ===
-              "25m"
-                ? "SC"
-                : "LC"}
-            </Text>
-            <Text
-              style={{
-                ...textColor(colorScheme),
-                textAlign: "right",
-                fontWeight: "bold",
-              }}
-            >
-              {findPb(title.distance, title.poolSize, title.time)?.time}
-            </Text>
-          </View>
-          <View
+            {findPb(title.distance, title.poolSize, title.time)?.event}{" "}
+            {findPb(title.distance, title.poolSize, title.time)?.poolSize ===
+            "25m"
+              ? "SC"
+              : "LC"}
+          </Text>
+          <Text
             style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
+              ...textColor(colorScheme),
+              textAlign: "right",
+              fontWeight: "bold",
             }}
           >
-            <Text style={{ textAlign: "right", ...textColor(colorScheme) }}>
-              {findPb(
-                title.distance,
-                title.poolSize,
-                title.time
-              )?.date.toLocaleDateString()}
-            </Text>
-            <Text style={textColor(colorScheme)}>
-              {findPb(title.distance, title.poolSize, title.time)?.points} Fina
-              punten
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={{ textAlign: "right", ...textColor(colorScheme) }}>
-              {findPb(title.distance, title.poolSize, title.time)?.meet}
-            </Text>
-            <Text style={{ textAlign: "left", ...textColor(colorScheme) }}>
-              {findPb(title.distance, title.poolSize, title.time)?.location}
-            </Text>
-          </View>
-          <ButtonComponent
-            onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
-            paddingVertical={10}
-            style={{ backgroundColor: "#2a3137" }}
-          >
-            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-              Bekijk geschiedenis
-            </Text>
-            {loading && <ActivityIndicator size="small" color="black" />}
-          </ButtonComponent>
-          <View style={{ height: 20 }} />
-          <ButtonComponent
-            onPress={(e) => (onPressClose ? onPressClose(e) : null)}
-            paddingVertical={10}
-            style={{ backgroundColor: "#2a3137" }}
-          >
-            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-              Sluit
-            </Text>
-          </ButtonComponent>
+            {findPb(title.distance, title.poolSize, title.time)?.time}
+          </Text>
         </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ textAlign: "right", ...textColor(colorScheme) }}>
+            {findPb(
+              title.distance,
+              title.poolSize,
+              title.time
+            )?.date.toLocaleDateString()}
+          </Text>
+          <Text style={textColor(colorScheme)}>
+            {findPb(title.distance, title.poolSize, title.time)?.points} Fina
+            punten
+          </Text>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ textAlign: "right", ...textColor(colorScheme) }}>
+            {findPb(title.distance, title.poolSize, title.time)?.meet}
+          </Text>
+          <Text style={{ textAlign: "left", ...textColor(colorScheme) }}>
+            {findPb(title.distance, title.poolSize, title.time)?.location}
+          </Text>
+        </View>
+        <ButtonComponent
+          onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
+          paddingVertical={10}
+          style={{ backgroundColor: "#2a3137" }}
+        >
+          <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+            Bekijk geschiedenis
+          </Text>
+          {loading && <ActivityIndicator size="small" color="black" />}
+        </ButtonComponent>
+        <View style={{ height: 20 }} />
+        <ButtonComponent
+          onPress={(e) => (onPressClose ? onPressClose(e) : null)}
+          paddingVertical={10}
+          style={{ backgroundColor: "#2a3137" }}
+        >
+          <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+            Sluit
+          </Text>
+        </ButtonComponent>
       </View>
-    </Modal>
+    </SwipeModal>
   );
 }
 

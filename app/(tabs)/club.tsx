@@ -33,6 +33,7 @@ import * as WebBrowser from "expo-web-browser";
 import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
 import { getItem } from "@/utils/AsyncStorage";
+import SwipeModal from "@/components/SwipeModal";
 
 export default function Club() {
   const [schema, setSchema] = useState("");
@@ -510,112 +511,108 @@ function ClubrecordsComponent({
   }
   return (
     <Fragment>
-      <Modal
-        animationType="slide"
+      <SwipeModal
         visible={selectedClubrecord.distance.length > 0}
-        transparent
         onRequestClose={() =>
           setSelectedClubrecord({ distance: "" } as Clubrecord)
         }
+        onClose={() =>
+          setSelectedClubrecord({
+            distance: "",
+            times: [],
+            swimmers: [],
+            event: "",
+            dates: [],
+            locations: [],
+            meets: [],
+          })
+        }
+        height={700}
+        closeValue={200}
       >
         <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={{
+            padding: 20,
+            flex: 1,
+          }}
         >
           <View
             style={{
-              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              height: 700,
-              width: 400,
-              padding: 20,
-              borderRadius: 10,
-              borderColor: "#ef8b22",
-              borderWidth: 2,
+              flex: 1,
+              justifyContent: "space-between",
             }}
           >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "space-between",
-              }}
+            <Text
+              style={[
+                textColor(colorScheme),
+                { fontWeight: "bold", textAlign: "center", fontSize: 25 },
+              ]}
             >
-              <Text
-                style={[
-                  textColor(colorScheme),
-                  { fontWeight: "bold", textAlign: "center", fontSize: 25 },
-                ]}
-              >
-                {selectedClubrecord.distance} {selectedClubrecord.event}
-              </Text>
-              <View>
-                {selectedClubrecord.times.map((time, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderRadius: 6,
-                      borderColor: "grey",
-                      borderWidth: 1,
-                      margin: 5,
-                      paddingHorizontal: 10,
-                      paddingVertical: 5,
-                    }}
+              {selectedClubrecord.distance} {selectedClubrecord.event}
+            </Text>
+            <View>
+              {selectedClubrecord.times.map((time, index) => (
+                <View
+                  key={index}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderRadius: 6,
+                    borderColor: "grey",
+                    borderWidth: 1,
+                    margin: 5,
+                    paddingHorizontal: 10,
+                    paddingVertical: 5,
+                  }}
+                >
+                  <Text
+                    style={[
+                      textColor(colorScheme),
+                      { textTransform: "capitalize", flex: 1 },
+                    ]}
                   >
+                    {ages[index]}
+                  </Text>
+                  <View style={{ flex: 1 }}>
                     <Text
-                      style={[
-                        textColor(colorScheme),
-                        { textTransform: "capitalize", flex: 1 },
-                      ]}
+                      style={[textColor(colorScheme), { textAlign: "center" }]}
                     >
-                      {ages[index]}
+                      {time}
                     </Text>
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={[
-                          textColor(colorScheme),
-                          { textAlign: "center" },
-                        ]}
-                      >
-                        {time}
-                      </Text>
-                      <Text
-                        style={[
-                          textColor(colorScheme),
-                          { textAlign: "center" },
-                        ]}
-                      >
-                        {selectedClubrecord.swimmers[index]}
-                      </Text>
-                    </View>
+                    <Text
+                      style={[textColor(colorScheme), { textAlign: "center" }]}
+                    >
+                      {selectedClubrecord.swimmers[index]}
+                    </Text>
                   </View>
-                ))}
-              </View>
-              <ButtonComponent
-                marginVertical={10}
-                paddingVertical={10}
-                style={{ backgroundColor: "#2a3137" }}
-                onPress={() =>
-                  setSelectedClubrecord({
-                    distance: "",
-                    times: [],
-                    swimmers: [],
-                    event: "",
-                    dates: [],
-                    locations: [],
-                    meets: [],
-                  })
-                }
-              >
-                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-                  Sluit
-                </Text>
-              </ButtonComponent>
+                </View>
+              ))}
             </View>
+            <ButtonComponent
+              marginVertical={10}
+              paddingVertical={10}
+              style={{ backgroundColor: "#2a3137" }}
+              onPress={() =>
+                setSelectedClubrecord({
+                  distance: "",
+                  times: [],
+                  swimmers: [],
+                  event: "",
+                  dates: [],
+                  locations: [],
+                  meets: [],
+                })
+              }
+            >
+              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                Sluit
+              </Text>
+            </ButtonComponent>
           </View>
         </View>
-      </Modal>
+      </SwipeModal>
       <SectionComponent title="Clubrecords">
         <View
           style={{ display: "flex", alignItems: "center", marginBottom: 10 }}

@@ -30,8 +30,9 @@ type SwipeModalProps = {
   children?: ReactNode;
   onRequestClose?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
   visible: boolean;
-  onClose?: () => void;
+  onClose: () => void | undefined | null;
   height?: number;
+  closeValue?: number;
 };
 
 const { height, width } = Dimensions.get("window");
@@ -42,6 +43,7 @@ export default function SwipeModal({
   visible,
   onClose,
   height: customHeight,
+  closeValue,
 }: SwipeModalProps) {
   const top = useSharedValue(0);
 
@@ -54,7 +56,8 @@ export default function SwipeModal({
       top.value = translationY;
     })
     .onEnd(() => {
-      if (top.value > height / 2 / 2) {
+      const h = closeValue ?? (customHeight ? customHeight / 2 : height / 4);
+      if (top.value > h) {
         if (onClose) {
           onClose();
         }
