@@ -89,6 +89,7 @@ export default function SwipeModal({
           style={{
             width,
             height: customHeight ? height - customHeight : height / 2,
+            backgroundColor: "rgba(0,0,0,0.3)",
           }}
         />
         <GestureDetector gesture={gesture}>
