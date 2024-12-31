@@ -200,7 +200,9 @@ export default function MeetsTable({
             </View>
           </View>
           <ButtonComponent
-            onPress={() => setModalShown(false)}
+            onPress={() => {
+              setModalShown(false);
+            }}
             marginVertical={10}
             paddingVertical={10}
             style={{ backgroundColor: "#2a3137" }}
