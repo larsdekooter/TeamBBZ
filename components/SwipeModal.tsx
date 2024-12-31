@@ -21,6 +21,7 @@ import {
 } from "react-native-gesture-handler";
 import Animated, {
   AnimatedStyle,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -46,7 +47,7 @@ export default function SwipeModal({
   closeValue,
 }: SwipeModalProps) {
   const top = useSharedValue(0);
-
+  const closeTime = 200;
   const gesture = Gesture.Pan()
     .onUpdate((e) => {
       const { translationY } = e;
@@ -58,9 +59,10 @@ export default function SwipeModal({
     .onEnd(() => {
       const h = closeValue ?? (customHeight ? customHeight / 2 : height / 4);
       if (top.value > h) {
-        if (onClose) {
+        top.value = withTiming(height, { duration: closeTime });
+        setTimeout(() => {
           onClose();
-        }
+        }, closeTime);
       } else {
         top.value = 0;
       }
