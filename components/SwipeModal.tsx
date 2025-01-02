@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import { ReactNode } from "react";
 import {
   //   Animated,
@@ -83,13 +84,13 @@ export default function SwipeModal({
       transparent
       onShow={() => (top.value = 0)}
     >
-      <GestureHandlerRootView>
+      <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
+      <GestureHandlerRootView style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
         <Pressable
           onPress={onClose}
           style={{
             width,
             height: customHeight ? height - customHeight : height / 2,
-            backgroundColor: "rgba(0,0,0,0.3)",
           }}
         />
         <GestureDetector gesture={gesture}>
