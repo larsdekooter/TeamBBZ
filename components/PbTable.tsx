@@ -265,13 +265,6 @@ function QuickViewModal({
       height={300}
       onClose={() => onPressClose?.()}
     >
-      {/* <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      > */}
       <View
         style={{
           flex: 1,
@@ -344,7 +337,9 @@ function QuickViewModal({
         <ButtonComponent
           onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
           paddingVertical={10}
-          style={{ backgroundColor: "#2a3137" }}
+          style={{
+            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+          }}
         >
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
             Bekijk geschiedenis
@@ -355,7 +350,9 @@ function QuickViewModal({
         <ButtonComponent
           onPress={(e) => (onPressClose ? onPressClose(e) : null)}
           paddingVertical={10}
-          style={{ backgroundColor: "#2a3137" }}
+          style={{
+            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+          }}
         >
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
             Sluit

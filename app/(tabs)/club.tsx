@@ -593,7 +593,9 @@ function ClubrecordsComponent({
             <ButtonComponent
               marginVertical={10}
               paddingVertical={10}
-              style={{ backgroundColor: "#2a3137" }}
+              style={{
+                backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+              }}
               onPress={() =>
                 setSelectedClubrecord({
                   distance: "",

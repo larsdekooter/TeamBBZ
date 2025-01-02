@@ -205,7 +205,9 @@ export default function MeetsTable({
             }}
             marginVertical={10}
             paddingVertical={10}
-            style={{ backgroundColor: "#2a3137" }}
+            style={{
+              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            }}
           >
             <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
               Sluit
