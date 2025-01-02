@@ -13,11 +13,13 @@ import { getPosts, textColor } from "../../constants/functions";
 import { useEffect, useState } from "react";
 import { Post } from "@/constants/types";
 import { openBrowserAsync } from "expo-web-browser";
+import PostComponent from "@/components/Post";
+import CheckBox from "@/components/Checkbox";
 
 export default function Home() {
   const colorScheme = useColorScheme();
   const [posts, setPosts] = useState([] as Post[]);
-  const scalingFactor = 1 / 2;
+  const [compact, setCompact] = useState(true);
 
   useEffect(() => {
     const s = async () => {
@@ -39,49 +41,24 @@ export default function Home() {
         >
           Berichten
         </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            top: 90,
+            justifyContent: "space-between",
+            display: "flex",
+            width: Dimensions.get("window").width,
+            paddingHorizontal: 100,
+          }}
+        >
+          <Text style={[textColor(colorScheme)]}>Compact</Text>
+          <CheckBox checked={compact} onPress={() => setCompact(!compact)} />
+        </View>
+
         <FlatList
           data={posts}
           renderItem={({ item, index }) => (
-            <Pressable
-              key={index}
-              style={{
-                flex: 1,
-                alignItems: "center",
-              }}
-              onPress={async () => {
-                await openBrowserAsync(item.link);
-              }}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  borderColor: "grey",
-                  borderWidth: 1,
-                  width: "80%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderRadius: 10,
-                  paddingVertical: 5,
-                  marginVertical: 5,
-                }}
-              >
-                <Image
-                  source={{ uri: item.image }}
-                  width={453 * scalingFactor}
-                  height={300 * scalingFactor}
-                  borderRadius={10}
-                />
-                <Text
-                  style={{
-                    ...textColor(colorScheme),
-                    textAlign: "center",
-                    width: "90%",
-                  }}
-                >
-                  {item.title}
-                </Text>
-              </View>
-            </Pressable>
+            <PostComponent post={item} key={index} compact={compact} />
           )}
           style={{
             height: 100,
