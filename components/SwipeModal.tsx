@@ -49,7 +49,7 @@ export default function SwipeModal({
 }: SwipeModalProps) {
   const top = useSharedValue(0);
   const closeTime = 200;
-  const gesture = Gesture.Pan()
+  const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       const { translationY } = e;
       if (translationY < 0) {
@@ -68,7 +68,8 @@ export default function SwipeModal({
         top.value = 0;
       }
     })
-    .runOnJS(true);
+    .runOnJS(true)
+    .activeOffsetY([-20, 20]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: top.value }],
@@ -93,7 +94,7 @@ export default function SwipeModal({
             height: customHeight ? height - customHeight : height / 2,
           }}
         />
-        <GestureDetector gesture={gesture}>
+        <GestureDetector gesture={panGesture}>
           <Animated.View
             collapsable={false}
             style={[
