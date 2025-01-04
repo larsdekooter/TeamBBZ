@@ -96,3 +96,9 @@ export class ClubRecordRegex {
 
   static TimeRegex = /(?<=\.\/\.).+/gm;
 }
+
+export class CompetietieRegex {
+  static RowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>|<\/tr>)/gi;
+  static TableRegex = /<table[^>]*>([\s\S]*?)<\/table>/i;
+  static DataRegex = /<td[^>]*>(?:<font[^>]*>)?([^<]*)(?:<\/font>)?<\/td>/g;
+}

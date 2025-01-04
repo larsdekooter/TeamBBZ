@@ -3,6 +3,7 @@ import Page from "@/components/Page";
 import {
   enterMeet,
   getClubRecords,
+  getCompetitieStand,
   getSchemaData,
   getWedstrijdData,
   textColor,
@@ -14,7 +15,7 @@ import {
   CarrotRegex,
   IdRegex,
 } from "@/constants/regex";
-import { Clubrecord, Wedstrijd } from "@/constants/types";
+import { Clubrecord, CompetitieStand, Wedstrijd } from "@/constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import { Fragment, useEffect, useState } from "react";
 import {
@@ -42,6 +43,9 @@ export default function Club() {
     male: Clubrecord[];
     female: Clubrecord[];
   });
+  const [competitieStanden, setCompetitieStanden] = useState(
+    [] as CompetitieStand[]
+  );
 
   useEffect(() => {
     const getS = async () => {
@@ -107,9 +111,13 @@ export default function Club() {
       const clubrecords = await getClubRecords();
       setClubrecords(clubrecords);
     };
+    const getCs = async () => {
+      setCompetitieStanden(await getCompetitieStand());
+    };
     getS();
     getW();
     getC();
+    getCs();
   }, []);
 
   const colorScheme = useColorScheme();
@@ -125,7 +133,167 @@ export default function Club() {
         colorScheme={colorScheme}
         clubrecords={clubrecords}
       />
+      <CompetitieStandComponent
+        colorScheme={colorScheme}
+        competitieStanden={competitieStanden}
+      />
     </Page>
+  );
+}
+
+function CompetitieStandComponent({
+  colorScheme,
+  competitieStanden,
+}: {
+  colorScheme: ColorSchemeName;
+  competitieStanden: CompetitieStand[];
+}) {
+  const [selected, setSelected] = useState({} as CompetitieStand);
+
+  return (
+    <Fragment>
+      <SwipeModal
+        visible={selected.team?.length > 1}
+        onClose={() => setSelected({} as CompetitieStand)}
+      >
+        <View
+          style={{
+            padding: 20,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text
+            style={[
+              textColor(colorScheme),
+              { flex: 1, fontWeight: "bold", textAlign: "left" },
+            ]}
+          >
+            {selected.team}
+          </Text>
+          <Text
+            style={[
+              textColor(colorScheme),
+              { flex: 1, fontWeight: "bold", textAlign: "center" },
+            ]}
+          >
+            {selected.currentPosition}
+          </Text>
+          <Text
+            style={[
+              textColor(colorScheme),
+              { flex: 1, fontWeight: "bold", textAlign: "right" },
+            ]}
+          >
+            {selected.totalPoints}
+          </Text>
+        </View>
+        <View
+          style={{
+            padding: 10,
+            marginHorizontal: 20,
+            borderColor: "grey",
+            borderWidth: 1,
+            borderRadius: 6,
+          }}
+        >
+          <FlatList
+            style={{
+              maxHeight: 300,
+            }}
+            data={["Ronde 1", "Ronde 2", "Ronde 3", "Ronde 4", "Ronde 5"]}
+            renderItem={({ item, index }) => {
+              const round = Object.values(selected)[index + 2] as {
+                points: string;
+                position: string;
+              };
+              return (
+                <View
+                  key={index}
+                  style={{
+                    borderColor: "#ef8b22",
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    padding: 5,
+                    marginVertical: 5,
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text
+                    style={[
+                      textColor(colorScheme),
+                      { textAlign: "left", flex: 1 },
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                  <Text
+                    style={[
+                      textColor(colorScheme),
+                      { textAlign: "center", flex: 1 },
+                    ]}
+                  >
+                    {round.position}
+                  </Text>
+                  <Text
+                    style={[
+                      textColor(colorScheme),
+                      { textAlign: "right", flex: 1 },
+                    ]}
+                  >
+                    {round.points}
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        </View>
+      </SwipeModal>
+
+      <SectionComponent title="Competitie Stand">
+        <FlatList
+          data={competitieStanden}
+          style={{ height: 350 }}
+          renderItem={({ item, index }) => (
+            <Pressable
+              style={{
+                margin: 5,
+                paddingVertical: 5,
+                borderColor: "grey",
+                borderWidth: 1,
+                borderRadius: 6,
+                paddingHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+              onPress={() => setSelected(item)}
+            >
+              <Text
+                style={[textColor(colorScheme), { textAlign: "left", flex: 2 }]}
+              >
+                {item.team}
+              </Text>
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  { textAlign: "center", flex: 1 },
+                ]}
+              >
+                {item.currentPosition}
+              </Text>
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  { textAlign: "right", flex: 1 },
+                ]}
+              >
+                {item.totalPoints}
+              </Text>
+            </Pressable>
+          )}
+        />
+      </SectionComponent>
+    </Fragment>
   );
 }
 

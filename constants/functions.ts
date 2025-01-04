@@ -34,10 +34,12 @@ import {
   MeetIdRegex,
   ClubIdRegex,
   ResultTableRegex,
+  CompetietieRegex,
 } from "./regex";
 import {
   AthleteData,
   Clubrecord,
+  CompetitieStand,
   MeetData,
   MeetResultData,
   Pb,
@@ -660,4 +662,28 @@ export function calculateAveragePoints(
   return (
     pbs.reduce((acc, current) => acc + parseInt(current.points), 0) / pbs.length
   ).toFixed(2);
+}
+
+export async function getCompetitieStand(): Promise<CompetitieStand[]> {
+  const response = await (
+    await fetch("https://www.b-b-z.nl/zwemmen/competitie/")
+  ).text();
+  const table = response.match(CompetietieRegex.TableRegex)![0];
+  const rs = table.match(CompetietieRegex.RowRegex)!.map((row) => {
+    const matches = [...row.matchAll(CompetietieRegex.DataRegex)].map(
+      (match) => match[1]
+    );
+    return {
+      currentPosition: matches[0],
+      team: matches[1],
+      round1: { points: matches[2], position: matches[3] },
+      round2: { points: matches[4], position: matches[5] },
+      round3: { points: matches[6], position: matches[7] },
+      round4: { points: matches[8], position: matches[9] },
+      round5: { points: matches[10], position: matches[11] },
+      totalPoints: matches[12],
+    };
+  });
+  rs.splice(0, 1);
+  return rs;
 }
