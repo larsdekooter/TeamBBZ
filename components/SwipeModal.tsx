@@ -105,6 +105,7 @@ export default function SwipeModal({
                 borderRadius: 20,
                 borderColor: "#ef8b22",
                 borderWidth: 1,
+                top: 0,
               },
               animatedStyle,
             ]}
