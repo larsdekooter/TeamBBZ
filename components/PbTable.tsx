@@ -336,9 +336,9 @@ function QuickViewModal({
         </View>
         <ButtonComponent
           onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
-          paddingVertical={10}
           style={{
             backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            paddingVertical: 10,
           }}
         >
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
@@ -349,9 +349,9 @@ function QuickViewModal({
         <View style={{ height: 20 }} />
         <ButtonComponent
           onPress={(e) => (onPressClose ? onPressClose(e) : null)}
-          paddingVertical={10}
           style={{
             backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            paddingVertical: 10,
           }}
         >
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>

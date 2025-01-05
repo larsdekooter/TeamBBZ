@@ -31,14 +31,11 @@ export default function ButtonComponent({
       style={[
         {
           backgroundColor: colorScheme === "light" ? "#fff" : "#181c20",
-          paddingHorizontal: 10,
-          paddingVertical: paddingVertical ?? 5,
           borderRadius: 8,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "row",
-          marginVertical: marginVertical,
           borderColor: "#ef8b22",
           borderWidth: 1,
         },

@@ -229,6 +229,7 @@ export default function Profile() {
             }}
           >
             <ButtonComponent
+              style={{ paddingHorizontal: 10, paddingVertical: 5 }}
               onPress={() => {
                 setActiveTab(Tabs.Pbs);
               }}
@@ -244,12 +245,16 @@ export default function Profile() {
                 PR's
               </Text>
             </ButtonComponent>
-            <ButtonComponent onPress={() => setActiveTab(Tabs.Meets)}>
+            <ButtonComponent
+              onPress={() => setActiveTab(Tabs.Meets)}
+              style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+            >
               <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
                 Wedstrijden
               </Text>
             </ButtonComponent>
             <ButtonComponent
+              style={{ paddingHorizontal: 10, paddingVertical: 5 }}
               onPress={async () => {
                 setActiveTab(Tabs.Speciality);
                 getSpecialityData(athleteData);

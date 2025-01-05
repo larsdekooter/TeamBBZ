@@ -149,12 +149,16 @@ function CompetitieStandComponent({
   competitieStanden: CompetitieStand[];
 }) {
   const [selected, setSelected] = useState({} as CompetitieStand);
+  if (!(competitieStanden.length > 0)) {
+    return <ActivityIndicator color="#ef8b22" size={20} />;
+  }
 
   return (
     <Fragment>
       <SwipeModal
         visible={selected.team?.length > 1}
         onClose={() => setSelected({} as CompetitieStand)}
+        style={{ justifyContent: "space-between", flex: 1 }}
       >
         <View
           style={{
@@ -248,9 +252,22 @@ function CompetitieStandComponent({
             }}
           />
         </View>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <ButtonComponent
+            onPress={() => setSelected({} as CompetitieStand)}
+            style={{
+              marginBottom: 20,
+              width: "90%",
+              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+              paddingVertical: 10,
+            }}
+          >
+            <Text style={[textColor(colorScheme)]}>Sluit</Text>
+          </ButtonComponent>
+        </View>
       </SwipeModal>
 
-      <SectionComponent title="Competitie Stand">
+      <SectionComponent title="Competitie stand">
         <FlatList
           data={competitieStanden}
           style={{ height: 350 }}
@@ -334,7 +351,6 @@ function WedstrijdenComponent({
       <Fragment>
         <Modal
           visible={modalShown}
-          // transparent={false}
           onRequestClose={() => {
             setModalShown(false);
             setChosenProgram([]);
@@ -369,7 +385,6 @@ function WedstrijdenComponent({
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    // justifyContent: "space-around",
                     paddingHorizontal: 20,
                   }}
                 >
@@ -401,7 +416,6 @@ function WedstrijdenComponent({
                   style={{
                     display: "flex",
                     flexDirection: "row",
-                    // justifyContent: "space-around",
                     paddingHorizontal: 20,
                   }}
                 >
@@ -429,11 +443,13 @@ function WedstrijdenComponent({
               </View>
               {selectedWedstrijd.enterable && selectedWedstrijd.program && (
                 <FlatList
-                  data={selectedWedstrijd.program}
+                  data={selectedWedstrijd.program.filter(
+                    (p) => !p.name.includes("pauze")
+                  )}
                   style={{
                     height: 600,
                     width: Dimensions.get("window").width,
-                    marginTop: 0,
+                    marginTop: 10,
                   }}
                   renderItem={({ item }) => (
                     <Pressable
@@ -556,7 +572,6 @@ function WedstrijdenComponent({
                   )}
                 />
               )}
-              <View style={{ height: 20 }} />
               {selectedWedstrijd.enterable && (
                 <ButtonComponent
                   onPress={async () => {
@@ -564,6 +579,11 @@ function WedstrijdenComponent({
                     await enterMeet(selectedWedstrijd, chosenProgram);
                     setInschrijfLoading(false);
                     setModalShown(false);
+                  }}
+                  style={{
+                    width: "90%",
+                    marginVertical: 10,
+                    paddingVertical: 5,
                   }}
                 >
                   <Text style={textColor(colorScheme)}>Schrijf in</Text>
@@ -574,6 +594,11 @@ function WedstrijdenComponent({
                 onPress={() => {
                   setModalShown(false);
                   setChosenProgram([]);
+                }}
+                style={{
+                  width: "90%",
+                  marginVertical: 10,
+                  paddingVertical: 5,
                 }}
               >
                 <Text style={textColor(colorScheme)}>Sluit</Text>
@@ -682,7 +707,15 @@ function ClubrecordsComponent({
       <SwipeModal
         visible={selectedClubrecord.distance.length > 0}
         onRequestClose={() =>
-          setSelectedClubrecord({ distance: "" } as Clubrecord)
+          setSelectedClubrecord({
+            distance: "",
+            times: [],
+            swimmers: [],
+            event: "",
+            dates: [],
+            locations: [],
+            meets: [],
+          })
         }
         onClose={() =>
           setSelectedClubrecord({
@@ -759,10 +792,10 @@ function ClubrecordsComponent({
               ))}
             </View>
             <ButtonComponent
-              marginVertical={10}
-              paddingVertical={10}
               style={{
                 backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                paddingVertical: 10,
+                marginVertical: 10,
               }}
               onPress={() =>
                 setSelectedClubrecord({

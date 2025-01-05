@@ -35,6 +35,7 @@ type SwipeModalProps = {
   onClose: () => void | undefined | null;
   height?: number;
   closeValue?: number;
+  style?: StyleProp<ViewStyle>;
 };
 
 const { height, width } = Dimensions.get("window");
@@ -46,6 +47,7 @@ export default function SwipeModal({
   onClose,
   height: customHeight,
   closeValue,
+  style,
 }: SwipeModalProps) {
   const top = useSharedValue(0);
   const closeTime = 200;
@@ -121,7 +123,16 @@ export default function SwipeModal({
                 transform: [{ translateX: "-50%" }],
               }}
             />
-            {children}
+            <View
+              style={[
+                style,
+                {
+                  height: (customHeight ?? height / 2) - height / 200,
+                },
+              ]}
+            >
+              {children}
+            </View>
           </Animated.View>
         </GestureDetector>
       </GestureHandlerRootView>

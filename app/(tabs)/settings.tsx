@@ -1,4 +1,4 @@
-import { Dimensions, Text, useColorScheme, View } from "react-native";
+import { Dimensions, Platform, Text, useColorScheme, View } from "react-native";
 import Page from "../../components/Page";
 import { textColor } from "@/constants/functions";
 import { useState, useCallback } from "react";
@@ -38,7 +38,7 @@ export default function Settings() {
             borderWidth: 1,
             borderRadius: 6,
             width: Dimensions.get("window").width * 0.95,
-            paddingHorizontal: 15,
+            // paddingHorizontal: 15,
             paddingVertical: 10,
           }}
         >
@@ -47,6 +47,7 @@ export default function Settings() {
               flexDirection: "row",
               justifyContent: "space-between",
               paddingVertical: 5,
+              paddingHorizontal: 15,
             }}
           >
             <Text style={textColor(colorScheme)}>Naam</Text>
@@ -57,36 +58,53 @@ export default function Settings() {
               flexDirection: "row",
               justifyContent: "space-between",
               paddingVertical: 5,
+              paddingHorizontal: 15,
             }}
           >
             <Text style={textColor(colorScheme)}>Email</Text>
             <Text style={textColor(colorScheme)}>{email}</Text>
           </View>
-          <ButtonComponent
-            onPress={async () => {
-              await removeItem("username");
-              await removeItem("email");
-              setUsername("");
-              setEmail("");
+          <View style={{ paddingHorizontal: 15 }}>
+            <ButtonComponent
+              onPress={async () => {
+                await removeItem("username");
+                await removeItem("email");
+                setUsername("");
+                setEmail("");
+              }}
+              style={{
+                paddingHorizontal: 15,
+                marginVertical: 10,
+                paddingVertical: 10,
+              }}
+            >
+              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                Log uit
+              </Text>
+            </ButtonComponent>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 15,
+              borderTopColor: "grey",
+              borderTopWidth: 1,
+              paddingTop: 10,
             }}
-            marginVertical={10}
-            paddingVertical={10}
           >
-            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-              Log uit
+            <Text
+              style={[textColor(colorScheme), { textAlign: "left", flex: 1 }]}
+            >
+              Versie
             </Text>
-          </ButtonComponent>
+            <Text
+              style={[textColor(colorScheme), { textAlign: "right", flex: 1 }]}
+            >
+              {nativeApplicationVersion} - {nativeBuildVersion}
+            </Text>
+          </View>
         </View>
-        <Text
-          style={{
-            color: "grey",
-            textAlign: "left",
-            width: "95%",
-            fontStyle: "italic",
-          }}
-        >
-          Build: {nativeApplicationVersion} - {nativeBuildVersion}
-        </Text>
+
         <Socials />
       </Page>
     );

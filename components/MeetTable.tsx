@@ -203,10 +203,10 @@ export default function MeetsTable({
             onPress={() => {
               setModalShown(false);
             }}
-            marginVertical={10}
-            paddingVertical={10}
             style={{
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+              paddingVertical: 10,
+              marginVertical: 10,
             }}
           >
             <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
