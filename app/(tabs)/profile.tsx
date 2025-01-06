@@ -35,6 +35,7 @@ import RadarChart from "@/components/RadarChart";
 import LineChart from "@/components/LineChart";
 import Dropdown from "@/components/Dropdown";
 import CheckBox from "@/components/Checkbox";
+import ErrorModal from "@/components/ErrorModal";
 
 enum Tabs {
   Pbs = 1,
@@ -48,9 +49,7 @@ export default function Profile() {
   const colorScheme = useColorScheme();
 
   const [username, setUsername] = useState("");
-  const [athleteData, setAthleteData] = useState<AthleteData>(
-    {} as AthleteData
-  );
+  const [athleteData, setAthleteData] = useState({} as AthleteData);
   const [modalShown, setModalShown] = useState(false);
   const [usernameSet, setUsernameSet] = useState("");
   const [activeTab, setActiveTab] = useState(Tabs.Pbs);
@@ -59,6 +58,7 @@ export default function Profile() {
   const [data, setData] = useState([] as number[]);
   const [labels, setLabels] = useState([] as string[]);
   const [shouldShow25, setShouldShow25] = useState(false);
+  const [error, setError] = useState("");
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -80,6 +80,7 @@ export default function Profile() {
         .find((t) => !t.includes("*"))
         ?.match(AthleteIdRegex)![0];
       if (athleteId) {
+        console.log(athleteId);
         const athletePage = await (
           await fetch(
             `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
@@ -103,6 +104,7 @@ export default function Profile() {
         setLabels(history25mFreestyle.map(({ year }) => year));
       } else {
         Alert.alert(`'${username}' is niet gevonden in SwimRankings!`);
+        setUsername("");
       }
     }
   }
@@ -117,14 +119,28 @@ export default function Profile() {
   );
 
   if (!(username.length > 0)) {
+    if (athleteData.name) {
+      setAthleteData({} as AthleteData);
+    }
     return (
       <Page>
         <Text style={textColor(colorScheme)}>
           Login om statistieken te zien
         </Text>
-        <ButtonComponent onPress={() => setModalShown(true)}>
-          <Text style={textColor(colorScheme)}>Login</Text>
+        <ButtonComponent
+          onPress={() => {
+            setModalShown(true);
+            setEmailSet("");
+            setUsernameSet("");
+          }}
+          style={{ width: "95%", paddingVertical: 10, marginVertical: 10 }}
+        >
+          <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+            Login
+          </Text>
         </ButtonComponent>
+
+        <ErrorModal error={error} onEnd={() => setError("")} />
 
         <Modal
           animationType="slide"
@@ -180,22 +196,32 @@ export default function Profile() {
                 inputMode="email"
               />
               <ButtonComponent
+                style={{
+                  paddingVertical: 10,
+                  width: 200,
+                  backgroundColor:
+                    colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                }}
                 onPress={async () => {
                   if (!(usernameSet.length > 0)) {
-                    return Alert.alert("Voer een gebruikersnaam in!");
+                    return setError("Voer een gebruikersnaam in!");
                   } else if (!(emailSet.length > 0)) {
-                    return Alert.alert("Voor een email address in!");
+                    return setError("Voer een email addres in!");
                   } else {
+                    setLoading(true);
                     await setItem("username", { username: usernameSet });
                     setUsername(usernameSet);
                     await setItem("email", { email: emailSet });
                     setEmailSet(emailSet);
                     setModalShown(false);
                     await fetchUser();
+                    setLoading(false);
                   }
                 }}
               >
-                <Text style={textColor(colorScheme)}>Login</Text>
+                <Text style={[textColor(colorScheme), { textAlign: "right" }]}>
+                  Login
+                </Text>
               </ButtonComponent>
             </View>
           </View>

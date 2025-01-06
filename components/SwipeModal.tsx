@@ -9,6 +9,7 @@ import {
   ModalProps,
   NativeSyntheticEvent,
   Pressable,
+  SafeAreaView,
   StyleProp,
   useColorScheme,
   View,
@@ -88,54 +89,57 @@ export default function SwipeModal({
       onShow={() => (top.value = 0)}
     >
       <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
-      <GestureHandlerRootView style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
-        <Pressable
-          onPress={onClose}
-          style={{
-            width,
-            height: customHeight ? height - customHeight : height / 2,
-          }}
-        />
-        <GestureDetector gesture={panGesture}>
-          <Animated.View
-            collapsable={false}
-            style={[
-              {
-                width,
-                height: customHeight ?? height / 2,
-                backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-                borderRadius: 20,
-                borderColor: "#ef8b22",
-                borderWidth: 1,
-                top: 0,
-              },
-              animatedStyle,
-            ]}
-          >
-            <View
-              style={{
-                height: height / 200,
-                backgroundColor: "grey",
-                width: width / 5,
-                borderRadius: 10,
-                marginTop: 10,
-                left: "50%",
-                transform: [{ translateX: "-50%" }],
-              }}
-            />
-            <View
+      <SafeAreaView>
+        <GestureHandlerRootView style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
+          <Pressable
+            onPress={onClose}
+            style={{
+              width,
+              height: customHeight ? height - customHeight : height / 2,
+            }}
+          />
+          <GestureDetector gesture={panGesture}>
+            <Animated.View
+              collapsable={false}
               style={[
-                style,
                 {
-                  height: (customHeight ?? height / 2) - height / 200,
+                  width,
+                  height: customHeight ?? height / 2,
+                  backgroundColor:
+                    colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                  borderRadius: 20,
+                  borderColor: "#ef8b22",
+                  borderWidth: 1,
+                  top: 0,
                 },
+                animatedStyle,
               ]}
             >
-              {children}
-            </View>
-          </Animated.View>
-        </GestureDetector>
-      </GestureHandlerRootView>
+              <View
+                style={{
+                  height: height / 200,
+                  backgroundColor: "grey",
+                  width: width / 5,
+                  borderRadius: 10,
+                  marginTop: 10,
+                  left: "50%",
+                  transform: [{ translateX: "-50%" }],
+                }}
+              />
+              <View
+                style={[
+                  style,
+                  {
+                    height: (customHeight ?? height / 2) - height / 200,
+                  },
+                ]}
+              >
+                {children}
+              </View>
+            </Animated.View>
+          </GestureDetector>
+        </GestureHandlerRootView>
+      </SafeAreaView>
     </Modal>
   );
 }
