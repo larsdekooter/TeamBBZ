@@ -322,14 +322,23 @@ function SchemaComponent({
   colorScheme: ColorSchemeName;
 }) {
   const currentDate = new Date();
+  const [shown, setShown] = useState(false);
   return (
-    <SectionComponent
-      title={`Schema van ${currentDate.getDate()}-${
-        currentDate.getMonth() + 1
-      }-${currentDate.getFullYear()}`}
-    >
-      <Text style={textColor(colorScheme)}>{schema}</Text>
-    </SectionComponent>
+    <>
+      <SwipeModal visible={shown} onClose={() => setShown(false)}>
+        <View style={{justifyContent: "center", alignItems: "center"}}>
+        <Text style={textColor(colorScheme)}>{schema}</Text></View>
+      </SwipeModal>
+      <SectionComponent
+        title={`Schema van ${currentDate.getDate()}-${
+          currentDate.getMonth() + 1
+        }-${currentDate.getFullYear()}`}
+        style={{ marginTop: 0 }}
+        onPress={() => setShown(true)}
+      >
+        <View></View>
+      </SectionComponent>
+    </>
   );
 }
 

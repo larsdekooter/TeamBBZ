@@ -18,10 +18,12 @@ export default function SectionComponent({
   children,
   title,
   style,
+  onPress
 }: {
   children: React.ReactNode;
   title: string;
   style?: StyleProp<ViewStyle>;
+  onPress?: () => void;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -50,6 +52,7 @@ export default function SectionComponent({
     ]).start();
   };
 
+
   return (
     <Pressable
       style={{
@@ -62,7 +65,10 @@ export default function SectionComponent({
         overflow: "hidden",
         marginVertical: 10,
       }}
-      onPress={toggleExpand}
+      onPress={(e) => {
+        toggleExpand();
+        onPress?.()
+      }}
     >
       <View
         style={{
