@@ -340,7 +340,7 @@ function SchemaComponent({
       <SwipeModal
         visible={shown}
         onClose={toggleExpand}
-        height={height}
+        height={height > 200 ? height : 200}
         closeValue={200}
       >
         <View style={{ flex: 1, padding: 20 }}>
