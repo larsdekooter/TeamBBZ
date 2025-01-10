@@ -46,13 +46,12 @@ export default function Club() {
   const [competitieStanden, setCompetitieStanden] = useState(
     [] as CompetitieStand[]
   );
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getS = async () => {
       const schema = await getSchemaData();
       setSchema(schema);
-    };
-    const getW = async () => {
       const wedstrijdenPage = await (
         await fetch("https://www.b-b-z.nl/kalender/?actie=volledig")
       ).text();
@@ -106,23 +105,22 @@ export default function Club() {
               } as Wedstrijd)
         );
       setWedstrijden(rows);
-    };
-    const getC = async () => {
       const clubrecords = await getClubRecords();
       setClubrecords(clubrecords);
-    };
-    const getCs = async () => {
       setCompetitieStanden(await getCompetitieStand());
+      setLoading(false);
     };
+
     getS();
-    getW();
-    getC();
-    getCs();
   }, []);
 
   const colorScheme = useColorScheme();
 
-  return (
+  return loading ? (
+    <Page>
+      <ActivityIndicator size={30} color="#ef8b22" />
+    </Page>
+  ) : (
     <Page>
       <SchemaComponent colorScheme={colorScheme} schema={schema} />
       <WedstrijdenComponent
@@ -149,9 +147,6 @@ function CompetitieStandComponent({
   competitieStanden: CompetitieStand[];
 }) {
   const [selected, setSelected] = useState({} as CompetitieStand);
-  if (!(competitieStanden.length > 0)) {
-    return <ActivityIndicator color="#ef8b22" size={20} />;
-  }
 
   return (
     <Fragment>
@@ -425,254 +420,236 @@ function WedstrijdenComponent({
   const [chosenProgram, setChosenProgram] = useState([] as number[]);
   const [inschrijfLoading, setInschrijfLoading] = useState(false);
 
-  if (wedstrijden.length > 0) {
-    return (
-      <Fragment>
-        <Modal
-          visible={modalShown}
-          onRequestClose={() => {
-            setModalShown(false);
-            setChosenProgram([]);
-          }}
-          animationType="slide"
+  return (
+    <Fragment>
+      <Modal
+        visible={modalShown}
+        onRequestClose={() => {
+          setModalShown(false);
+          setChosenProgram([]);
+        }}
+        animationType="slide"
+        style={{
+          width: Dimensions.get("window").width,
+          height: Dimensions.get("window").height,
+        }}
+      >
+        <View
           style={{
-            width: Dimensions.get("window").width,
-            height: Dimensions.get("window").height,
+            flex: 1,
+            paddingVertical: 25,
+            backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
           }}
         >
           <View
             style={{
               flex: 1,
-              paddingVertical: 25,
-              backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
             <View
               style={{
                 flex: 1,
-                justifyContent: "space-between",
-                alignItems: "center",
+                width: Dimensions.get("window").width,
               }}
             >
               <View
                 style={{
-                  flex: 1,
-                  width: Dimensions.get("window").width,
+                  display: "flex",
+                  flexDirection: "row",
+                  paddingHorizontal: 20,
                 }}
               >
-                <View
+                <Text
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    paddingHorizontal: 20,
+                    ...textColor(colorScheme),
+                    fontWeight: "bold",
+                    flex: 1.5,
+                    textAlign: "left",
+                  }}
+                  numberOfLines={1}
+                >
+                  {selectedWedstrijd.name}
+                </Text>
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    fontWeight: "bold",
+                    flex: 1.5,
+                    textAlign: "right",
                   }}
                 >
-                  <Text
-                    style={{
-                      ...textColor(colorScheme),
-                      fontWeight: "bold",
-                      flex: 1.5,
-                      textAlign: "left",
-                    }}
-                    numberOfLines={1}
-                  >
-                    {selectedWedstrijd.name}
-                  </Text>
-                  <Text
-                    style={{
-                      ...textColor(colorScheme),
-                      fontWeight: "bold",
-                      flex: 1.5,
-                      textAlign: "right",
-                    }}
-                  >
-                    {selectedWedstrijd.endDate != null
-                      ? `${selectedWedstrijd.startDate.getDate()}-${selectedWedstrijd.endDate?.toLocaleDateString()}`
-                      : `${selectedWedstrijd.startDate?.toLocaleDateString()}`}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    paddingHorizontal: 20,
-                  }}
-                >
-                  <Text
-                    style={{
-                      ...textColor(colorScheme),
-                      fontWeight: "bold",
-                      flex: 1.5,
-                      textAlign: "left",
-                    }}
-                  >
-                    {`${selectedWedstrijd.location} - ${selectedWedstrijd.country}`}
-                  </Text>
-                  <Text
-                    style={{
-                      ...textColor(colorScheme),
-                      fontWeight: "bold",
-                      flex: 1.5,
-                      textAlign: "right",
-                    }}
-                  >
-                    {selectedWedstrijd.category}
-                  </Text>
-                </View>
+                  {selectedWedstrijd.endDate != null
+                    ? `${selectedWedstrijd.startDate.getDate()}-${selectedWedstrijd.endDate?.toLocaleDateString()}`
+                    : `${selectedWedstrijd.startDate?.toLocaleDateString()}`}
+                </Text>
               </View>
-              {selectedWedstrijd.enterable && selectedWedstrijd.program && (
-                <FlatList
-                  data={selectedWedstrijd.program.filter(
-                    (p) => !p.name.includes("pauze")
-                  )}
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  paddingHorizontal: 20,
+                }}
+              >
+                <Text
                   style={{
-                    height: 600,
-                    width: Dimensions.get("window").width,
-                    marginTop: 10,
+                    ...textColor(colorScheme),
+                    fontWeight: "bold",
+                    flex: 1.5,
+                    textAlign: "left",
                   }}
-                  renderItem={({ item }) => (
-                    <Pressable
+                >
+                  {`${selectedWedstrijd.location} - ${selectedWedstrijd.country}`}
+                </Text>
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    fontWeight: "bold",
+                    flex: 1.5,
+                    textAlign: "right",
+                  }}
+                >
+                  {selectedWedstrijd.category}
+                </Text>
+              </View>
+            </View>
+            {selectedWedstrijd.enterable && selectedWedstrijd.program && (
+              <FlatList
+                data={selectedWedstrijd.program.filter(
+                  (p) => !p.name.includes("pauze")
+                )}
+                style={{
+                  height: 600,
+                  width: Dimensions.get("window").width,
+                  marginTop: 10,
+                }}
+                renderItem={({ item }) => (
+                  <Pressable
+                    style={{
+                      backgroundColor: !chosenProgram.includes(
+                        parseInt(item.name.split(/\s/)[0])
+                      )
+                        ? colorScheme === "dark"
+                          ? "#2a3137"
+                          : "#d6d6d6"
+                        : "#133914",
+                      margin: 10,
+                      flex: 1,
+                      borderRadius: 10,
+                      paddingHorizontal: 5,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingVertical: 15,
+                      flexDirection: "row",
+                      minHeight: 10,
+                      borderColor: chosenProgram.includes(
+                        parseInt(item.name.split(/\s/)[0])
+                      )
+                        ? "#b7f1b9"
+                        : "#2a3137",
+                      borderWidth: 1,
+                    }}
+                    onPress={() => {
+                      const programNumber = parseInt(item.name.split(/\s/)[0]);
+                      if (chosenProgram.includes(programNumber)) {
+                        setChosenProgram(
+                          chosenProgram.filter((num) => num !== programNumber)
+                        );
+                      } else {
+                        setChosenProgram([...chosenProgram, programNumber]);
+                      }
+                    }}
+                  >
+                    <View
                       style={{
+                        height: 20,
+                        width: 20,
                         backgroundColor: !chosenProgram.includes(
                           parseInt(item.name.split(/\s/)[0])
                         )
                           ? colorScheme === "dark"
                             ? "#2a3137"
-                            : "#d6d6d6"
-                          : "#133914",
-                        margin: 10,
-                        flex: 1,
-                        borderRadius: 10,
-                        paddingHorizontal: 5,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        paddingVertical: 15,
-                        flexDirection: "row",
-                        minHeight: 10,
-                        borderColor: chosenProgram.includes(
-                          parseInt(item.name.split(/\s/)[0])
-                        )
-                          ? "#b7f1b9"
-                          : "#2a3137",
+                            : "#fff"
+                          : "#90ea93",
+                        borderColor: "#fff",
                         borderWidth: 1,
-                      }}
-                      onPress={() => {
-                        const programNumber = parseInt(
-                          item.name.split(/\s/)[0]
-                        );
-                        if (chosenProgram.includes(programNumber)) {
-                          setChosenProgram(
-                            chosenProgram.filter((num) => num !== programNumber)
-                          );
-                        } else {
-                          setChosenProgram([...chosenProgram, programNumber]);
-                        }
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 20,
-                          width: 20,
-                          backgroundColor: !chosenProgram.includes(
-                            parseInt(item.name.split(/\s/)[0])
-                          )
-                            ? colorScheme === "dark"
-                              ? "#2a3137"
-                              : "#fff"
-                            : "#90ea93",
-                          borderColor: "#fff",
-                          borderWidth: 1,
-                          borderRadius: 3,
-                          marginHorizontal: 10,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {chosenProgram.includes(
-                          parseInt(item.name.split(/\s/)[0])
-                        ) && (
-                          <FontAwesome
-                            name="check"
-                            size={15}
-                            color="#000"
-                            style={{ textAlign: "center" }}
-                          ></FontAwesome>
-                        )}
-                      </View>
-                      <Text
-                        style={{
-                          ...textColor(colorScheme),
-                          textAlign: "center",
-                          flex: 1,
-                        }}
-                      >
-                        {item.name}
-                      </Text>
-                    </Pressable>
-                  )}
-                />
-              )}
-              {!selectedWedstrijd.enterable && selectedWedstrijd.program && (
-                <FlatList
-                  data={selectedWedstrijd.program}
-                  style={{
-                    height: 600,
-                    width: Dimensions.get("window").width,
-                    marginTop: 0,
-                    borderRadius: 10,
-                  }}
-                  renderItem={({ item, index }) => (
-                    <Pressable
-                      key={index}
-                      style={{
-                        backgroundColor:
-                          colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
-                        margin: 10,
-                        flex: 1,
-                        borderRadius: 10,
-                        paddingHorizontal: 5,
-                        justifyContent: "center",
+                        borderRadius: 3,
+                        marginHorizontal: 10,
+                        display: "flex",
                         alignItems: "center",
-                        paddingVertical: 15,
-                        flexDirection: "row",
-                        minHeight: 10,
-                      }}
-                      onPress={async () => {
-                        if (item.no < 0) return;
-                        const pdfUrl = `${selectedWedstrijd.livetimeLink}StartList_${item.no}.pdf`;
-                        const docsUrl = `https://docs.google.com/gview?embedded=true&url=${pdfUrl}`;
-
-                        await WebBrowser.openBrowserAsync(docsUrl);
+                        justifyContent: "center",
                       }}
                     >
-                      <Text style={textColor(colorScheme)}>{item.name}</Text>
-                    </Pressable>
-                  )}
-                />
-              )}
-              {selectedWedstrijd.enterable && (
-                <ButtonComponent
-                  onPress={async () => {
-                    setInschrijfLoading(true);
-                    await enterMeet(selectedWedstrijd, chosenProgram);
-                    setInschrijfLoading(false);
-                    setModalShown(false);
-                  }}
-                  style={{
-                    width: "90%",
-                    marginVertical: 10,
-                    paddingVertical: 5,
-                  }}
-                >
-                  <Text style={textColor(colorScheme)}>Schrijf in</Text>
-                </ButtonComponent>
-              )}
-              {inschrijfLoading && <ActivityIndicator color="#ef8b22" />}
+                      {chosenProgram.includes(
+                        parseInt(item.name.split(/\s/)[0])
+                      ) && (
+                        <FontAwesome
+                          name="check"
+                          size={15}
+                          color="#000"
+                          style={{ textAlign: "center" }}
+                        ></FontAwesome>
+                      )}
+                    </View>
+                    <Text
+                      style={{
+                        ...textColor(colorScheme),
+                        textAlign: "center",
+                        flex: 1,
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                  </Pressable>
+                )}
+              />
+            )}
+            {!selectedWedstrijd.enterable && selectedWedstrijd.program && (
+              <FlatList
+                data={selectedWedstrijd.program}
+                style={{
+                  height: 600,
+                  width: Dimensions.get("window").width,
+                  marginTop: 0,
+                  borderRadius: 10,
+                }}
+                renderItem={({ item, index }) => (
+                  <Pressable
+                    key={index}
+                    style={{
+                      backgroundColor:
+                        colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+                      margin: 10,
+                      flex: 1,
+                      borderRadius: 10,
+                      paddingHorizontal: 5,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingVertical: 15,
+                      flexDirection: "row",
+                      minHeight: 10,
+                    }}
+                    onPress={async () => {
+                      if (item.no < 0) return;
+                      const pdfUrl = `${selectedWedstrijd.livetimeLink}StartList_${item.no}.pdf`;
+                      const docsUrl = `https://docs.google.com/gview?embedded=true&url=${pdfUrl}`;
+
+                      await WebBrowser.openBrowserAsync(docsUrl);
+                    }}
+                  >
+                    <Text style={textColor(colorScheme)}>{item.name}</Text>
+                  </Pressable>
+                )}
+              />
+            )}
+            {selectedWedstrijd.enterable && (
               <ButtonComponent
-                onPress={() => {
+                onPress={async () => {
+                  setInschrijfLoading(true);
+                  await enterMeet(selectedWedstrijd, chosenProgram);
+                  setInschrijfLoading(false);
                   setModalShown(false);
-                  setChosenProgram([]);
                 }}
                 style={{
                   width: "90%",
@@ -680,75 +657,89 @@ function WedstrijdenComponent({
                   paddingVertical: 5,
                 }}
               >
-                <Text style={textColor(colorScheme)}>Sluit</Text>
+                <Text style={textColor(colorScheme)}>Schrijf in</Text>
               </ButtonComponent>
-              <View style={{ height: 20 }} />
-            </View>
-          </View>
-        </Modal>
-        <SectionComponent title="Wedstrijden">
-          {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
-            <Pressable
-              key={i}
-              onPress={async (e) => {
-                e.stopPropagation();
-
-                setProgramLoading(true);
-                setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
-                const w = await getWedstrijdData(wedstrijd);
-                setProgramLoading(false);
-                setSelectedWedstrijd(w);
-                setModalShown(true);
+            )}
+            {inschrijfLoading && <ActivityIndicator color="#ef8b22" />}
+            <ButtonComponent
+              onPress={() => {
+                setModalShown(false);
+                setChosenProgram([]);
               }}
               style={{
-                display: "flex",
-                flexDirection: "row",
-                borderColor: "grey",
-                borderWidth: 1,
-                borderRadius: 6,
-                paddingHorizontal: 5,
-                marginHorizontal: 5,
-                paddingVertical: 10,
-                marginVertical: 5,
+                width: "90%",
+                marginVertical: 10,
+                paddingVertical: 5,
               }}
             >
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  textAlign: "left",
-                  flex: 1.5,
-                }}
-                numberOfLines={1}
-              >
-                {wedstrijd.name}
-              </Text>
-              {programLoading && selectedWedstrijd.id === wedstrijd.id && (
-                <ActivityIndicator color="#ef8b22" />
-              )}
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  textAlign: "center",
-                  flex: 1.5,
-                }}
-              >
-                {wedstrijd.startDate.toLocaleDateString()}
-              </Text>
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  textAlign: "right",
-                  flex: 1.5,
-                }}
-              >
-                {wedstrijd.location}
-              </Text>
-            </Pressable>
-          ))}
-        </SectionComponent>
-      </Fragment>
-    );
-  } else return <ActivityIndicator color="#ef8b22" />;
+              <Text style={textColor(colorScheme)}>Sluit</Text>
+            </ButtonComponent>
+            <View style={{ height: 20 }} />
+          </View>
+        </View>
+      </Modal>
+      <SectionComponent title="Wedstrijden">
+        {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
+          <Pressable
+            key={i}
+            onPress={async (e) => {
+              e.stopPropagation();
+
+              setProgramLoading(true);
+              setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
+              const w = await getWedstrijdData(wedstrijd);
+              setProgramLoading(false);
+              setSelectedWedstrijd(w);
+              setModalShown(true);
+            }}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              borderColor: "grey",
+              borderWidth: 1,
+              borderRadius: 6,
+              paddingHorizontal: 5,
+              marginHorizontal: 5,
+              paddingVertical: 10,
+              marginVertical: 5,
+            }}
+          >
+            <Text
+              style={{
+                ...textColor(colorScheme),
+                textAlign: "left",
+                flex: 1.5,
+              }}
+              numberOfLines={1}
+            >
+              {wedstrijd.name}
+            </Text>
+            {programLoading && selectedWedstrijd.id === wedstrijd.id && (
+              <ActivityIndicator color="#ef8b22" />
+            )}
+            <Text
+              style={{
+                ...textColor(colorScheme),
+                textAlign: "center",
+                flex: 1.5,
+              }}
+            >
+              {wedstrijd.startDate.toLocaleDateString()}
+            </Text>
+            <Text
+              style={{
+                ...textColor(colorScheme),
+                textAlign: "right",
+                flex: 1.5,
+              }}
+            >
+              {wedstrijd.location}
+            </Text>
+          </Pressable>
+        ))}
+      </SectionComponent>
+    </Fragment>
+  );
 }
 
 function ClubrecordsComponent({
@@ -778,9 +769,7 @@ function ClubrecordsComponent({
     locations: [],
     meets: [],
   } as Clubrecord);
-  if (!(clubrecords.male.length > 0)) {
-    return <ActivityIndicator color="#ef8b22" size="small" />;
-  }
+
   return (
     <Fragment>
       <SwipeModal
