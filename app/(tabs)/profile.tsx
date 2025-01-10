@@ -80,7 +80,6 @@ export default function Profile() {
         .find((t) => !t.includes("*"))
         ?.match(AthleteIdRegex)![0];
       if (athleteId) {
-        console.log(athleteId);
         const athletePage = await (
           await fetch(
             `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`

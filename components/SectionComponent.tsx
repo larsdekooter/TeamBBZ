@@ -18,7 +18,7 @@ export default function SectionComponent({
   children,
   title,
   style,
-  onPress
+  onPress,
 }: {
   children: React.ReactNode;
   title: string;
@@ -52,7 +52,6 @@ export default function SectionComponent({
     ]).start();
   };
 
-
   return (
     <Pressable
       style={{
@@ -67,7 +66,7 @@ export default function SectionComponent({
       }}
       onPress={(e) => {
         toggleExpand();
-        onPress?.()
+        onPress?.();
       }}
     >
       <View

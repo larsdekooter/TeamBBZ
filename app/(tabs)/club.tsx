@@ -323,21 +323,91 @@ function SchemaComponent({
 }) {
   const currentDate = new Date();
   const [shown, setShown] = useState(false);
+  const rotateAnim = useState(new Animated.Value(0))[0];
+
+  const toggleExpand = () => {
+    setShown(!shown);
+    Animated.timing(rotateAnim, {
+      toValue: shown ? 0 : 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "180deg"],
+  });
+
+  const height = 2 * (schema.split("\n").length * 15 + 45);
   return (
     <>
-      <SwipeModal visible={shown} onClose={() => setShown(false)}>
-        <View style={{justifyContent: "center", alignItems: "center"}}>
-        <Text style={textColor(colorScheme)}>{schema}</Text></View>
-      </SwipeModal>
-      <SectionComponent
-        title={`Schema van ${currentDate.getDate()}-${
-          currentDate.getMonth() + 1
-        }-${currentDate.getFullYear()}`}
-        style={{ marginTop: 0 }}
-        onPress={() => setShown(true)}
+      <SwipeModal
+        visible={shown}
+        onClose={toggleExpand}
+        height={height}
+        closeValue={200}
       >
-        <View></View>
-      </SectionComponent>
+        <View style={{ flex: 1, padding: 20 }}>
+          <View
+            style={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              flex: 1,
+            }}
+          >
+            <Text
+              style={[textColor(colorScheme), { fontSize: 15, width: "100%" }]}
+            >
+              {schema}
+            </Text>
+            <ButtonComponent
+              onPress={toggleExpand}
+              style={{
+                width: "95%",
+                paddingVertical: 10,
+                backgroundColor:
+                  colorScheme === "light" ? "#f3f5f6" : "#2a3137",
+              }}
+            >
+              <Text style={[textColor(colorScheme)]}>Sluit</Text>
+            </ButtonComponent>
+          </View>
+        </View>
+      </SwipeModal>
+      <Pressable
+        style={{
+          width: Dimensions.get("window").width * 0.95,
+          borderColor: "#ef8b22",
+          borderWidth: 1,
+          borderRadius: 6,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          overflow: "hidden",
+          marginVertical: 10,
+        }}
+        onPress={toggleExpand}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={[textColor(colorScheme)]}>
+            Schema van {currentDate.getDate()}-{currentDate.getMonth() + 1}-
+            {currentDate.getFullYear()}
+          </Text>
+          <Animated.View style={{ transform: [{ rotate }] }}>
+            <FontAwesome
+              name="chevron-down"
+              size={15}
+              color={colorScheme === "dark" ? "#fff" : "#000"}
+            />
+          </Animated.View>
+        </View>
+      </Pressable>
     </>
   );
 }

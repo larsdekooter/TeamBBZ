@@ -117,7 +117,7 @@ export default function SwipeModal({
             >
               <View
                 style={{
-                  height: height / 200,
+                  height: 4,
                   backgroundColor: "grey",
                   width: width / 5,
                   borderRadius: 10,
@@ -130,7 +130,7 @@ export default function SwipeModal({
                 style={[
                   style,
                   {
-                    height: (customHeight ?? height / 2) - height / 200,
+                    height: (customHeight ?? height / 2) - 4,
                   },
                 ]}
               >
