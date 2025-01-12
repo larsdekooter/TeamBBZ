@@ -98,7 +98,8 @@ export class ClubRecordRegex {
 }
 
 export class CompetietieRegex {
-  static RowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>|<\/tr>)/gi;
-  static TableRegex = /<table[^>]*>([\s\S]*?)<\/table>/i;
-  static DataRegex = /<td[^>]*>(?:<font[^>]*>)?([^<]*)(?:<\/font>)?<\/td>/g;
+  static TableRegex = /(?<=<table\sid="t1"[^>]*>\n)[\s\S]*?(?=<\/table>)/gm;
+  static RowRegex = /(?<=<tr>)[\s\S]*?(?=<\/tr>)/gm;
+  static CellRegex = /(?<=<td[^>]*>)[\s\S]*?(?=<\/td>)/gm;
+  static LinkRegex = /(?<=>)([\s\S]*?)(?=<)/gm;
 }

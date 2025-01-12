@@ -666,24 +666,49 @@ export function calculateAveragePoints(
 
 export async function getCompetitieStand(): Promise<CompetitieStand[]> {
   const response = await (
-    await fetch("https://www.b-b-z.nl/zwemmen/competitie/")
+    await fetch(
+      "https://zwemcompetitie.knzb.nl/competitieservice/index.php?klasse=A&district=2"
+    )
   ).text();
-  const table = response.match(CompetietieRegex.TableRegex)![0];
-  const rs = table.match(CompetietieRegex.RowRegex)!.map((row) => {
-    const matches = [...row.matchAll(CompetietieRegex.DataRegex)].map(
-      (match) => match[1]
-    );
-    return {
-      currentPosition: matches[0],
-      team: matches[1],
-      round1: { points: matches[2], position: matches[3] },
-      round2: { points: matches[4], position: matches[5] },
-      round3: { points: matches[6], position: matches[7] },
-      round4: { points: matches[8], position: matches[9] },
-      round5: { points: matches[10], position: matches[11] },
-      totalPoints: matches[12],
-    };
-  });
-  rs.splice(0, 1);
-  return rs;
+  const rows = response
+    .match(CompetietieRegex.RowRegex)!
+    .toSpliced(0, 4)
+    .map((row) => {
+      const cells = row.match(CompetietieRegex.CellRegex)!;
+      return {
+        team: cells[1],
+        round1: parseFloat(
+          cells[3]
+            .match(CompetietieRegex.LinkRegex)![0]
+            .replace(/\./g, "")
+            .replace(/,/g, ".")
+        ),
+        round2: parseFloat(
+          cells[5]
+            .match(CompetietieRegex.LinkRegex)![0]
+            .replace(/\./g, "")
+            .replace(/,/g, ".")
+        ),
+        round3: parseFloat(
+          cells[7]
+            .match(CompetietieRegex.LinkRegex)![0]
+            .replace(/\./g, "")
+            .replace(/,/g, ".")
+        ),
+        round4: parseFloat(
+          cells[9]
+            .match(CompetietieRegex.LinkRegex)![0]
+            .replace(/\./g, "")
+            .replace(/,/g, ".")
+        ),
+        round5: parseFloat(
+          cells[11]
+            .match(CompetietieRegex.LinkRegex)![0]
+            .replace(/\./g, "")
+            .replace(/,/g, ".")
+        ),
+        total: parseFloat(cells[13].replace(/\./g, "").replace(/,/g, ".")),
+      };
+    });
+  return rows;
 }

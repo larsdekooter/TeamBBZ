@@ -147,12 +147,16 @@ function CompetitieStandComponent({
   competitieStanden: CompetitieStand[];
 }) {
   const [selected, setSelected] = useState({} as CompetitieStand);
+  const [position, setPosition] = useState(0);
 
   return (
     <Fragment>
       <SwipeModal
         visible={selected.team?.length > 1}
-        onClose={() => setSelected({} as CompetitieStand)}
+        onClose={() => {
+          setSelected({} as CompetitieStand);
+          setPosition(0);
+        }}
         style={{ justifyContent: "space-between", flex: 1 }}
       >
         <View
@@ -176,7 +180,7 @@ function CompetitieStandComponent({
               { flex: 1, fontWeight: "bold", textAlign: "center" },
             ]}
           >
-            {selected.currentPosition}
+            {position}
           </Text>
           <Text
             style={[
@@ -184,7 +188,7 @@ function CompetitieStandComponent({
               { flex: 1, fontWeight: "bold", textAlign: "right" },
             ]}
           >
-            {selected.totalPoints}
+            {selected.total}
           </Text>
         </View>
         <View
@@ -202,10 +206,20 @@ function CompetitieStandComponent({
             }}
             data={["Ronde 1", "Ronde 2", "Ronde 3", "Ronde 4", "Ronde 5"]}
             renderItem={({ item, index }) => {
-              const round = Object.values(selected)[index + 2] as {
-                points: string;
-                position: string;
-              };
+              const roundName = `round${index + 1}` as
+                | "round1"
+                | "round2"
+                | "round3"
+                | "round4"
+                | "round5";
+              const points = selected[roundName];
+              const competitieStandenIndexRound = competitieStanden
+                .map((stand) => stand[roundName]) // Map the competitie standen to the round we are working on based on the index
+                .sort((a, b) => b - a);
+              const position =
+                points === 0
+                  ? ""
+                  : competitieStandenIndexRound.indexOf(points) + 1;
               return (
                 <View
                   key={index}
@@ -232,7 +246,7 @@ function CompetitieStandComponent({
                       { textAlign: "center", flex: 1 },
                     ]}
                   >
-                    {round.position}
+                    {position}
                   </Text>
                   <Text
                     style={[
@@ -240,7 +254,7 @@ function CompetitieStandComponent({
                       { textAlign: "right", flex: 1 },
                     ]}
                   >
-                    {round.points}
+                    {points}
                   </Text>
                 </View>
               );
@@ -249,7 +263,10 @@ function CompetitieStandComponent({
         </View>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
           <ButtonComponent
-            onPress={() => setSelected({} as CompetitieStand)}
+            onPress={() => {
+              setSelected({} as CompetitieStand);
+              setPosition(0);
+            }}
             style={{
               marginBottom: 20,
               width: "90%",
@@ -264,7 +281,7 @@ function CompetitieStandComponent({
 
       <SectionComponent title="Competitie stand">
         <FlatList
-          data={competitieStanden}
+          data={competitieStanden.sort((a, b) => b.total - a.total)}
           style={{ height: 350 }}
           renderItem={({ item, index }) => (
             <Pressable
@@ -278,7 +295,10 @@ function CompetitieStandComponent({
                 flexDirection: "row",
                 alignItems: "center",
               }}
-              onPress={() => setSelected(item)}
+              onPress={() => {
+                setSelected(item);
+                setPosition(index + 1);
+              }}
             >
               <Text
                 style={[textColor(colorScheme), { textAlign: "left", flex: 2 }]}
@@ -291,7 +311,7 @@ function CompetitieStandComponent({
                   { textAlign: "center", flex: 1 },
                 ]}
               >
-                {item.currentPosition}
+                {index + 1}
               </Text>
               <Text
                 style={[
@@ -299,7 +319,7 @@ function CompetitieStandComponent({
                   { textAlign: "right", flex: 1 },
                 ]}
               >
-                {item.totalPoints}
+                {item.total}
               </Text>
             </Pressable>
           )}

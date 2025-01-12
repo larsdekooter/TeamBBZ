@@ -77,27 +77,11 @@ export type Clubrecord = {
 };
 
 export type CompetitieStand = {
-  currentPosition: string;
   team: string;
-  round1: {
-    points: string;
-    position: string;
-  };
-  round2: {
-    points: string;
-    position: string;
-  };
-  round3: {
-    points: string;
-    position: string;
-  };
-  round4: {
-    points: string;
-    position: string;
-  };
-  round5: {
-    points: string;
-    position: string;
-  };
-  totalPoints: string;
+  round1: number;
+  round2: number;
+  round3: number;
+  round4: number;
+  round5: number;
+  total: number;
 };
