@@ -215,7 +215,7 @@ function CompetitieStandComponent({
               const points = selected[roundName];
               const competitieStandenIndexRound = competitieStanden
                 .map((stand) => stand[roundName]) // Map the competitie standen to the round we are working on based on the index
-                .sort((a, b) => b - a);
+                .sort((a, b) => a - b);
               const position =
                 points === 0
                   ? ""
@@ -281,7 +281,7 @@ function CompetitieStandComponent({
 
       <SectionComponent title="Competitie stand">
         <FlatList
-          data={competitieStanden.sort((a, b) => b.total - a.total)}
+          data={competitieStanden.sort((a, b) => a.total - b.total)}
           style={{ height: 350 }}
           renderItem={({ item, index }) => (
             <Pressable
