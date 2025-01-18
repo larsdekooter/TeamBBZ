@@ -338,6 +338,7 @@ function SchemaComponent({
 }) {
   const currentDate = new Date();
   const [shown, setShown] = useState(false);
+  const [height, setHeight] = useState(0);
   const rotateAnim = useState(new Animated.Value(0))[0];
 
   const toggleExpand = () => {
@@ -354,13 +355,12 @@ function SchemaComponent({
     outputRange: ["0deg", "180deg"],
   });
 
-  const height = 2 * (schema.split("\n").length * 15 + 45);
   return (
     <>
       <SwipeModal
         visible={shown}
         onClose={toggleExpand}
-        height={height > 200 ? height : 200}
+        height={height > 150 ? height + 50 : 150}
         closeValue={200}
       >
         <View style={{ flex: 1, padding: 20 }}>
@@ -372,9 +372,16 @@ function SchemaComponent({
             }}
           >
             <Text
-              style={[textColor(colorScheme), { fontSize: 15, width: "100%" }]}
+              style={[textColor(colorScheme), { fontSize: 13, width: "100%" }]}
+              onTextLayout={(event) => {
+                const { lines } = event.nativeEvent;
+                if (lines.length > 0) {
+                  console.log(lines[0].height * lines.length);
+                  setHeight(lines[0].height * lines.length);
+                }
+              }}
             >
-              {schema}
+              {schema.replace("\r", "\n")}
             </Text>
             <ButtonComponent
               onPress={toggleExpand}
