@@ -16,6 +16,7 @@ import Page from "../../components/Page";
 import {
   calculateAveragePoints,
   calculateProgression,
+  fetchSwimrankingSwimmer,
   getAthleteData,
   getProgression,
   getSpecialityData,
@@ -59,6 +60,8 @@ export default function Profile() {
   const [labels, setLabels] = useState([] as string[]);
   const [shouldShow25, setShouldShow25] = useState(false);
   const [error, setError] = useState("");
+  const [userSwitchLoading, setUserSwitchLoading] = useState(false);
+  const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -66,37 +69,11 @@ export default function Profile() {
       setUsername("");
     } else {
       setUsername(response.username);
-      const athleteWithUsername = await (
-        await fetch(
-          `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${response.username.replace(
-            " ",
-            "%20"
-          )}&athlete_firstname=`
-        )
-      ).text();
-      const table = athleteWithUsername.split("<tr");
-      table.splice(0, 2);
-      const athleteId = table
-        .find((t) => !t.includes("*"))
-        ?.match(AthleteIdRegex)![0];
-      if (athleteId) {
-        const athletePage = await (
-          await fetch(
-            `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
-          )
-        ).text();
-        const meetsPage = await (
-          await fetch(
-            `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`
-          )
-        ).text();
-        const aData = getAthleteData(athletePage, meetsPage, athleteId);
+      const { aData, history25mFreestyle } = await fetchSwimrankingSwimmer(
+        response.username
+      );
+      if (aData) {
         setAthleteData(aData);
-        const history25mFreestyle = await getProgression(
-          SwimrakingEventId["25m vrije slag"],
-          athleteId,
-          "25m"
-        );
         setData(
           history25mFreestyle.map(({ points }) => parseInt(points.points))
         );
@@ -231,16 +208,54 @@ export default function Profile() {
     if (athleteData.name) {
       return (
         <Page>
-          <Text
+          <Pressable
             style={{
-              ...textColor(colorScheme),
               position: "absolute",
               zIndex: 99,
               top: 50,
-              textAlign: "center",
+              width: "100%",
+              paddingVertical: 5,
+              flexDirection: "row",
+              justifyContent: "center",
             }}
-            onPress={fetchUser}
-          >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
+            onPress={async () => {
+              setUserSwitchLoading(true);
+              setMainSwimmerSelected(!mainSwimmerSelected);
+              const swimmer = await getItem(
+                mainSwimmerSelected ? "swimmers" : "username"
+              );
+              if (swimmer) {
+                const { aData, history25mFreestyle } =
+                  await fetchSwimrankingSwimmer(
+                    swimmer.swimmer ?? swimmer.username
+                  );
+                if (aData) {
+                  setAthleteData(aData);
+                  setData(
+                    history25mFreestyle.map(({ points }) =>
+                      parseInt(points.points)
+                    )
+                  );
+                  setLabels(history25mFreestyle.map(({ year }) => year));
+                  setUserSwitchLoading(false);
+                } else {
+                  setUserSwitchLoading(false);
+                }
+              } else setUserSwitchLoading(false);
+            }}
+          >
+            {!userSwitchLoading && (
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  textAlign: "center",
+                }}
+              >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
+            )}
+            {userSwitchLoading && (
+              <ActivityIndicator color="#ef8b22" size={25} />
+            )}
+          </Pressable>
           <View
             style={{
               marginTop: 100,

@@ -33,7 +33,6 @@ import {
 import * as WebBrowser from "expo-web-browser";
 import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
-import { getItem } from "@/utils/AsyncStorage";
 import SwipeModal from "@/components/SwipeModal";
 
 export default function Club() {

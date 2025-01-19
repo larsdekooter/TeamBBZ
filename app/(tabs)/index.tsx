@@ -15,12 +15,12 @@ import { Post } from "@/constants/types";
 import { openBrowserAsync } from "expo-web-browser";
 import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
+import { removeItem, setItem } from "@/utils/AsyncStorage";
 
 export default function Home() {
   const colorScheme = useColorScheme();
   const [posts, setPosts] = useState([] as Post[]);
   const [compact, setCompact] = useState(true);
-
   useEffect(() => {
     const s = async () => {
       setPosts(await getPosts());

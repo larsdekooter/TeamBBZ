@@ -35,6 +35,7 @@ import {
   ClubIdRegex,
   ResultTableRegex,
   CompetietieRegex,
+  AthleteIdRegex,
 } from "./regex";
 import {
   AthleteData,
@@ -211,6 +212,42 @@ export function getWeekNumber(date: Date): number {
   // Round the amount of days to compensate for daylight saving time
   const days = Math.round((thursday - jan1st) / 86400000); // 1 day = 86400000 ms
   return Math.floor(days / 7) + 1;
+}
+
+export async function fetchSwimrankingSwimmer(username: string) {
+  const athleteWithUsername = await (
+    await fetch(
+      `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${username.replace(
+        " ",
+        "%20"
+      )}&athlete_firstname=`
+    )
+  ).text();
+  const table = athleteWithUsername.split("<tr");
+  table.splice(0, 2);
+  const athleteId = table
+    .find((t) => !t.includes("*"))
+    ?.match(AthleteIdRegex)![0];
+  if (athleteId) {
+    const athletePage = await (
+      await fetch(
+        `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
+      )
+    ).text();
+    const meetsPage = await (
+      await fetch(
+        `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`
+      )
+    ).text();
+    const aData = getAthleteData(athletePage, meetsPage, athleteId);
+    const history25mFreestyle = await getProgression(
+      SwimrakingEventId["25m vrije slag"],
+      athleteId,
+      "25m"
+    );
+    return { aData, history25mFreestyle };
+  }
+  return {};
 }
 
 export async function getWedstrijdData(wedstrijd: Wedstrijd) {
