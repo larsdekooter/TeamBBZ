@@ -208,109 +208,111 @@ export default function Profile() {
     if (athleteData.name) {
       return (
         <Page>
-          <Pressable
-            style={{
-              position: "absolute",
-              zIndex: 99,
-              top: 50,
-              width: "100%",
-              paddingVertical: 5,
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-            onPress={async () => {
-              setUserSwitchLoading(true);
-              setMainSwimmerSelected(!mainSwimmerSelected);
-              const swimmer = await getItem(
-                mainSwimmerSelected ? "swimmers" : "username"
-              );
-              if (swimmer) {
-                const { aData, history25mFreestyle } =
-                  await fetchSwimrankingSwimmer(
-                    swimmer.swimmer ?? swimmer.username
-                  );
-                if (aData) {
-                  setAthleteData(aData);
-                  setData(
-                    history25mFreestyle.map(({ points }) =>
-                      parseInt(points.points)
-                    )
-                  );
-                  setLabels(history25mFreestyle.map(({ year }) => year));
-                  setUserSwitchLoading(false);
-                } else {
-                  setUserSwitchLoading(false);
-                }
-              } else setUserSwitchLoading(false);
-            }}
-          >
-            {!userSwitchLoading && (
-              <Text
-                style={{
-                  ...textColor(colorScheme),
-                  textAlign: "center",
-                }}
-              >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
-            )}
-            {userSwitchLoading && (
-              <ActivityIndicator color="#ef8b22" size={25} />
-            )}
-          </Pressable>
-          <View
-            style={{
-              marginTop: 100,
-              flexDirection: "row",
-              borderBottomWidth: 1,
-              borderColor: "grey",
-              width: Dimensions.get("window").width,
-              display: "flex",
-              justifyContent: "space-around",
-              paddingBottom: 5,
-            }}
-          >
-            <ButtonComponent
-              style={{ paddingHorizontal: 10, paddingVertical: 5 }}
-              onPress={() => {
-                setActiveTab(Tabs.Pbs);
+          <View>
+            <Pressable
+              style={{
+                position: "absolute",
+                zIndex: 99,
+                top: 50,
+                width: "100%",
+                paddingVertical: 5,
+                flexDirection: "row",
+                justifyContent: "center",
               }}
-            >
-              <Text
-                style={[
-                  textColor(colorScheme),
-                  {
-                    fontWeight: "bold",
-                  },
-                ]}
-              >
-                PR's
-              </Text>
-            </ButtonComponent>
-            <ButtonComponent
-              onPress={() => setActiveTab(Tabs.Meets)}
-              style={{ paddingHorizontal: 10, paddingVertical: 5 }}
-            >
-              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-                Wedstrijden
-              </Text>
-            </ButtonComponent>
-            <ButtonComponent
-              style={{ paddingHorizontal: 10, paddingVertical: 5 }}
               onPress={async () => {
-                setActiveTab(Tabs.Speciality);
-                getSpecialityData(athleteData);
+                setUserSwitchLoading(true);
+                setMainSwimmerSelected(!mainSwimmerSelected);
+                const swimmer = await getItem(
+                  mainSwimmerSelected ? "swimmers" : "username"
+                );
+                if (swimmer) {
+                  const { aData, history25mFreestyle } =
+                    await fetchSwimrankingSwimmer(
+                      swimmer.swimmer ?? swimmer.username
+                    );
+                  if (aData) {
+                    setAthleteData(aData);
+                    setData(
+                      history25mFreestyle.map(({ points }) =>
+                        parseInt(points.points)
+                      )
+                    );
+                    setLabels(history25mFreestyle.map(({ year }) => year));
+                    setUserSwitchLoading(false);
+                  } else {
+                    setUserSwitchLoading(false);
+                  }
+                } else setUserSwitchLoading(false);
               }}
             >
-              <Text
-                style={[
-                  textColor(colorScheme),
-                  {
-                    fontWeight: "bold",
-                  },
-                ]}
+              {!userSwitchLoading && (
+                <Text
+                  style={{
+                    ...textColor(colorScheme),
+                    textAlign: "center",
+                  }}
+                >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
+              )}
+              {userSwitchLoading && (
+                <ActivityIndicator color="#ef8b22" size={25} />
+              )}
+            </Pressable>
+            <View
+              style={{
+                marginTop: 100,
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderColor: "grey",
+                width: Dimensions.get("window").width,
+                display: "flex",
+                justifyContent: "space-around",
+                paddingBottom: 5,
+              }}
+            >
+              <ButtonComponent
+                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+                onPress={() => {
+                  setActiveTab(Tabs.Pbs);
+                }}
               >
-                Specialiteit
-              </Text>
-            </ButtonComponent>
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    {
+                      fontWeight: "bold",
+                    },
+                  ]}
+                >
+                  PR's
+                </Text>
+              </ButtonComponent>
+              <ButtonComponent
+                onPress={() => setActiveTab(Tabs.Meets)}
+                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+              >
+                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                  Wedstrijden
+                </Text>
+              </ButtonComponent>
+              <ButtonComponent
+                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+                onPress={async () => {
+                  setActiveTab(Tabs.Speciality);
+                  getSpecialityData(athleteData);
+                }}
+              >
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    {
+                      fontWeight: "bold",
+                    },
+                  ]}
+                >
+                  Specialiteit
+                </Text>
+              </ButtonComponent>
+            </View>
           </View>
           {activeTab === Tabs.Pbs && (
             <PbTable
