@@ -80,6 +80,8 @@ export default function SwipeModal({
 
   const colorScheme = useColorScheme();
 
+  const flex = customHeight ? customHeight / height : 1 / 2;
+
   return (
     <Modal
       animationType="slide"
@@ -89,13 +91,15 @@ export default function SwipeModal({
       onShow={() => (top.value = 0)}
     >
       <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
-      <SafeAreaView>
-        <GestureHandlerRootView style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <GestureHandlerRootView
+          style={{ backgroundColor: "rgba(0,0,0,0.3)", flex: 1 }}
+        >
           <Pressable
             onPress={onClose}
             style={{
               width,
-              height: customHeight ? height - customHeight : height / 2,
+              flex: 1 - flex,
             }}
           />
           <GestureDetector gesture={panGesture}>
@@ -104,7 +108,7 @@ export default function SwipeModal({
               style={[
                 {
                   width,
-                  height: customHeight ?? height / 2,
+                  flex,
                   backgroundColor:
                     colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
                   borderRadius: 20,

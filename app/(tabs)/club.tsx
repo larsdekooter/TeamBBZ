@@ -375,7 +375,6 @@ function SchemaComponent({
               onTextLayout={(event) => {
                 const { lines } = event.nativeEvent;
                 if (lines.length > 0) {
-                  console.log(lines[0].height * lines.length);
                   setHeight(lines[0].height * lines.length);
                 }
               }}
