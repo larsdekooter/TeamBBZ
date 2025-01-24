@@ -5,38 +5,32 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  SectionList,
   StyleSheet,
   Text,
-  TextInput,
   useColorScheme,
   View,
 } from "react-native";
 import Page from "../../components/Page";
 import {
   calculateAveragePoints,
-  calculateProgression,
   fetchSwimrankingSwimmer,
-  getAthleteData,
   getProgression,
   getSpecialityData,
   textColor,
 } from "../../constants/functions";
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
-import { Fragment, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
-import { AthleteIdRegex } from "@/constants/regex";
 import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MeetsTable from "@/components/MeetTable";
 import { SwimrakingEventId } from "@/constants/enums";
 import RadarChart from "@/components/RadarChart";
 import LineChart from "@/components/LineChart";
 import Dropdown from "@/components/Dropdown";
 import CheckBox from "@/components/Checkbox";
-import ErrorModal from "@/components/ErrorModal";
+import TextInputComponent from "@/components/TextInputComponent";
 
 enum Tabs {
   Pbs = 1,
@@ -59,14 +53,16 @@ export default function Profile() {
   const [data, setData] = useState([] as number[]);
   const [labels, setLabels] = useState([] as string[]);
   const [shouldShow25, setShouldShow25] = useState(false);
-  const [error, setError] = useState("");
   const [userSwitchLoading, setUserSwitchLoading] = useState(false);
   const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
+  const [nameError, setNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   async function fetchUser() {
     const response = await getItem("username");
     if (response === null) {
       setUsername("");
+      return false;
     } else {
       setUsername(response.username);
       const { aData, history25mFreestyle } = await fetchSwimrankingSwimmer(
@@ -78,9 +74,11 @@ export default function Profile() {
           history25mFreestyle.map(({ points }) => parseInt(points.points))
         );
         setLabels(history25mFreestyle.map(({ year }) => year));
+        return true;
       } else {
         Alert.alert(`'${username}' is niet gevonden in SwimRankings!`);
         setUsername("");
+        return false;
       }
     }
   }
@@ -116,8 +114,6 @@ export default function Profile() {
           </Text>
         </ButtonComponent>
 
-        <ErrorModal error={error} onEnd={() => setError("")} />
-
         <Modal
           animationType="slide"
           transparent
@@ -141,34 +137,26 @@ export default function Profile() {
                   : styles.modalDarkView
               }
             >
-              <TextInput
-                style={{
-                  backgroundColor: "white",
-                  width: 200,
-                  marginVertical: 20,
-                  borderRadius: 8,
-                  paddingHorizontal: 10,
-                  height: 40,
-                }}
+              <TextInputComponent
+                contentContainerStyle={{ marginVertical: 20 }}
                 placeholder="Naam"
+                errorMessage={nameError.length > 0 ? nameError : undefined}
                 id="username"
                 onChangeText={(input) => {
+                  if (nameError.length > 0) setNameError("");
                   setUsernameSet(input);
                 }}
                 autoComplete="name"
               />
-              <TextInput
-                style={{
-                  backgroundColor: "white",
-                  width: 200,
-                  marginVertical: 40,
-                  borderRadius: 8,
-                  paddingHorizontal: 10,
-                  height: 40,
-                }}
+              <TextInputComponent
+                contentContainerStyle={{ marginVertical: 20 }}
+                errorMessage={emailError.length > 0 ? emailError : undefined}
                 placeholder="Email"
                 id="email"
-                onChangeText={(input) => setEmailSet(input)}
+                onChangeText={(input) => {
+                  if (nameError.length > 0) setNameError("");
+                  setEmailSet(input);
+                }}
                 inputMode="email"
               />
               <ButtonComponent
@@ -180,9 +168,9 @@ export default function Profile() {
                 }}
                 onPress={async () => {
                   if (!(usernameSet.length > 0)) {
-                    return setError("Voer een gebruikersnaam in!");
+                    return setNameError("Voer een naam in!");
                   } else if (!(emailSet.length > 0)) {
-                    return setError("Voer een email addres in!");
+                    return setEmailError("Voer een email addres in!");
                   } else {
                     setLoading(true);
                     await setItem("username", { username: usernameSet });
@@ -190,8 +178,10 @@ export default function Profile() {
                     await setItem("email", { email: emailSet });
                     setEmailSet(emailSet);
                     setModalShown(false);
-                    await fetchUser();
+                    const userFound = await fetchUser();
                     setLoading(false);
+                    if (!userFound)
+                      setNameError(`${usernameSet} werd niet gevonden!`);
                   }
                 }}
               >
