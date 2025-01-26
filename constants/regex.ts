@@ -103,3 +103,5 @@ export class CompetietieRegex {
   static CellRegex = /(?<=<td[^>]*>)[\s\S]*?(?=<\/td>)/gm;
   static LinkRegex = /(?<=>)([\s\S]*?)(?=<)/gm;
 }
+
+export const PostDateRegex = /\d{4}\/\d{2}\/\d{2}/gm;
