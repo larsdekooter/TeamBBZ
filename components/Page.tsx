@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, useColorScheme } from "react-native";
-import { SafeAreaView } from "react-native";
-import { View } from "react-native";
+import { StyleSheet, useColorScheme, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page({ children }: { children?: React.ReactNode }) {
   const colorScheme = useColorScheme();
   return (
+    // <SafeAreaProvider>
     <SafeAreaView
       style={{
         backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
@@ -23,6 +23,7 @@ export default function Page({ children }: { children?: React.ReactNode }) {
         {children}
       </View>
     </SafeAreaView>
+    // </SafeAreaProvider>
   );
 }
 const stylesLight = StyleSheet.create({

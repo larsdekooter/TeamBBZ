@@ -1,33 +1,26 @@
 import { StatusBar } from "expo-status-bar";
 import { ReactNode } from "react";
 import {
-  //   Animated,
   Dimensions,
-  DimensionValue,
-  GestureResponderEvent,
   Modal,
-  ModalProps,
   NativeSyntheticEvent,
   Pressable,
-  SafeAreaView,
   StyleProp,
   useColorScheme,
   View,
   ViewStyle,
 } from "react-native";
 import {
-  Directions,
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
-  AnimatedStyle,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 type SwipeModalProps = {
   children?: ReactNode;
@@ -90,8 +83,8 @@ export default function SwipeModal({
       transparent
       onShow={() => (top.value = 0)}
     >
-      <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
       <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
         <GestureHandlerRootView
           style={{ backgroundColor: "rgba(0,0,0,0.3)", flex: 1 }}
         >
@@ -135,6 +128,7 @@ export default function SwipeModal({
                   style,
                   {
                     height: (customHeight ?? height / 2) - 4,
+                    flex: 1,
                   },
                 ]}
               >

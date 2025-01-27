@@ -203,7 +203,7 @@ export default function Profile() {
               style={{
                 position: "absolute",
                 zIndex: 99,
-                top: 50,
+                // top: 50,
                 width: "100%",
                 paddingVertical: 5,
                 flexDirection: "row",
@@ -249,7 +249,7 @@ export default function Profile() {
             </Pressable>
             <View
               style={{
-                marginTop: 100,
+                marginTop: 50,
                 flexDirection: "row",
                 borderBottomWidth: 1,
                 borderColor: "grey",

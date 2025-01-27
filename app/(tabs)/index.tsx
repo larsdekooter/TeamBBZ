@@ -12,10 +12,8 @@ import Page from "../../components/Page";
 import { getPosts, textColor } from "../../constants/functions";
 import { useEffect, useState } from "react";
 import { Post } from "@/constants/types";
-import { openBrowserAsync } from "expo-web-browser";
 import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
-import { removeItem, setItem } from "@/utils/AsyncStorage";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -34,7 +32,7 @@ export default function Home() {
         <Text
           style={{
             ...textColor(colorScheme),
-            top: 80,
+            top: 30,
             fontWeight: "bold",
             fontSize: 50,
           }}
@@ -44,7 +42,7 @@ export default function Home() {
         <View
           style={{
             flexDirection: "row",
-            top: 90,
+            top: 40,
             justifyContent: "space-between",
             display: "flex",
             width: Dimensions.get("window").width,
@@ -63,8 +61,8 @@ export default function Home() {
           style={{
             height: 100,
             width: Dimensions.get("window").width,
-            top: 100,
-            marginBottom: 100,
+            top: 50,
+            marginBottom: 50,
             zIndex: 10,
           }}
         />
