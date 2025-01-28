@@ -355,11 +355,11 @@ function SchemaComponent({
   });
 
   return (
-    <>
+    <Fragment>
       <SwipeModal
         visible={shown}
         onClose={toggleExpand}
-        height={height > 150 ? height + 50 : 150}
+        height={height > 100 ? height + 100 : 200}
         closeValue={200}
       >
         <View style={{ flex: 1, padding: 20 }}>
@@ -371,7 +371,7 @@ function SchemaComponent({
             }}
           >
             <Text
-              style={[textColor(colorScheme), { fontSize: 13, width: "100%" }]}
+              style={[textColor(colorScheme), { width: "100%" }]}
               onTextLayout={(event) => {
                 const { lines } = event.nativeEvent;
                 if (lines.length > 0) {
@@ -428,7 +428,7 @@ function SchemaComponent({
           </Animated.View>
         </View>
       </Pressable>
-    </>
+    </Fragment>
   );
 }
 
