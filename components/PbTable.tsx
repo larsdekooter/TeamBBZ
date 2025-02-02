@@ -344,7 +344,7 @@ function QuickViewModal({
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
             Bekijk geschiedenis
           </Text>
-          {loading && <ActivityIndicator size="small" color="black" />}
+          {loading && <ActivityIndicator size="small" color="#ef8b22" />}
         </ButtonComponent>
         <View style={{ height: 20 }} />
         <ButtonComponent
