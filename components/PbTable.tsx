@@ -267,8 +267,9 @@ function QuickViewModal({
     >
       <View
         style={{
+          width: "100%",
           flex: 1,
-          padding: 20,
+          padding: 10,
         }}
       >
         <View
@@ -338,6 +339,7 @@ function QuickViewModal({
           onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
           style={{
             backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            flex: 1,
             paddingVertical: 10,
           }}
         >
@@ -345,18 +347,6 @@ function QuickViewModal({
             Bekijk geschiedenis
           </Text>
           {loading && <ActivityIndicator size="small" color="#ef8b22" />}
-        </ButtonComponent>
-        <View style={{ height: 20 }} />
-        <ButtonComponent
-          onPress={(e) => (onPressClose ? onPressClose(e) : null)}
-          style={{
-            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-            paddingVertical: 10,
-          }}
-        >
-          <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-            Sluit
-          </Text>
         </ButtonComponent>
       </View>
     </SwipeModal>

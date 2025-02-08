@@ -1,6 +1,6 @@
 import { getMeetData, textColor } from "@/constants/functions";
 import { AthleteData, MeetData } from "@/constants/types";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -31,7 +31,7 @@ export default function MeetsTable({
   const [loading, setLoading] = useState(-1);
 
   return (
-    <>
+    <Fragment>
       <SwipeModal
         visible={modalShown}
         onRequestClose={() => setModalShown(false)}
@@ -40,8 +40,8 @@ export default function MeetsTable({
       >
         <View
           style={{
-            padding: 20,
             justifyContent: "space-between",
+            width: "100%",
             flex: 1,
           }}
         >
@@ -199,20 +199,6 @@ export default function MeetsTable({
               />
             </View>
           </View>
-          <ButtonComponent
-            onPress={() => {
-              setModalShown(false);
-            }}
-            style={{
-              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              paddingVertical: 10,
-              marginVertical: 10,
-            }}
-          >
-            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-              Sluit
-            </Text>
-          </ButtonComponent>
         </View>
       </SwipeModal>
       <FlatList
@@ -273,7 +259,7 @@ export default function MeetsTable({
           </Pressable>
         )}
       ></FlatList>
-    </>
+    </Fragment>
   );
 }
 

@@ -271,7 +271,9 @@ export default function Settings() {
           style={{
             alignItems: "center",
             justifyContent: "space-between",
-            paddingBottom: 20,
+            // paddingBottom: 20,
+            width: "100%",
+            flex: 1,
           }}
         >
           <Text
@@ -293,7 +295,7 @@ export default function Settings() {
               setInfoModalShown(false);
             }}
             style={{
-              width: "90%",
+              width: "95%",
               paddingVertical: 10,
               backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
             }}
@@ -305,18 +307,6 @@ export default function Settings() {
               }}
             >
               Verwijder 2e zwemmer
-            </Text>
-          </ButtonComponent>
-          <ButtonComponent
-            onPress={() => setInfoModalShown(false)}
-            style={{
-              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              width: "90%",
-              paddingVertical: 10,
-            }}
-          >
-            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-              Sluit
             </Text>
           </ButtonComponent>
         </SwipeModal>

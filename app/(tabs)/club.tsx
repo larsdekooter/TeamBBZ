@@ -363,38 +363,17 @@ function SchemaComponent({
         closeValue={200}
         onRequestClose={toggleExpand}
       >
-        <View style={{ flex: 1, padding: 20 }}>
-          <View
-            style={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              flex: 1,
-            }}
-          >
-            <Text
-              style={[textColor(colorScheme), { width: "100%" }]}
-              onTextLayout={(event) => {
-                const { lines } = event.nativeEvent;
-                if (lines.length > 0) {
-                  setHeight(lines[0].height * lines.length);
-                }
-              }}
-            >
-              {schema.replace("\r", "\n")}
-            </Text>
-            <ButtonComponent
-              onPress={toggleExpand}
-              style={{
-                width: "95%",
-                paddingVertical: 10,
-                backgroundColor:
-                  colorScheme === "light" ? "#f3f5f6" : "#2a3137",
-              }}
-            >
-              <Text style={[textColor(colorScheme)]}>Sluit</Text>
-            </ButtonComponent>
-          </View>
-        </View>
+        <Text
+          style={[textColor(colorScheme), { width: "100%" }]}
+          onTextLayout={(event) => {
+            const { lines } = event.nativeEvent;
+            if (lines.length > 0) {
+              setHeight(lines[0].height * lines.length);
+            }
+          }}
+        >
+          {schema.replace("\r", "\n")}
+        </Text>
       </SwipeModal>
       <Pressable
         style={{
