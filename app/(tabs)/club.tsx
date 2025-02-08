@@ -361,6 +361,7 @@ function SchemaComponent({
         onClose={toggleExpand}
         height={height > 100 ? height + 100 : 200}
         closeValue={200}
+        onRequestClose={toggleExpand}
       >
         <View style={{ flex: 1, padding: 20 }}>
           <View

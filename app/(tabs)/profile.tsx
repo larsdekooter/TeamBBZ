@@ -76,7 +76,7 @@ export default function Profile() {
         setLabels(history25mFreestyle.map(({ year }) => year));
         return true;
       } else {
-        Alert.alert(`'${username}' is niet gevonden in SwimRankings!`);
+        Alert.alert(`'${response.username}' is niet gevonden in SwimRankings!`);
         setUsername("");
         return false;
       }
