@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, useColorScheme, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page({ children }: { children?: React.ReactNode }) {
@@ -15,13 +16,13 @@ export default function Page({ children }: { children?: React.ReactNode }) {
       <StatusBar
         backgroundColor={colorScheme === "light" ? "#FFF" : "#181c20"}
       />
-      <View
+      <GestureHandlerRootView
         style={
           colorScheme === "light" ? stylesLight.container : stylesDark.container
         }
       >
         {children}
-      </View>
+      </GestureHandlerRootView>
     </SafeAreaView>
     // </SafeAreaProvider>
   );

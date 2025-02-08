@@ -34,6 +34,7 @@ import * as WebBrowser from "expo-web-browser";
 import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function Club() {
   const [schema, setSchema] = useState("");
@@ -156,125 +157,104 @@ function CompetitieStandComponent({
           setSelected({} as CompetitieStand);
           setPosition(0);
         }}
-        style={{ justifyContent: "space-between", flex: 1 }}
       >
-        <View
-          style={{
-            padding: 20,
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text
-            style={[
-              textColor(colorScheme),
-              { flex: 1, fontWeight: "bold", textAlign: "left" },
-            ]}
-          >
-            {selected.team}
-          </Text>
-          <Text
-            style={[
-              textColor(colorScheme),
-              { flex: 1, fontWeight: "bold", textAlign: "center" },
-            ]}
-          >
-            {position}
-          </Text>
-          <Text
-            style={[
-              textColor(colorScheme),
-              { flex: 1, fontWeight: "bold", textAlign: "right" },
-            ]}
-          >
-            {selected.total}
-          </Text>
-        </View>
-        <View
-          style={{
-            padding: 10,
-            marginHorizontal: 20,
-            borderColor: "grey",
-            borderWidth: 1,
-            borderRadius: 6,
-          }}
-        >
-          <FlatList
+        <View style={{ width: "100%", flex: 1 }}>
+          <View style={{ flexDirection: "row", marginBottom: 10 }}>
+            <Text
+              style={[
+                textColor(colorScheme),
+                { flex: 1, fontWeight: "bold", textAlign: "left" },
+              ]}
+            >
+              {selected.team}
+            </Text>
+            <Text
+              style={[
+                textColor(colorScheme),
+                { flex: 1, fontWeight: "bold", textAlign: "center" },
+              ]}
+            >
+              {position}
+            </Text>
+            <Text
+              style={[
+                textColor(colorScheme),
+                { flex: 1, fontWeight: "bold", textAlign: "right" },
+              ]}
+            >
+              {selected.total}
+            </Text>
+          </View>
+          <View
             style={{
-              maxHeight: 300,
-            }}
-            data={["Ronde 1", "Ronde 2", "Ronde 3", "Ronde 4", "Ronde 5"]}
-            renderItem={({ item, index }) => {
-              const roundName = `round${index + 1}` as
-                | "round1"
-                | "round2"
-                | "round3"
-                | "round4"
-                | "round5";
-              const points = selected[roundName];
-              const competitieStandenIndexRound = competitieStanden
-                .map((stand) => stand[roundName]) // Map the competitie standen to the round we are working on based on the index
-                .sort((a, b) => a - b);
-              const position =
-                points === 0
-                  ? ""
-                  : competitieStandenIndexRound.indexOf(points) + 1;
-              return (
-                <View
-                  key={index}
-                  style={{
-                    borderColor: "#ef8b22",
-                    borderWidth: 1,
-                    borderRadius: 6,
-                    padding: 5,
-                    marginVertical: 5,
-                    flexDirection: "row",
-                  }}
-                >
-                  <Text
-                    style={[
-                      textColor(colorScheme),
-                      { textAlign: "left", flex: 1 },
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                  <Text
-                    style={[
-                      textColor(colorScheme),
-                      { textAlign: "center", flex: 1 },
-                    ]}
-                  >
-                    {position}
-                  </Text>
-                  <Text
-                    style={[
-                      textColor(colorScheme),
-                      { textAlign: "right", flex: 1 },
-                    ]}
-                  >
-                    {points}
-                  </Text>
-                </View>
-              );
-            }}
-          />
-        </View>
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <ButtonComponent
-            onPress={() => {
-              setSelected({} as CompetitieStand);
-              setPosition(0);
-            }}
-            style={{
-              marginBottom: 20,
-              width: "90%",
-              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-              paddingVertical: 10,
+              padding: 10,
+              marginHorizontal: 20,
+              borderColor: "grey",
+              borderWidth: 1,
+              borderRadius: 6,
             }}
           >
-            <Text style={[textColor(colorScheme)]}>Sluit</Text>
-          </ButtonComponent>
+            <FlatList
+              style={{
+                maxHeight: 300,
+              }}
+              data={["Ronde 1", "Ronde 2", "Ronde 3", "Ronde 4", "Ronde 5"]}
+              renderItem={({ item, index }) => {
+                const roundName = `round${index + 1}` as
+                  | "round1"
+                  | "round2"
+                  | "round3"
+                  | "round4"
+                  | "round5";
+                const points = selected[roundName];
+                const competitieStandenIndexRound = competitieStanden
+                  .map((stand) => stand[roundName]) // Map the competitie standen to the round we are working on based on the index
+                  .sort((a, b) => a - b);
+                const position =
+                  points === 0
+                    ? ""
+                    : competitieStandenIndexRound.indexOf(points) + 1;
+                return (
+                  <View
+                    key={index}
+                    style={{
+                      borderColor: "#ef8b22",
+                      borderWidth: 1,
+                      borderRadius: 6,
+                      padding: 5,
+                      marginVertical: 5,
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textAlign: "left", flex: 1 },
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textAlign: "center", flex: 1 },
+                      ]}
+                    >
+                      {position}
+                    </Text>
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textAlign: "right", flex: 1 },
+                      ]}
+                    >
+                      {points}
+                    </Text>
+                  </View>
+                );
+              }}
+            />
+          </View>
         </View>
       </SwipeModal>
 
@@ -439,7 +419,7 @@ function WedstrijdenComponent({
           height: Dimensions.get("window").height,
         }}
       >
-        <View
+        <GestureHandlerRootView
           style={{
             flex: 1,
             paddingVertical: 25,
@@ -681,7 +661,7 @@ function WedstrijdenComponent({
             </ButtonComponent>
             <View style={{ height: 20 }} />
           </View>
-        </View>
+        </GestureHandlerRootView>
       </Modal>
       <SectionComponent title="Wedstrijden">
         {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
@@ -806,86 +786,57 @@ function ClubrecordsComponent({
       >
         <View
           style={{
-            padding: 20,
             flex: 1,
+            width: "100%",
           }}
         >
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "space-between",
-            }}
+          <Text
+            style={[
+              textColor(colorScheme),
+              { fontWeight: "bold", textAlign: "center", fontSize: 25 },
+            ]}
           >
-            <Text
-              style={[
-                textColor(colorScheme),
-                { fontWeight: "bold", textAlign: "center", fontSize: 25 },
-              ]}
-            >
-              {selectedClubrecord.distance} {selectedClubrecord.event}
-            </Text>
-            <View>
-              {selectedClubrecord.times.map((time, index) => (
-                <View
-                  key={index}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderRadius: 6,
-                    borderColor: "grey",
-                    borderWidth: 1,
-                    margin: 5,
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                  }}
+            {selectedClubrecord.distance} {selectedClubrecord.event}
+          </Text>
+          <View>
+            {selectedClubrecord.times.map((time, index) => (
+              <View
+                key={index}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderRadius: 6,
+                  borderColor: "grey",
+                  borderWidth: 1,
+                  margin: 5,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                }}
+              >
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    { textTransform: "capitalize", flex: 1 },
+                  ]}
                 >
+                  {ages[index]}
+                </Text>
+                <View style={{ flex: 1 }}>
                   <Text
-                    style={[
-                      textColor(colorScheme),
-                      { textTransform: "capitalize", flex: 1 },
-                    ]}
+                    style={[textColor(colorScheme), { textAlign: "center" }]}
                   >
-                    {ages[index]}
+                    {time}
                   </Text>
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      style={[textColor(colorScheme), { textAlign: "center" }]}
-                    >
-                      {time}
-                    </Text>
-                    <Text
-                      style={[textColor(colorScheme), { textAlign: "center" }]}
-                    >
-                      {selectedClubrecord.swimmers[index]}
-                    </Text>
-                  </View>
+                  <Text
+                    style={[textColor(colorScheme), { textAlign: "center" }]}
+                  >
+                    {selectedClubrecord.swimmers[index]}
+                  </Text>
                 </View>
-              ))}
-            </View>
-            <ButtonComponent
-              style={{
-                backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-                paddingVertical: 10,
-                marginVertical: 10,
-              }}
-              onPress={() =>
-                setSelectedClubrecord({
-                  distance: "",
-                  times: [],
-                  swimmers: [],
-                  event: "",
-                  dates: [],
-                  locations: [],
-                  meets: [],
-                })
-              }
-            >
-              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-                Sluit
-              </Text>
-            </ButtonComponent>
+              </View>
+            ))}
           </View>
         </View>
       </SwipeModal>

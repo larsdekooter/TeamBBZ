@@ -31,6 +31,7 @@ import LineChart from "@/components/LineChart";
 import Dropdown from "@/components/Dropdown";
 import CheckBox from "@/components/Checkbox";
 import TextInputComponent from "@/components/TextInputComponent";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 enum Tabs {
   Pbs = 1,
@@ -129,7 +130,7 @@ export default function Profile() {
             height: Dimensions.get("window").height,
           }}
         >
-          <View style={styles.centeredView}>
+          <GestureHandlerRootView style={styles.centeredView}>
             <View
               style={
                 colorScheme === "light"
@@ -190,7 +191,7 @@ export default function Profile() {
                 </Text>
               </ButtonComponent>
             </View>
-          </View>
+          </GestureHandlerRootView>
         </Modal>
       </Page>
     );

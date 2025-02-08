@@ -19,6 +19,7 @@ import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "@/components/SwipeModal";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -218,7 +219,7 @@ export default function Settings() {
             height: Dimensions.get("window").height,
           }}
         >
-          <View style={styles.centeredView}>
+          <GestureHandlerRootView style={styles.centeredView}>
             <View
               style={
                 colorScheme === "light"
@@ -248,6 +249,7 @@ export default function Settings() {
                   width: 200,
                   backgroundColor:
                     colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                  zIndex: 1000,
                 }}
                 onPress={async () => {
                   await setItem("swimmers", {
@@ -262,7 +264,7 @@ export default function Settings() {
                 </Text>
               </ButtonComponent>
             </View>
-          </View>
+          </GestureHandlerRootView>
         </Modal>
         <SwipeModal
           visible={infoModalShown}

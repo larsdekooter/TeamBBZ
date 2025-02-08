@@ -1,27 +1,13 @@
-import { textColor } from "@/constants/functions";
-import { Href, Link } from "expo-router";
-import {
-  Alert,
-  Button,
-  GestureResponderEvent,
-  Pressable,
-  StyleProp,
-  useColorScheme,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, useColorScheme, ViewStyle } from "react-native";
+import { Pressable, PressableProps } from "react-native-gesture-handler";
 
 export default function ButtonComponent({
   children,
   onPress,
-  paddingVertical,
-  marginVertical,
   style,
 }: {
   children?: React.ReactNode;
-  onPress: (event: GestureResponderEvent) => void;
-  paddingVertical?: number;
-  marginVertical?: number;
+  onPress: PressableProps["onPress"];
   style?: StyleProp<ViewStyle>;
 }) {
   const colorScheme = useColorScheme();

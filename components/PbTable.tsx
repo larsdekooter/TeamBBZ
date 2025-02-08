@@ -21,6 +21,7 @@ import { Strokes, SwimrakingEventId } from "@/constants/enums";
 import { FontAwesome } from "@expo/vector-icons";
 import SectionComponent from "./SectionComponent";
 import SwipeModal from "./SwipeModal";
+import { PressableProps } from "react-native-gesture-handler";
 
 export default function PbTable({
   data,
@@ -249,7 +250,7 @@ function QuickViewModal({
   title: { distance: string; time: string; poolSize: "25m" | "50m" };
   athleteData: AthleteData;
   colorScheme: ColorSchemeName;
-  onPressChoose: null | ((event: GestureResponderEvent) => void) | undefined;
+  onPressChoose: PressableProps["onPress"];
   loading: boolean;
   onPressClose: null | ((event?: GestureResponderEvent) => void) | undefined;
 }) {
@@ -339,7 +340,6 @@ function QuickViewModal({
           onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
           style={{
             backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
-            flex: 1,
             paddingVertical: 10,
           }}
         >
