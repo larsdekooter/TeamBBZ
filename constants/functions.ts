@@ -305,7 +305,7 @@ export async function getSchemaData() {
   const weekNo = getWeekNumber(new Date(date.getTime()));
   const res = await (
     await fetch(
-      `https://www.b-b-z.nl/training/schema/?jaar=2024&week=${weekNo}`
+      `https://www.b-b-z.nl/training/schema/?jaar=${date.getFullYear()}&week=${weekNo}`
     )
   ).text();
   const contentDiv = res.match(ContentRegex)![0];
@@ -319,6 +319,7 @@ export async function getSchemaData() {
       }-${date.getFullYear()}`
     )
   );
+  console.log(tdMatch);
   if (tdMatch) {
     const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
     if (tdMatch.includes("GEEN TRAINEN")) {
