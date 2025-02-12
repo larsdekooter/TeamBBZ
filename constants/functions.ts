@@ -319,7 +319,6 @@ export async function getSchemaData() {
       }-${date.getFullYear()}`
     )
   );
-  console.log(tdMatch);
   if (tdMatch) {
     const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
     if (tdMatch.includes("GEEN TRAINEN")) {
