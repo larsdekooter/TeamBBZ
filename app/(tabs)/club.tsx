@@ -148,6 +148,10 @@ function CompetitieStandComponent({
 }) {
   const [selected, setSelected] = useState({} as CompetitieStand);
   const [position, setPosition] = useState(0);
+  const huidigePlek =
+    competitieStanden
+      .sort((a, b) => a.total - b.total)
+      .findIndex(({ team }) => team === "De Biesboschzwemmers") + 1;
 
   return (
     <Fragment>
@@ -258,7 +262,7 @@ function CompetitieStandComponent({
         </View>
       </SwipeModal>
 
-      <SectionComponent title="Competitie stand">
+      <SectionComponent title={`Competitie stand (${huidigePlek})`}>
         <FlatList
           data={competitieStanden.sort((a, b) => a.total - b.total)}
           style={{ height: 350 }}
@@ -664,64 +668,68 @@ function WedstrijdenComponent({
         </GestureHandlerRootView>
       </Modal>
       <SectionComponent title="Wedstrijden">
-        {wedstrijden.slice(0, 10).map((wedstrijd, i) => (
-          <Pressable
-            key={i}
-            onPress={async (e) => {
-              e.stopPropagation();
+        <FlatList
+          data={wedstrijden.slice(0, 10)}
+          style={{ maxHeight: 400 }}
+          renderItem={({ item: wedstrijd, index: i }) => (
+            <Pressable
+              key={i}
+              onPress={async (e) => {
+                e.stopPropagation();
 
-              setProgramLoading(true);
-              setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
-              const w = await getWedstrijdData(wedstrijd);
-              setProgramLoading(false);
-              setSelectedWedstrijd(w);
-              setModalShown(true);
-            }}
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              borderColor: "grey",
-              borderWidth: 1,
-              borderRadius: 6,
-              paddingHorizontal: 5,
-              marginHorizontal: 5,
-              paddingVertical: 10,
-              marginVertical: 5,
-            }}
-          >
-            <Text
-              style={{
-                ...textColor(colorScheme),
-                textAlign: "left",
-                flex: 1.5,
+                setProgramLoading(true);
+                setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
+                const w = await getWedstrijdData(wedstrijd);
+                setProgramLoading(false);
+                setSelectedWedstrijd(w);
+                setModalShown(true);
               }}
-              numberOfLines={1}
-            >
-              {wedstrijd.name}
-            </Text>
-            {programLoading && selectedWedstrijd.id === wedstrijd.id && (
-              <ActivityIndicator color="#ef8b22" />
-            )}
-            <Text
               style={{
-                ...textColor(colorScheme),
-                textAlign: "center",
-                flex: 1.5,
+                display: "flex",
+                flexDirection: "row",
+                borderColor: "grey",
+                borderWidth: 1,
+                borderRadius: 6,
+                paddingHorizontal: 5,
+                marginHorizontal: 5,
+                paddingVertical: 10,
+                marginVertical: 5,
               }}
             >
-              {wedstrijd.startDate.toLocaleDateString()}
-            </Text>
-            <Text
-              style={{
-                ...textColor(colorScheme),
-                textAlign: "right",
-                flex: 1.5,
-              }}
-            >
-              {wedstrijd.location}
-            </Text>
-          </Pressable>
-        ))}
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  textAlign: "left",
+                  flex: 1.5,
+                }}
+                numberOfLines={1}
+              >
+                {wedstrijd.name}
+              </Text>
+              {programLoading && selectedWedstrijd.id === wedstrijd.id && (
+                <ActivityIndicator color="#ef8b22" />
+              )}
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  textAlign: "center",
+                  flex: 1.5,
+                }}
+              >
+                {wedstrijd.startDate.toLocaleDateString()}
+              </Text>
+              <Text
+                style={{
+                  ...textColor(colorScheme),
+                  textAlign: "right",
+                  flex: 1.5,
+                }}
+              >
+                {wedstrijd.location}
+              </Text>
+            </Pressable>
+          )}
+        />
       </SectionComponent>
     </Fragment>
   );
