@@ -20,10 +20,16 @@ export default function Home() {
   const [posts, setPosts] = useState([] as Post[]);
   const [compact, setCompact] = useState(true);
   useEffect(() => {
+    console.log("USEEFFECT");
+
     const s = async () => {
+      console.log("GETPOST");
+
       setPosts(await getPosts());
     };
-    s();
+    if (posts.length < 1) {
+      s();
+    }
   }, []);
 
   if (posts.length > 1) {

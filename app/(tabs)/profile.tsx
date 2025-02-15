@@ -64,6 +64,8 @@ export default function Profile() {
     if (response === null) {
       setUsername("");
       return false;
+    } else if (response.username === username) {
+      return true;
     } else {
       setUsername(response.username);
       const { aData, history25mFreestyle } = await fetchSwimrankingSwimmer(

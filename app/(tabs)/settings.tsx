@@ -36,13 +36,13 @@ export default function Settings() {
         const us = await getItem("username");
         const em = await getItem("email");
         const sw = await getItem("swimmers");
-        if (us) {
+        if (us && us.username !== username) {
           setUsername(us.username);
         }
-        if (em) {
+        if (em && em.email !== email) {
           setEmail(em.email);
         }
-        if (sw) {
+        if (sw && sw.swimmer !== swimmer) {
           setSwimmer(sw.swimmer);
         }
       };

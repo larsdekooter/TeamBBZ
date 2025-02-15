@@ -34,6 +34,7 @@ import {
   ResultTableRegex,
   CompetietieRegex,
   AthleteIdRegex,
+  IdRegex,
 } from "./regex";
 import {
   AthleteData,
@@ -135,6 +136,62 @@ function getMeetsInfo(meetsPage: string): MeetData[] {
     } as MeetData;
   });
   return meets;
+}
+
+export async function getMeetCalendar() {
+  const wedstrijdenPage = await (
+    await fetch("https://www.b-b-z.nl/kalender/?actie=volledig")
+  ).text();
+  const table = wedstrijdenPage.match(TableRegex)![0];
+  const rows = table
+    .match(RowRegex)!
+    .map((row) => {
+      return row
+        .match(CellRegex2)
+        ?.filter((m) => m != null)
+        .map((m) => m.replace(/<td>/g, "").replace(/<\/td>/g, ""))
+        .filter((m) => m.length > 0)
+        .map((m) => {
+          if (m.includes("<a")) {
+            let r = m
+              .match(CarrotRegex)![0]
+              .replace(/>/g, "")
+              .replace(/</g, "");
+            if (m.includes("?id=")) {
+              r += "SPLITHERE";
+              r += m.match(IdRegex)![0].replace("?id=", "");
+            }
+            return r;
+          }
+          return m;
+        });
+    })
+    .filter((s) => s != null)
+    .map((w) =>
+      w.length > 6
+        ? ({
+            startDate: new Date(
+              new Date(w[0]).setHours(parseInt(w[5][0] + w[5][1]))
+            ),
+            endDate: new Date(w[1]),
+            name: w[2].split("SPLITHERE")[0],
+            location: w[3],
+            country: w[4],
+            category: w[6],
+            id: w[2].split("SPLITHERE")[1],
+          } as Wedstrijd)
+        : ({
+            startDate: new Date(
+              new Date(w[0]).setHours(parseInt(w[4][0] + w[4][1]))
+            ),
+            name: w[1].split("SPLITHERE")[0],
+            location: w[2],
+            country: w[3],
+            category: w[5],
+            id: w[1].split("SPLITHERE")[1],
+          } as Wedstrijd)
+    );
+  return rows;
 }
 
 export function getAthleteData(
