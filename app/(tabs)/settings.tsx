@@ -269,11 +269,10 @@ export default function Settings() {
         <SwipeModal
           visible={infoModalShown}
           onClose={() => setInfoModalShown(false)}
-          height={300}
+          height={350}
           style={{
             alignItems: "center",
             justifyContent: "space-between",
-            // paddingBottom: 20,
             width: "100%",
             flex: 1,
           }}
@@ -309,6 +308,21 @@ export default function Settings() {
               }}
             >
               Verwijder 2e zwemmer
+            </Text>
+          </ButtonComponent>
+          <ButtonComponent
+            onPress={() => {
+              setAddSwimmerModalShown(true);
+              setInfoModalShown(false);
+            }}
+            style={{
+              width: "95%",
+              paddingVertical: 10,
+              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            }}
+          >
+            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+              Wijzig 2e zwemmer
             </Text>
           </ButtonComponent>
         </SwipeModal>
