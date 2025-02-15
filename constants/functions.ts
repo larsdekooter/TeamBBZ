@@ -1,9 +1,7 @@
-import { Alert, ColorSchemeName, Platform, Text, View } from "react-native";
+import { Alert, ColorSchemeName } from "react-native";
 import {
-  AthleteInfoDivRegex,
   AthleteNameRegex,
   AthleteNameDivRegex,
-  ImageRegex,
   BirthYearRegex,
   NationClubRegex,
   AthleteTableRegex,
@@ -494,7 +492,7 @@ export function getSpecialityData(
   });
   Object.entries(pointsPerStroke).forEach((p) => {
     pointsPerStroke[p[0] as keyof typeof pointsPerStroke].count =
-      p[1].count / p[1].amount / points[0].points;
+      p[1].count / (p[1].amount || 1) / (points[0].points || 1);
   });
   return Object.values(pointsPerStroke).map(({ count }) => count);
 }
