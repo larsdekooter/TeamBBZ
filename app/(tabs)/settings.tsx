@@ -8,6 +8,7 @@ import {
   TextInput,
   useColorScheme,
   View,
+  Appearance,
 } from "react-native";
 import Page from "../../components/Page";
 import { textColor } from "@/constants/functions";
@@ -200,6 +201,33 @@ export default function Settings() {
               </ButtonComponent>
             </View>
           )}
+          <Pressable
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 15,
+              borderTopColor: "grey",
+              borderTopWidth: 1,
+              paddingTop: 10,
+              marginTop: 10,
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+            onPress={async () => {
+              await setItem("colorScheme", {
+                colorScheme: colorScheme === "light" ? "dark" : "light",
+              });
+              Appearance.setColorScheme(
+                colorScheme === "light" ? "dark" : "light"
+              );
+            }}
+          >
+            <Text style={[textColor(colorScheme)]}>Thema</Text>
+            <FontAwesome
+              name={colorScheme === "light" ? "sun-o" : "moon-o"}
+              color={textColor(colorScheme).color}
+              size={20}
+            />
+          </Pressable>
         </View>
 
         <Socials />
