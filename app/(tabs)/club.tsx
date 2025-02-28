@@ -8,14 +8,8 @@ import {
   getSchemaData,
   getWedstrijdData,
   textColor,
+  wait,
 } from "@/constants/functions";
-import {
-  RowRegex,
-  TableRegex,
-  CellRegex2,
-  CarrotRegex,
-  IdRegex,
-} from "@/constants/regex";
 import { Clubrecord, CompetitieStand, Wedstrijd } from "@/constants/types";
 import { FontAwesome } from "@expo/vector-icons";
 import { Fragment, useEffect, useState } from "react";
@@ -36,6 +30,7 @@ import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 export default function Club() {
   const [schema, setSchema] = useState("");
@@ -51,10 +46,14 @@ export default function Club() {
 
   useEffect(() => {
     const getS = async () => {
-      setSchema(await getSchemaData());
-      setWedstrijden(await getMeetCalendar());
-      setClubrecords(await getClubRecords());
-      setCompetitieStanden(await getCompetitieStand());
+      const schem = await getSchemaData();
+      const wden = await getMeetCalendar();
+      const crs = await getClubRecords();
+      const compStanden = await getCompetitieStand();
+      setSchema(schem);
+      setWedstrijden(wden);
+      setClubrecords(crs);
+      setCompetitieStanden(compStanden);
       setLoading(false);
     };
     if (loading) {
@@ -64,24 +63,27 @@ export default function Club() {
 
   const colorScheme = useColorScheme();
 
-  return loading ? (
+  return (
     <Page>
-      <ActivityIndicator size={30} color="#ef8b22" />
-    </Page>
-  ) : (
-    <Page>
-      <SchemaComponent colorScheme={colorScheme} schema={schema} />
+      <SchemaComponent
+        colorScheme={colorScheme}
+        schema={schema}
+        loading={loading}
+      />
       <WedstrijdenComponent
         colorScheme={colorScheme}
         wedstrijden={wedstrijden}
+        loading={loading}
       />
       <ClubrecordsComponent
         colorScheme={colorScheme}
         clubrecords={clubrecords}
+        loading={loading}
       />
       <CompetitieStandComponent
         colorScheme={colorScheme}
         competitieStanden={competitieStanden}
+        loading={loading}
       />
     </Page>
   );
@@ -90,9 +92,11 @@ export default function Club() {
 function CompetitieStandComponent({
   colorScheme,
   competitieStanden,
+  loading,
 }: {
   colorScheme: ColorSchemeName;
   competitieStanden: CompetitieStand[];
+  loading?: boolean;
 }) {
   const [selected, setSelected] = useState({} as CompetitieStand);
   const [position, setPosition] = useState(0);
@@ -210,7 +214,10 @@ function CompetitieStandComponent({
         </View>
       </SwipeModal>
 
-      <SectionComponent title={`Competitie stand (${huidigePlek})`}>
+      <SectionComponent
+        title={`Competitie stand (${huidigePlek})`}
+        loading={loading}
+      >
         <FlatList
           data={competitieStanden.sort((a, b) => a.total - b.total)}
           style={{ height: 350 }}
@@ -263,9 +270,11 @@ function CompetitieStandComponent({
 function SchemaComponent({
   schema,
   colorScheme,
+  loading,
 }: {
   schema: string;
   colorScheme: ColorSchemeName;
+  loading?: boolean;
 }) {
   const currentDate = new Date();
   const [shown, setShown] = useState(false);
@@ -285,6 +294,10 @@ function SchemaComponent({
     inputRange: [0, 1],
     outputRange: ["0deg", "180deg"],
   });
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <Fragment>
@@ -347,9 +360,11 @@ function SchemaComponent({
 function WedstrijdenComponent({
   colorScheme,
   wedstrijden,
+  loading,
 }: {
   colorScheme: ColorSchemeName;
   wedstrijden: Wedstrijd[];
+  loading?: boolean;
 }) {
   const [modalShown, setModalShown] = useState(false);
   const [selectedWedstrijd, setSelectedWedstrijd] = useState({} as Wedstrijd);
@@ -615,7 +630,7 @@ function WedstrijdenComponent({
           </View>
         </GestureHandlerRootView>
       </Modal>
-      <SectionComponent title="Wedstrijden">
+      <SectionComponent title="Wedstrijden" loading={loading}>
         <FlatList
           data={wedstrijden.slice(0, 10)}
           style={{ maxHeight: 400 }}
@@ -686,9 +701,11 @@ function WedstrijdenComponent({
 function ClubrecordsComponent({
   clubrecords,
   colorScheme,
+  loading,
 }: {
   clubrecords: { male: Clubrecord[]; female: Clubrecord[] };
   colorScheme: ColorSchemeName;
+  loading?: boolean;
 }) {
   const ages = [
     "onder 8",
@@ -796,7 +813,7 @@ function ClubrecordsComponent({
           </View>
         </View>
       </SwipeModal>
-      <SectionComponent title="Clubrecords">
+      <SectionComponent title="Clubrecords" loading={loading}>
         <View
           style={{ display: "flex", alignItems: "center", marginBottom: 10 }}
         >

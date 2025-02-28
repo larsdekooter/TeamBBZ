@@ -13,17 +13,20 @@ import {
 import { useState } from "react";
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
+import SkeletonLoader from "./SkeletonLoader";
 
 export default function SectionComponent({
   children,
   title,
   style,
   onPress,
+  loading,
 }: {
   children: React.ReactNode;
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  loading?: boolean;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -51,6 +54,10 @@ export default function SectionComponent({
       }),
     ]).start();
   };
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <Pressable
