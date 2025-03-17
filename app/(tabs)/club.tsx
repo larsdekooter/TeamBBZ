@@ -710,12 +710,12 @@ function ClubrecordsComponent({
                   <Text
                     style={[textColor(colorScheme), { textAlign: "center" }]}
                   >
-                    {time}
+                    {time ?? "-.--.--"}
                   </Text>
                   <Text
                     style={[textColor(colorScheme), { textAlign: "center" }]}
                   >
-                    {selectedClubrecord.swimmers[index]}
+                    {selectedClubrecord.swimmers[index] ?? "-"}
                   </Text>
                 </View>
               </View>
