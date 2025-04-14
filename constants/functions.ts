@@ -358,6 +358,7 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
 export async function getSchemaData() {
   const date = new Date();
   const weekNo = getWeekNumber(new Date(date.getTime()));
+
   const res = await (
     await fetch(
       `https://www.b-b-z.nl/training/schema/?jaar=${date.getFullYear()}&week=${weekNo}`
@@ -375,9 +376,12 @@ export async function getSchemaData() {
     )
   );
   if (tdMatch) {
-    const id = tdMatch.match(CellRegex)![2].match(Number4Regex)![0];
+    const id = tdMatch.match(CellRegex)![2].match(Number4Regex)?.[0];
     if (tdMatch.includes("GEEN TRAINEN")) {
       return "Geen trainen vandaag!";
+    }
+    if (!id) {
+      return "Schema bekijken niet toegestaan";
     }
     const schemaPage = await (
       await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
@@ -392,7 +396,6 @@ export async function getSchemaData() {
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
     return ["A", ...schema].join("");
-    // .replace(/\n/g, "\n");
   } else {
     return "Geen schema vandaag!";
   }
