@@ -369,52 +369,34 @@ function HistoryModal({
   title: { distance: string; time: string; poolSize: "25m" | "50m" };
 }) {
   return (
-    <Modal
+    <SwipeModal
       visible={visible}
-      animationType="slide"
-      transparent
       onRequestClose={onRequestClose}
+      onClose={onPressClose as () => void}
+      height={Dimensions.get("window").height * 0.9}
     >
       <View
         style={{
-          backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
-          height: Dimensions.get("window").height,
-          width: Dimensions.get("window").width,
           flex: 1,
           justifyContent: "center",
         }}
       >
-        <Pressable
+        <Text
           style={{
-            flexDirection: "row",
-            top: 25,
+            ...textColor(colorScheme),
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: 20,
+            zIndex: 1,
             width: Dimensions.get("window").width,
           }}
-          onPress={onPressClose}
         >
-          <FontAwesome
-            name="arrow-left"
-            color="#ef8b22"
-            size={30}
-            style={{ left: 10, position: "absolute" }}
-          />
-          <Text
-            style={{
-              ...textColor(colorScheme),
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: 20,
-              zIndex: 1,
-              width: Dimensions.get("window").width,
-            }}
-          >
-            {title.distance} - {title.time} -{" "}
-            {title.poolSize === "25m" ? "SC" : "LC"}
-          </Text>
-        </Pressable>
+          {title.distance} - {title.time} -{" "}
+          {title.poolSize === "25m" ? "SC" : "LC"}
+        </Text>
         <FlatList
           data={sData}
-          style={{ top: 50, marginBottom: 50 }}
+          style={{ marginBottom: 50 }}
           contentContainerStyle={{
             display: "flex",
             justifyContent: "center",
@@ -469,6 +451,6 @@ function HistoryModal({
           )}
         />
       </View>
-    </Modal>
+    </SwipeModal>
   );
 }
