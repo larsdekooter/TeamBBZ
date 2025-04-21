@@ -1,6 +1,12 @@
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+  useEffect,
+} from "react"; // Import useEffect
 import {
   ActivityIndicator,
   Animated,
@@ -43,6 +49,12 @@ export default function Dropdown<T extends ReactNode>({
   const rotateAnim = useState(new Animated.Value(0))[0];
   const heightAnim = useState(new Animated.Value(0))[0];
   const [selected, setSelected] = useState(data[0]);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setSelected(data[0]);
+    }
+  }, [data]); // This effect runs whenever the 'data' prop changes
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],

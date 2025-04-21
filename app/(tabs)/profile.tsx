@@ -58,6 +58,13 @@ export default function Profile() {
   const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<{
+    event: SwimrakingEventId;
+    poolSize: "25m" | "50m";
+  }>({
+    event: SwimrakingEventId["100m vrije slag"],
+    poolSize: "25m",
+  });
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -77,6 +84,13 @@ export default function Profile() {
           history25mFreestyle.map(({ points }) => parseInt(points.points))
         );
         setLabels(history25mFreestyle.map(({ year }) => year));
+        setSelectedEvent({
+          event:
+            SwimrakingEventId[
+              athleteData.pbs[0].event as keyof typeof SwimrakingEventId
+            ],
+          poolSize: athleteData.pbs[0].poolSize,
+        });
         return true;
       } else {
         Alert.alert(`'${response.username}' is niet gevonden in SwimRankings!`);
@@ -392,15 +406,19 @@ export default function Profile() {
                   .filter((e) => !e.includes("split"))}
                 onPress={async (item) => {
                   setLoading(true);
-                  const progression = await getProgression(
+                  const event =
                     SwimrakingEventId[
                       item
                         .match(/[^LC|SC]/gm)!
                         .join("")
                         .trim() as keyof typeof SwimrakingEventId
-                    ],
+                    ];
+                  const poolSize = item.includes("LC") ? "50m" : "25m";
+                  setSelectedEvent({ event, poolSize });
+                  const progression = await getProgression(
+                    event,
                     athleteData.id,
-                    item.includes("LC") ? "50m" : "25m"
+                    poolSize
                   );
                   setData(
                     progression.map(({ points }) => parseInt(points.points))

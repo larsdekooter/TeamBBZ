@@ -296,12 +296,13 @@ export async function fetchSwimrankingSwimmer(username: string) {
       )
     ).text();
     const aData = getAthleteData(athletePage, meetsPage, athleteId);
+    //TODO: rework this to historyFirstStroke
     const history25mFreestyle = await getProgression(
-      SwimrakingEventId["25m vrije slag"],
+      SwimrakingEventId[aData.pbs[0].event as keyof typeof SwimrakingEventId],
       athleteId,
-      "25m"
+      aData.pbs[0].poolSize
     );
-    return { aData, history25mFreestyle };
+    if (history25mFreestyle) return { aData, history25mFreestyle };
   }
   return {};
 }
