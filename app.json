@@ -15,7 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon-light.png",
-        "backgroundColor": "#fff"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.ldekooter.TeamBBZ"
     },
