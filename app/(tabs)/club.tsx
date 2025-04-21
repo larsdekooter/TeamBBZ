@@ -56,9 +56,9 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setLoading(false);
     };
-    // if (loading) {
-    getS();
-    // }
+    if (loading) {
+      getS();
+    }
   }, []);
 
   const colorScheme = useColorScheme();
