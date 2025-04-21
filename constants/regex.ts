@@ -80,6 +80,8 @@ export const ClubIdRegex = /(?<=clubId=)\d*/gm;
 export const ResultTableRegex =
   /(?<=<table\s.*class="meetResult"[^>]*>)[\s\S]*?(?=<\/table>)/gm;
 
+export const SchemaIdRegex = /(?<=id=)[^"]*/gm;
+
 export class ClubRecordRegex {
   static TableRowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>|<\/tr>)/gi;
 

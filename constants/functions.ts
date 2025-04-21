@@ -35,6 +35,7 @@ import {
   CompetietieRegex,
   AthleteIdRegex,
   IdRegex,
+  SchemaIdRegex,
 } from "./regex";
 import {
   AthleteData,
@@ -376,7 +377,7 @@ export async function getSchemaData() {
     )
   );
   if (tdMatch) {
-    const id = tdMatch.match(CellRegex)![2].match(Number4Regex)?.[0];
+    const id = tdMatch.match(SchemaIdRegex)?.[0];
     if (tdMatch.includes("GEEN TRAINEN")) {
       return "Geen trainen vandaag!";
     }
@@ -390,8 +391,9 @@ export async function getSchemaData() {
       .match(ContentRegex)![0]
       .replace(/&#8243;/g, '"')
       .replace(/&#8217;/g, "'")
-      .replace(/&#8221;/g, "'")
-      .replace(/&#8242/g, '"');
+      .replace(/&#8221;/g, '"')
+      .replace(/&#8242/g, '"')
+      .replace(/\uFFFD/g, '"');
     const schema = contentDiv.split("<br />");
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
