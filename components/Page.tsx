@@ -1,4 +1,5 @@
 import { StatusBar } from "expo-status-bar";
+import { Fragment } from "react";
 import { StyleSheet, useColorScheme, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,13 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Page({ children }: { children?: React.ReactNode }) {
   const colorScheme = useColorScheme();
   return (
-    // <SafeAreaProvider>
-    <SafeAreaView
-      style={{
-        backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
-        flex: 1,
-      }}
-    >
+    <Fragment>
       <StatusBar
         backgroundColor={colorScheme === "light" ? "#FFF" : "#181c20"}
       />
@@ -23,8 +18,7 @@ export default function Page({ children }: { children?: React.ReactNode }) {
       >
         {children}
       </GestureHandlerRootView>
-    </SafeAreaView>
-    // </SafeAreaProvider>
+    </Fragment>
   );
 }
 const stylesLight = StyleSheet.create({

@@ -17,7 +17,8 @@
         "foregroundImage": "./assets/images/icon-light.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ldekooter.TeamBBZ"
+      "package": "com.ldekooter.TeamBBZ",
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "bundler": "metro",
