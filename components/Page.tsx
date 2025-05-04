@@ -1,5 +1,4 @@
 import { StatusBar } from "expo-status-bar";
-import { Fragment } from "react";
 import { StyleSheet, useColorScheme, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -9,6 +8,9 @@ export default function Page({ children }: { children?: React.ReactNode }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar
+          backgroundColor={colorScheme === "dark" ? "#181c20" : "#fff"}
+        />
         <GestureHandlerRootView
           style={
             colorScheme === "light"
