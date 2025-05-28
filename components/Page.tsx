@@ -8,9 +8,6 @@ export default function Page({ children }: { children?: React.ReactNode }) {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar
-          backgroundColor={colorScheme === "dark" ? "#181c20" : "#fff"}
-        />
         <GestureHandlerRootView
           style={
             colorScheme === "light"
