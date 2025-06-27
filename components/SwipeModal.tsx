@@ -116,7 +116,6 @@ export default function SwipeModal({
       }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar backgroundColor="rgba(0,0,0,0.3)" />
         <GestureHandlerRootView style={{ flex: 1 }}>
           <Animated.View style={[{ flex: 1 }, backgroundAnimatedStyle]}>
             <Pressable

@@ -36,6 +36,7 @@ import {
   AthleteIdRegex,
   IdRegex,
   SchemaIdRegex,
+  SchemaGroupRegex,
 } from "./regex";
 import {
   AthleteData,
@@ -357,8 +358,8 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
   }
 }
 
-export async function getSchemaData() {
-  const date = new Date();
+export async function getSchemaData(group?: string) {
+  const date = new Date(new Date().setDate(26));
   const weekNo = getWeekNumber(new Date(date.getTime()));
 
   const res = await (
@@ -368,7 +369,7 @@ export async function getSchemaData() {
   ).text();
   const contentDiv = res.match(ContentRegex)![0];
   const trs = contentDiv.match(RowRegex)!;
-  const tdMatch = trs.find((tr) =>
+  const tdMatch = trs.filter((tr) =>
     tr.includes(
       `${date.getDate()}-${
         `${date.getMonth() + 1}`.length == 1
@@ -377,13 +378,16 @@ export async function getSchemaData() {
       }-${date.getFullYear()}`
     )
   );
-  if (tdMatch) {
-    const id = tdMatch.match(SchemaIdRegex)?.[0];
-    if (tdMatch.includes("GEEN TRAINEN")) {
-      return "Geen trainen vandaag!";
+  if (tdMatch.length > 0) {
+    const index = group
+      ? tdMatch.findIndex((match) => match.includes(group))
+      : 0;
+    const id = tdMatch[index].match(SchemaIdRegex)?.[0];
+    if (tdMatch[index].includes("GEEN TRAINEN")) {
+      return { schema: "Geen trainen vandaag!", groups: [] };
     }
     if (!id) {
-      return "Schema bekijken niet toegestaan";
+      return { schema: "Schema bekijken niet toegestaan", groups: [] };
     }
     const schemaPage = await (
       await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
@@ -398,9 +402,13 @@ export async function getSchemaData() {
     const schema = contentDiv.split("<br />");
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
-    return ["A", ...schema].join("");
+    console.log(["A\n", schema.map((line) => `${line.trim()}\n`)].join(""));
+    return {
+      schema: ["A\n", ...schema.map((line) => `${line.trim()}\n`)].join(""),
+      groups: tdMatch.map((match) => match.match(SchemaGroupRegex)![1]),
+    };
   } else {
-    return "Geen schema vandaag!";
+    return { schema: "Geen schema vandaag!", groups: [] };
   }
 }
 

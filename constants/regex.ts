@@ -82,6 +82,8 @@ export const ResultTableRegex =
 
 export const SchemaIdRegex = /(?<=id=)[^"]*/gm;
 
+export const SchemaGroupRegex = /(?<=<td>).*(?=<\/td>)/gm;
+
 export class ClubRecordRegex {
   static TableRowRegex = /<tr\b[^>]*>[\s\S]*?(?=<tr>|<\/tr>)/gi;
 

@@ -29,11 +29,16 @@ import * as WebBrowser from "expo-web-browser";
 import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
 
 export default function Club() {
-  const [schema, setSchema] = useState("");
+  const [schema, setSchema] = useState(
+    {} as { schema: string; groups: string[] }
+  );
   const [wedstrijden, setWedstrijden] = useState([] as Wedstrijd[]);
   const [clubrecords, setClubrecords] = useState({ male: [], female: [] } as {
     male: Clubrecord[];
@@ -56,9 +61,9 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setLoading(false);
     };
-    if (loading) {
-      getS();
-    }
+    // if (loading) {
+    getS();
+    // }
   }, []);
 
   const colorScheme = useColorScheme();
@@ -272,7 +277,7 @@ function SchemaComponent({
   colorScheme,
   loading,
 }: {
-  schema: string;
+  schema: { schema: string; groups: string[] };
   colorScheme: ColorSchemeName;
   loading?: boolean;
 }) {
@@ -280,7 +285,10 @@ function SchemaComponent({
   const [shown, setShown] = useState(false);
   const [height, setHeight] = useState(0);
   const rotateAnim = useState(new Animated.Value(0))[0];
-
+  const [schemaState, setSchemaState] = useState(schema);
+  useEffect(() => {
+    setSchemaState(schema);
+  }, [schema]);
   const toggleExpand = () => {
     setShown(!shown);
     Animated.timing(rotateAnim, {
@@ -304,21 +312,51 @@ function SchemaComponent({
       <SwipeModal
         visible={shown}
         onClose={toggleExpand}
-        height={height > 100 ? height + 100 : 200}
+        height={height > 100 ? height + 200 : 200}
         closeValue={200}
         onRequestClose={toggleExpand}
       >
-        <Text
-          style={[textColor(colorScheme), { width: "100%" }]}
-          onTextLayout={(event) => {
-            const { lines } = event.nativeEvent;
-            if (lines.length > 0) {
-              setHeight(lines[0].height * lines.length);
-            }
-          }}
-        >
-          {schema.replace("\r", "\n")}
-        </Text>
+        <ScrollView style={{ width: "100%" }}>
+          <Dropdown
+            data={schema.groups}
+            style={{ width: "100%" }}
+            closeWhenSelected
+            onPress={async (item) => {
+              setSchemaState(await getSchemaData(item));
+            }}
+            renderItem={({ item }) => (
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  {
+                    borderWidth: 1,
+                    borderColor: "grey",
+                    margin: 5,
+                    paddingVertical: 10,
+                    paddingHorizontal: 5,
+                    borderRadius: 8,
+                    textAlign: "center",
+                  },
+                ]}
+              >
+                {item}
+              </Text>
+            )}
+          />
+          <Text
+            style={[textColor(colorScheme), { width: "100%" }]}
+            onTextLayout={(event) => {
+              const { lines } = event.nativeEvent;
+              if (lines.length > 0) {
+                setHeight(lines[0].height * lines.length);
+              }
+            }}
+          >
+            {!schemaState.schema
+              ? null
+              : schemaState.schema.replace("\r", "\n")}
+          </Text>
+        </ScrollView>
       </SwipeModal>
       <Pressable
         style={{
