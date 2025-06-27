@@ -36,6 +36,7 @@ interface DropdownProps<T extends ReactNode> {
     | ((item: T, event: GestureResponderEvent) => void)
     | undefined;
   style?: StyleProp<ViewStyle>;
+  closeWhenSelected?: boolean;
 }
 
 export default function Dropdown<T extends ReactNode>({
@@ -44,6 +45,7 @@ export default function Dropdown<T extends ReactNode>({
   shouldLoad,
   onPress,
   style,
+  closeWhenSelected = false,
 }: DropdownProps<T>) {
   const [isOpened, setOpened] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -150,6 +152,7 @@ export default function Dropdown<T extends ReactNode>({
             onPress={(event) => {
               setSelected(item);
               onPress ? onPress(item, event) : null;
+              closeWhenSelected ? toggleExpand() : null;
             }}
           >
             {renderItem({ item, index, array })}
