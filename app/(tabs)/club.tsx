@@ -61,9 +61,9 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setLoading(false);
     };
-    // if (loading) {
-    getS();
-    // }
+    if (loading) {
+      getS();
+    }
   }, []);
 
   const colorScheme = useColorScheme();
@@ -319,7 +319,7 @@ function SchemaComponent({
       <SwipeModal
         visible={shown}
         onClose={toggleExpand}
-        height={height > 100 ? height + 200 : 200}
+        height={height > 100 ? height + 150 : 200}
         closeValue={200}
         onRequestClose={toggleExpand}
       >
@@ -361,7 +361,16 @@ function SchemaComponent({
             onTextLayout={(event) => {
               const { lines } = event.nativeEvent;
               if (lines.length > 0) {
-                setHeight(lines[0].height * lines.length);
+                setHeight(
+                  lines[0].height * lines.length +
+                    (![
+                      "Geen schema vandaag!",
+                      "Schema bekijken niet toegestaan",
+                      "Geen trainen vandaag!",
+                    ].includes(schemaState.schema)
+                      ? 50
+                      : 0)
+                );
               }
             }}
           >

@@ -402,7 +402,6 @@ export async function getSchemaData(group?: string) {
     const schema = contentDiv.split("<br />");
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
-    console.log(["A\n", schema.map((line) => `${line.trim()}\n`)].join(""));
     return {
       schema: ["A\n", ...schema.map((line) => `${line.trim()}\n`)].join(""),
       groups: tdMatch.map((match) => match.match(SchemaGroupRegex)![1]),
