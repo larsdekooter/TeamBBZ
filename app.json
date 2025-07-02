@@ -2,7 +2,7 @@
   "expo": {
     "name": "TeamBBZ",
     "slug": "TeamBBZ",
-    "version": "1.9.2",
+    "version": "1.9.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon-light.png",
     "scheme": "myapp",
