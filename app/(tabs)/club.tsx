@@ -277,7 +277,14 @@ function SchemaComponent({
   colorScheme,
   loading,
 }: {
-  schema: { schema: string; groups: string[] };
+  schema: {
+    schema:
+      | "Geen schema vandaag!"
+      | "Schema bekijken niet toegestaan"
+      | "Geen trainen vandaag!"
+      | string;
+    groups: string[];
+  };
   colorScheme: ColorSchemeName;
   loading?: boolean;
 }) {
@@ -317,32 +324,38 @@ function SchemaComponent({
         onRequestClose={toggleExpand}
       >
         <ScrollView style={{ width: "100%" }}>
-          <Dropdown
-            data={schema.groups}
-            style={{ width: "100%" }}
-            closeWhenSelected
-            onPress={async (item) => {
-              setSchemaState(await getSchemaData(item));
-            }}
-            renderItem={({ item }) => (
-              <Text
-                style={[
-                  textColor(colorScheme),
-                  {
-                    borderWidth: 1,
-                    borderColor: "grey",
-                    margin: 5,
-                    paddingVertical: 10,
-                    paddingHorizontal: 5,
-                    borderRadius: 8,
-                    textAlign: "center",
-                  },
-                ]}
-              >
-                {item}
-              </Text>
-            )}
-          />
+          {![
+            "Geen schema vandaag!",
+            "Schema bekijken niet toegestaan",
+            "Geen trainen vandaag!",
+          ].includes(schemaState.schema) && (
+            <Dropdown
+              data={schema.groups}
+              style={{ width: "100%" }}
+              closeWhenSelected
+              onPress={async (item) => {
+                setSchemaState(await getSchemaData(item));
+              }}
+              renderItem={({ item }) => (
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    {
+                      borderWidth: 1,
+                      borderColor: "grey",
+                      margin: 5,
+                      paddingVertical: 10,
+                      paddingHorizontal: 5,
+                      borderRadius: 8,
+                      textAlign: "center",
+                    },
+                  ]}
+                >
+                  {item}
+                </Text>
+              )}
+            />
+          )}
           <Text
             style={[textColor(colorScheme), { width: "100%" }]}
             onTextLayout={(event) => {
