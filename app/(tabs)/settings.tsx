@@ -280,7 +280,6 @@ export default function Settings() {
                   zIndex: 1000,
                 }}
                 onPress={async (e) => {
-                  console.log("here");
                   await setItem("swimmers", {
                     swimmer: inputText,
                   });
