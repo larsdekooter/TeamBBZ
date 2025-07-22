@@ -279,7 +279,8 @@ export default function Settings() {
                     colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
                   zIndex: 1000,
                 }}
-                onPress={async () => {
+                onPress={async (e) => {
+                  console.log("here");
                   await setItem("swimmers", {
                     swimmer: inputText,
                   });

@@ -34,6 +34,7 @@ export default function TextInputComponent(props: TextInputComponentProps) {
             borderWidth: colorScheme === "light" || props.errorMessage ? 2 : 0,
             textAlignVertical: "center",
             paddingVertical: 0,
+            color: "#000",
           },
           props.style,
         ]}
