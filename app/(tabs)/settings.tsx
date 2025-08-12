@@ -263,6 +263,7 @@ export default function Settings() {
                   borderRadius: 8,
                   paddingHorizontal: 10,
                   height: 40,
+                  color: "#000",
                 }}
                 placeholder="Naam"
                 id="username"
