@@ -340,7 +340,7 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
 
 export async function getSchemaData(group?: string) {
   const date = new Date();
-  const weekNo = getWeekNumber(new Date(date.setDate(12)));
+  const weekNo = getWeekNumber(new Date(date.setDate(11)));
 
   const res = await (
     await fetch(

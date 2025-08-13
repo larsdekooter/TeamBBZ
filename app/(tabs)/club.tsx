@@ -25,14 +25,10 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import * as WebBrowser from "expo-web-browser";
 import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
-import {
-  GestureHandlerRootView,
-  ScrollView,
-} from "react-native-gesture-handler";
+import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
 
 export default function Club() {

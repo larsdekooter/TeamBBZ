@@ -6,7 +6,7 @@ import {
   SetStateAction,
   useState,
   useEffect,
-} from "react"; // Import useEffect
+} from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -52,11 +52,11 @@ export default function Dropdown<T extends ReactNode>({
   const heightAnim = useState(new Animated.Value(0))[0];
   const [selected, setSelected] = useState(data[0]);
 
-  useEffect(() => {
-    if (data && data.length > 0) {
-      setSelected(data[0]);
-    }
-  }, [data]); // This effect runs whenever the 'data' prop changes
+  // useEffect(() => {
+  //   if (data && data.length > 0) {
+  //     setSelected(data[0]);
+  //   }
+  // }, [data]);
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
