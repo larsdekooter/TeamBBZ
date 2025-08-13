@@ -1,43 +1,13 @@
 import { Alert, ColorSchemeName } from "react-native";
 import {
-  AthleteNameRegex,
-  AthleteNameDivRegex,
-  BirthYearRegex,
-  NationClubRegex,
-  AthleteTableRegex,
-  RowRegex,
-  DataRegex,
-  MeetTableRegex,
-  MonthRegex,
-  Number4Regex,
-  ContentRegex,
-  CarrotRegex,
-  DateRegex,
-  DivRegex,
-  CellRegex,
-  LivetimingRegex,
-  HrefRefex,
-  TripleNumberRegex,
-  PostRegex,
-  PostImageRegex,
-  PostImageSourceRegex,
-  PostTitleRegexFromImage,
-  PostTitleRegexFromLink,
-  TimeTableRegex,
-  OnMouseOverRegex,
-  CellRegex2,
-  ProgramNumberCheckRegex,
-  TableRegex,
+  GeneralRegexes,
+  SwimrankingsRegexes,
   ClubRecordRegex,
-  MeetIdRegex,
-  ClubIdRegex,
-  ResultTableRegex,
   CompetietieRegex,
-  AthleteIdRegex,
-  IdRegex,
-  SchemaIdRegex,
-  SchemaGroupRegex,
-  WeergaveDivRegex,
+  DateRegexes,
+  MeetRegexes,
+  PostRegexes,
+  SchemaRegexes,
 } from "./regex";
 import {
   AthleteData,
@@ -60,29 +30,33 @@ export function textColor(colorScheme: ColorSchemeName | boolean) {
 }
 
 function getAthleteInfo(athletePage: string, athleteId: string): AthleteData {
-  const nameDiv = athletePage.match(AthleteNameDivRegex)![0];
+  const nameDiv = athletePage.match(
+    SwimrankingsRegexes.Athlete.AthleteNameDivRegex
+  )![0];
 
   const nationAndClub = athletePage
-    .match(NationClubRegex)![0]
+    .match(SwimrankingsRegexes.Athlete.NationClubRegex)![0]
     .replace('<div id="nationclub"><br>', "")
     .replace("</div>", "")
     .split("<br>");
 
   const name = nameDiv
-    .match(AthleteNameRegex)![0]
+    .match(SwimrankingsRegexes.Athlete.AthleteNameRegex)![0]
     .split('<div id="name">')[1]
     .split(" <br>")[0];
 
-  const birthYear = nameDiv.split(BirthYearRegex)[1];
+  const birthYear = nameDiv.split(
+    SwimrankingsRegexes.Athlete.BirthYearRegex
+  )[1];
 
   const pbTable = athletePage
     .replace(/onmouseover="([\s\S]*?)"/gi, "")
-    .match(AthleteTableRegex)![0];
-  const rows = pbTable.match(RowRegex)!;
+    .match(SwimrankingsRegexes.Athlete.AthleteTableRegex)![0];
+  const rows = pbTable.match(GeneralRegexes.RowRegex)!;
   rows.splice(0, 1);
   const pb = rows.map((row) => {
     const data = row
-      .match(DataRegex)
+      .match(GeneralRegexes.DataRegex)
       ?.map((data) => data.replace(/<|>|M(?!\w)/g, ""))
       .filter((d) => d.length > 0)!;
     return {
@@ -107,23 +81,28 @@ function getAthleteInfo(athletePage: string, athleteId: string): AthleteData {
 }
 
 function getMeetsInfo(meetsPage: string): MeetData[] {
-  const meetTable = meetsPage.match(MeetTableRegex)![0];
+  const meetTable = meetsPage.match(
+    SwimrankingsRegexes.Meet.MeetTableRegex
+  )![0];
   const rows = meetTable
-    .match(RowRegex)!
+    .match(GeneralRegexes.RowRegex)!
     .map(
       (meet) =>
         meet
-          .match(DataRegex)!
+          .match(GeneralRegexes.DataRegex)!
           .map((match) => match.replace("<", "").replace(">", ""))
           .filter((match) => match.length > 0)!
     )
     .filter((row) => row.length > 1);
   rows.splice(0, 1);
   const ids = meetTable
-    .match(RowRegex)!
+    .match(GeneralRegexes.RowRegex)!
     .toSpliced(0, 1)
     .filter((x) => !x.includes("separator"))
-    .map((row) => [row.match(MeetIdRegex)![0], row.match(ClubIdRegex)![0]]);
+    .map((row) => [
+      row.match(SwimrankingsRegexes.Meet.MeetIdRegex)![0],
+      row.match(SwimrankingsRegexes.Meet.ClubIdRegex)![0],
+    ]);
   const meets = rows.map((row, index) => {
     return {
       date: row[0]
@@ -145,24 +124,24 @@ export async function getMeetCalendar() {
   const wedstrijdenPage = await (
     await fetch("https://www.b-b-z.nl/kalender/?actie=volledig")
   ).text();
-  const table = wedstrijdenPage.match(TableRegex)![0];
+  const table = wedstrijdenPage.match(GeneralRegexes.TableRegex)![0];
   const rows = table
-    .match(RowRegex)!
+    .match(GeneralRegexes.RowRegex)!
     .map((row) => {
       return row
-        .match(CellRegex2)
+        .match(GeneralRegexes.CellRegex2)
         ?.filter((m) => m != null)
         .map((m) => m.replace(/<td>/g, "").replace(/<\/td>/g, ""))
         .filter((m) => m.length > 0)
         .map((m) => {
           if (m.includes("<a")) {
             let r = m
-              .match(CarrotRegex)![0]
+              .match(GeneralRegexes.CarrotRegex)![0]
               .replace(/>/g, "")
               .replace(/</g, "");
             if (m.includes("?id=")) {
               r += "SPLITHERE";
-              r += m.match(IdRegex)![0].replace("?id=", "");
+              r += m.match(GeneralRegexes.IdRegex)![0].replace("?id=", "");
             }
             return r;
           }
@@ -246,11 +225,11 @@ export function translateEvent(event: string) {
 function formatDate(date: string, i: number, arr: string[]) {
   if (date.length === 2 || date.length === 1) {
     const dateCopy = arr[1];
-    const month = dateCopy.match(MonthRegex)!;
-    const year = dateCopy.match(Number4Regex)!;
+    const month = dateCopy.match(DateRegexes.MonthRegex)!;
+    const year = dateCopy.match(DateRegexes.Number4Regex)!;
     return `${date} ${month} ${year}`;
-  } else if (date.match(Number4Regex) === null) {
-    const year = arr[1].match(Number4Regex)![0];
+  } else if (date.match(DateRegexes.Number4Regex) === null) {
+    const year = arr[1].match(DateRegexes.Number4Regex)![0];
     return `${date} ${year}`;
   } else return date;
 }
@@ -285,7 +264,7 @@ export async function fetchSwimrankingSwimmer(username: string) {
   table.splice(0, 2);
   const athleteId = table
     .find((t) => !t.includes("*"))
-    ?.match(AthleteIdRegex)![0];
+    ?.match(SwimrankingsRegexes.Athlete.AthleteIdRegex)![0];
   if (athleteId) {
     const athletePage = await (
       await fetch(
@@ -316,12 +295,12 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
   const inschrijfDatumMatch = page
     .split("\n")
     .find((l) => l.includes("Inschrijfdatum:"))
-    ?.match(DivRegex)!;
+    ?.match(GeneralRegexes.DivRegex)!;
   const inschrijfDatum = inschrijfDatumMatch[
     inschrijfDatumMatch.length - 1
-  ]!.match(CarrotRegex)![0]
+  ]!.match(GeneralRegexes.CarrotRegex)![0]
     .replace(/>|</g, "")
-    .match(DateRegex)![0];
+    .match(DateRegexes.DateRegex)![0];
   const [day, month, year] = inschrijfDatum.split("-");
   const entryDate = new Date(+year, +month - 1, +day);
   if (new Date().getTime() > entryDate.getTime()) {
@@ -344,14 +323,14 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
       .filter((p) => p.length > 1)
       .map((p, i) => ({
         name: p,
-        no: !p.match(ProgramNumberCheckRegex)
-          ? Number.parseInt(p.match(TripleNumberRegex)?.[0] ?? "-1")
+        no: !p.match(MeetRegexes.ProgramNumberCheckRegex)
+          ? Number.parseInt(p.match(MeetRegexes.TripleNumberRegex)?.[0] ?? "-1")
           : i,
       }));
 
     wedstrijd.livetimeLink = page
-      .match(LivetimingRegex)![0]
-      .match(HrefRefex)![1];
+      .match(MeetRegexes.LivetimingRegex)![0]
+      .match(GeneralRegexes.HrefRegex)![1];
 
     return wedstrijd;
   } catch {
@@ -368,8 +347,8 @@ export async function getSchemaData(group?: string) {
       `https://www.b-b-z.nl/training/schema/?jaar=${date.getFullYear()}&week=${weekNo}`
     )
   ).text();
-  const contentDiv = res.match(TableRegex)![0];
-  const trs = contentDiv.match(RowRegex)!;
+  const contentDiv = res.match(GeneralRegexes.TableRegex)![0];
+  const trs = contentDiv.match(GeneralRegexes.RowRegex)!;
   const tdMatch = trs.filter((tr) =>
     tr.includes(
       `${date.getDate()}-${
@@ -383,7 +362,7 @@ export async function getSchemaData(group?: string) {
     const index = group
       ? tdMatch.findIndex((match) => match.includes(group))
       : 0;
-    const id = tdMatch[index].match(SchemaIdRegex)?.[0];
+    const id = tdMatch[index].match(SchemaRegexes.SchemaIdRegex)?.[0];
     if (tdMatch[index].includes("GEEN TRAINEN")) {
       return { schema: "Geen trainen vandaag!", groups: [] };
     }
@@ -394,7 +373,7 @@ export async function getSchemaData(group?: string) {
       await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
     ).text();
     const contentDiv = schemaPage
-      .match(ContentRegex)![0]
+      .match(GeneralRegexes.ContentRegex)![0]
       .replace(/&#8243;/g, '"')
       .replace(/&#8217;/g, "'")
       .replace(/&#8221;/g, '"')
@@ -405,7 +384,9 @@ export async function getSchemaData(group?: string) {
     schema.splice(schema.length - 1, 1);
     return {
       schema: ["A\n", ...schema.map((line) => `${line.trim()}\n`)].join(""),
-      groups: tdMatch.map((match) => match.match(SchemaGroupRegex)![1]),
+      groups: tdMatch.map(
+        (match) => match.match(SchemaRegexes.SchemaGroupRegex)![1]
+      ),
     };
   } else {
     return { schema: "Geen schema vandaag!", groups: [] };
@@ -465,19 +446,22 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
 
 export async function getPosts() {
   const page = await (await fetch("https://www.b-b-z.nl/")).text();
-  const posts = page.match(PostRegex)!.map((post) => ({
+  const posts = page.match(PostRegexes.PostRegex)!.map((post) => ({
     image: post
-      .match(PostImageRegex)![0]
-      .match(PostImageSourceRegex)![0]
+      .match(PostRegexes.PostImageRegex)![0]
+      .match(PostRegexes.PostImageSourceRegex)![0]
       .replace('src="', ""),
-    link: post.match(HrefRefex)![0].replace('href="', "").replace('"', ""),
+    link: post
+      .match(GeneralRegexes.HrefRegex)![0]
+      .replace('href="', "")
+      .replace('"', ""),
     title:
       post
-        .match(PostTitleRegexFromLink)![0]
+        .match(PostRegexes.PostTitleRegexFromLink)![0]
         .replace('aria-label="', "")
         .replace('"', "") ||
       post
-        .match(PostTitleRegexFromImage)![0]
+        .match(PostRegexes.PostTitleRegexFromImage)![0]
         .replace('alt="', "")
         .replace('"', ""),
   }));
@@ -495,11 +479,11 @@ export async function getHistory(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&styleId=${event}`
       )
     ).text()
-  ).replace(OnMouseOverRegex, "");
-  const tables = page.match(TimeTableRegex)!;
+  ).replace(GeneralRegexes.OnMouseOverRegex, "");
+  const tables = page.match(SwimrankingsRegexes.Meet.TimeTableRegex)!;
   const table = poolSize === "50m" ? tables[0] : tables[1];
   const rows = table
-    .match(RowRegex)!
+    .match(GeneralRegexes.RowRegex)!
     .toSpliced(0, 1)
     .map((row) =>
       row
@@ -606,13 +590,13 @@ export function wait(duration: number) {
 }
 
 export function mapClubrecords(page: string) {
-  const table = page.match(TableRegex)![0];
+  const table = page.match(GeneralRegexes.TableRegex)![0];
   const rs = table.match(ClubRecordRegex.TableRowRegex)!;
   rs.splice(0, 2);
   const rows = rs
     .map((row) =>
       row
-        .match(CellRegex2)!
+        .match(GeneralRegexes.CellRegex2)!
         .map((cell) =>
           cell
             .replace(ClubRecordRegex.CellReplacementRegex, "")
@@ -688,19 +672,23 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
         `https://www.swimrankings.net/index.php?page=meetDetail&meetId=${meet.id}&clubId=${meet.clubId}`
       )
     ).text()
-  ).replace(OnMouseOverRegex, "");
+  ).replace(GeneralRegexes.OnMouseOverRegex, "");
   const meetTitle = page.match(
     /(?<=<td\sclass="titleLeft">).*?(?=<\/td>)/gm
   )![0];
-  const resultsTable = page.match(ResultTableRegex)![0];
-  const rows = resultsTable.match(RowRegex)!.toSpliced(0, 1);
+  const resultsTable = page.match(
+    SwimrankingsRegexes.Meet.ResultTableRegex
+  )![0];
+  const rows = resultsTable.match(GeneralRegexes.RowRegex)!.toSpliced(0, 1);
   const idRows = rows.filter((row) => row.includes("athleteId"));
   const idRowIndexes = idRows.map((id) => rows.findIndex((x) => x === id));
 
   if (idRowIndexes.length === 1) {
     rows.splice(0, 1);
     const cells = rows.map((row) =>
-      row.match(CellRegex2)!.filter((cell) => cell !== "<td></td>")
+      row
+        .match(GeneralRegexes.CellRegex2)!
+        .filter((cell) => cell !== "<td></td>")
     );
     return mapMeet(cells, meetTitle) as MeetResultData;
   } else {
@@ -715,7 +703,11 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     data.splice(0, 1);
     const cells = data
       .filter((d) => !d.includes("height=15") && !d.includes("meetResultHead"))
-      .map((d) => d.match(CellRegex2)!.filter((cell) => cell !== "<td></td>"));
+      .map((d) =>
+        d
+          .match(GeneralRegexes.CellRegex2)!
+          .filter((cell) => cell !== "<td></td>")
+      );
     return mapMeet(cells, meetTitle);
   }
 }
@@ -738,7 +730,7 @@ function mapMeet(cells: string[][], name: string): MeetResultData {
       .map(
         (x) =>
           x
-            .match(DataRegex)!
+            .match(GeneralRegexes.DataRegex)!
             .map((y) => y.replace(/<|>/g, ""))
             .filter((z) => z.length > 0)[0]
       )

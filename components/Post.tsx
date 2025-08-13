@@ -1,5 +1,5 @@
 import { textColor } from "@/constants/functions";
-import { PostDateRegex } from "@/constants/regex";
+import { PostRegexes } from "@/constants/regex";
 import { Post } from "@/constants/types";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useRef, useState } from "react";
@@ -83,7 +83,7 @@ export default function PostComponent({
         >
           {post.title}
           <Text style={{ color: "grey", fontStyle: "italic" }}>{`\n${
-            post.link.match(PostDateRegex)![0]
+            post.link.match(PostRegexes.PostDateRegex)![0]
           }`}</Text>
         </Text>
       </View>
