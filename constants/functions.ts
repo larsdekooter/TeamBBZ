@@ -37,6 +37,7 @@ import {
   IdRegex,
   SchemaIdRegex,
   SchemaGroupRegex,
+  WeergaveDivRegex,
 } from "./regex";
 import {
   AthleteData,
@@ -360,14 +361,14 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
 
 export async function getSchemaData(group?: string) {
   const date = new Date();
-  const weekNo = getWeekNumber(new Date(date.getTime()));
+  const weekNo = getWeekNumber(new Date(date.setDate(12)));
 
   const res = await (
     await fetch(
       `https://www.b-b-z.nl/training/schema/?jaar=${date.getFullYear()}&week=${weekNo}`
     )
   ).text();
-  const contentDiv = res.match(ContentRegex)![0];
+  const contentDiv = res.match(TableRegex)![0];
   const trs = contentDiv.match(RowRegex)!;
   const tdMatch = trs.filter((tr) =>
     tr.includes(

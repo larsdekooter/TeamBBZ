@@ -109,3 +109,6 @@ export class CompetietieRegex {
 }
 
 export const PostDateRegex = /\d{4}\/\d{2}\/\d{2}/gm;
+
+export const WeergaveDivRegex =
+  /<div\s[^>]*><br>\n[^<]*<strong>([\s\S]*)<\/div>/gm;
