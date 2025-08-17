@@ -8,7 +8,6 @@ import {
   getSchemaData,
   getWedstrijdData,
   textColor,
-  wait,
 } from "@/constants/functions";
 import { Clubrecord, CompetitieStand, Wedstrijd } from "@/constants/types";
 import { FontAwesome } from "@expo/vector-icons";
