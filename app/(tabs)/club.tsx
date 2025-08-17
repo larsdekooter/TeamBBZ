@@ -21,7 +21,6 @@ import {
   View,
   ColorSchemeName,
   ActivityIndicator,
-  Modal,
   FlatList,
 } from "react-native";
 import SectionComponent from "@/components/SectionComponent";
