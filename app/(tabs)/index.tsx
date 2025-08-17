@@ -3,7 +3,6 @@ import {
   Appearance,
   Dimensions,
   FlatList,
-  Image,
   Pressable,
   Text,
   useColorScheme,
