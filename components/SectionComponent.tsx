@@ -21,12 +21,14 @@ export default function SectionComponent({
   style,
   onPress,
   loading,
+  bold,
 }: {
   children: React.ReactNode;
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   loading?: boolean;
+  bold?: boolean;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -83,7 +85,14 @@ export default function SectionComponent({
           justifyContent: "space-between",
         }}
       >
-        <Text style={{ ...textColor(colorScheme) }}>{title}</Text>
+        <Text
+          style={[
+            textColor(colorScheme),
+            { fontWeight: bold ? "500" : "normal" },
+          ]}
+        >
+          {title}
+        </Text>
         <Animated.View style={{ transform: [{ rotate }] }}>
           <FontAwesome
             name="chevron-down"

@@ -1,16 +1,26 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { transform } from "@babel/core";
+import {
+  FontAwesome,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { Image, StyleSheet, useColorScheme } from "react-native";
+import { Image, StyleSheet, useColorScheme, View } from "react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const iconSize = 35;
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#ef8b22",
         animation: "shift",
+        tabBarShowLabel: false,
+        tabBarLabelStyle: { height: 0 },
         tabBarStyle: {
           backgroundColor: colorScheme == "dark" ? "#181c20" : "#FFF",
+          height: 60,
         },
         sceneStyle: {
           backgroundColor: colorScheme === "dark" ? "#181c20" : "#FFF",
@@ -22,7 +32,12 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
+            <FontAwesome
+              size={iconSize}
+              name="home"
+              color={color}
+              style={styles.icon}
+            />
           ),
           headerShown: false,
         }}
@@ -32,7 +47,12 @@ export default function TabLayout() {
         options={{
           title: "Profiel",
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="user" color={color} />
+            <FontAwesome5
+              size={iconSize}
+              name="swimmer"
+              color={color}
+              style={[styles.icon, { transform: [{ rotateY: "180deg" }] }]}
+            />
           ),
           headerShown: false,
         }}
@@ -49,11 +69,14 @@ export default function TabLayout() {
                     ? require("../../assets/images/teambbz.png")
                     : require("../../assets/images/teambbz-dark.png")
                 }
-                style={{
-                  height: 28,
-                  width: 28,
-                  tintColor: !focused ? "grey" : undefined,
-                }}
+                style={[
+                  {
+                    height: iconSize,
+                    width: iconSize,
+                    tintColor: !focused ? "grey" : undefined,
+                  },
+                  styles.icon,
+                ]}
               />
             );
           },
@@ -65,7 +88,12 @@ export default function TabLayout() {
         options={{
           title: "Instellingen",
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="cog" color={color} />
+            <FontAwesome
+              size={iconSize}
+              name="cog"
+              color={color}
+              style={styles.icon}
+            />
           ),
           headerShown: false,
         }}
@@ -73,3 +101,13 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  icon: {
+    height: 40,
+    marginTop: 20,
+    marginBottom: 10,
+    width: 40,
+    // backgroundColor: "red",
+  },
+});

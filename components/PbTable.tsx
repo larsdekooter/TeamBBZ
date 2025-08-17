@@ -156,34 +156,13 @@ function StrokeComponent({
     id: number;
   }[];
 }) {
-  const [isExpanded, setExpanded] = useState(false);
-  const rotateAnim = useState(new Animated.Value(0))[0];
-  const heightAnim = useState(new Animated.Value(0))[0];
   const colorScheme = useColorScheme();
 
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
-  });
-
-  const toggleExpand = () => {
-    setExpanded(!isExpanded);
-
-    Animated.parallel([
-      Animated.timing(rotateAnim, {
-        toValue: isExpanded ? 0 : 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(heightAnim, {
-        toValue: isExpanded ? 0 : 1,
-        duration: isExpanded ? 200 : 500,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
   return (
-    <SectionComponent title={stroke.charAt(0).toUpperCase() + stroke.slice(1)}>
+    <SectionComponent
+      title={stroke.charAt(0).toUpperCase() + stroke.slice(1)}
+      bold
+    >
       <FlatList
         data={strokeData}
         style={{ height: 350 }}

@@ -20,7 +20,7 @@ import {
 } from "../../constants/functions";
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
 import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
@@ -32,6 +32,13 @@ import Dropdown from "@/components/Dropdown";
 import CheckBox from "@/components/Checkbox";
 import TextInputComponent from "@/components/TextInputComponent";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  AntDesign,
+  Entypo,
+  FontAwesome,
+  FontAwesome5,
+  Octicons,
+} from "@expo/vector-icons";
 
 enum Tabs {
   Pbs = 1,
@@ -65,6 +72,7 @@ export default function Profile() {
     event: SwimrakingEventId["100m vrije slag"],
     poolSize: "25m",
   });
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -214,13 +222,10 @@ export default function Profile() {
   } else {
     if (athleteData.name) {
       return (
-        <Page>
-          <View>
+        <Page style={{ justifyContent: "flex-start" }}>
+          <View style={{ flex: 1, backgroundColor: "#181c20", zIndex: 2 }}>
             <Pressable
               style={{
-                position: "absolute",
-                zIndex: 99,
-                // top: 50,
                 width: "100%",
                 paddingVertical: 5,
                 flexDirection: "row",
@@ -253,12 +258,50 @@ export default function Profile() {
               }}
             >
               {!userSwitchLoading && (
-                <Text
+                <View
                   style={{
-                    ...textColor(colorScheme),
-                    textAlign: "center",
+                    flexDirection: "column",
+                    flex: 1,
+                    width: "90%",
+                    marginVertical: 10,
+                    borderColor: "#ef8b22",
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    paddingHorizontal: 20,
+                    paddingVertical: 5,
                   }}
-                >{`${athleteData.name} - ${athleteData.birthYear} \n${athleteData.nation} - ${athleteData.club}`}</Text>
+                >
+                  <View
+                    style={{
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text
+                      style={[textColor(colorScheme), { textAlign: "left" }]}
+                    >
+                      {athleteData.name}
+                    </Text>
+                    <Text style={[textColor(colorScheme)]}>
+                      {athleteData.birthYear}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text
+                      style={[textColor(colorScheme), { textAlign: "left" }]}
+                    >
+                      {athleteData.nation}
+                    </Text>
+                    <Text style={[textColor(colorScheme)]}>
+                      {athleteData.club}
+                    </Text>
+                  </View>
+                </View>
               )}
               {userSwitchLoading && (
                 <ActivityIndicator color="#ef8b22" size={25} />
@@ -266,7 +309,7 @@ export default function Profile() {
             </Pressable>
             <View
               style={{
-                marginTop: 50,
+                // marginTop: 50,
                 flexDirection: "row",
                 borderBottomWidth: 1,
                 borderColor: "grey",
@@ -277,47 +320,51 @@ export default function Profile() {
               }}
             >
               <ButtonComponent
-                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderWidth: activeTab === Tabs.Pbs ? 2 : 1,
+                }}
                 onPress={() => {
                   setActiveTab(Tabs.Pbs);
                 }}
               >
-                <Text
-                  style={[
-                    textColor(colorScheme),
-                    {
-                      fontWeight: "bold",
-                    },
-                  ]}
-                >
-                  PR's
-                </Text>
+                <Octicons
+                  name="stopwatch"
+                  color={textColor(colorScheme).color}
+                  size={20}
+                />
               </ButtonComponent>
               <ButtonComponent
                 onPress={() => setActiveTab(Tabs.Meets)}
-                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderWidth: activeTab === Tabs.Meets ? 2 : 1,
+                }}
               >
-                <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-                  Wedstrijden
-                </Text>
+                <Entypo
+                  name="medal"
+                  color={textColor(colorScheme).color}
+                  size={20}
+                />
               </ButtonComponent>
               <ButtonComponent
-                style={{ paddingHorizontal: 10, paddingVertical: 5 }}
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderWidth: activeTab === Tabs.Speciality ? 2 : 1,
+                }}
                 onPress={async () => {
                   setActiveTab(Tabs.Speciality);
                   getSpecialityData(athleteData);
                 }}
               >
-                <Text
-                  style={[
-                    textColor(colorScheme),
-                    {
-                      fontWeight: "bold",
-                    },
-                  ]}
-                >
-                  Specialiteit
-                </Text>
+                <AntDesign
+                  name="staro"
+                  color={textColor(colorScheme).color}
+                  size={20}
+                />
               </ButtonComponent>
             </View>
           </View>

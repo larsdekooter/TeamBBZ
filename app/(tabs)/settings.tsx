@@ -82,7 +82,7 @@ export default function Settings() {
               paddingHorizontal: 15,
             }}
           >
-            <Text style={textColor(colorScheme)}>Email</Text>
+            <Text style={textColor(colorScheme)}>E-mail</Text>
             <Text style={textColor(colorScheme)}>{email}</Text>
           </View>
           <View style={{ paddingHorizontal: 15 }}>
