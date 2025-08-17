@@ -1,8 +1,4 @@
-import {
-  FontAwesome,
-  FontAwesome5,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Image, StyleSheet, useColorScheme, View } from "react-native";
 
