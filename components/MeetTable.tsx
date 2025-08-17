@@ -3,17 +3,14 @@ import { AthleteData, MeetData } from "@/constants/types";
 import { Fragment, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Dimensions,
   FlatList,
-  Modal,
   Pressable,
   Text,
   useColorScheme,
   View,
 } from "react-native";
-import ButtonComponent from "./ButtonComponent";
-import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "./SwipeModal";
 
 export default function MeetsTable({

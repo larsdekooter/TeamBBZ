@@ -1,10 +1,8 @@
 import { getHistory, textColor } from "@/constants/functions";
 import { AthleteData } from "@/constants/types";
-import { getItem } from "@/utils/AsyncStorage";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import {
   ActivityIndicator,
-  Animated,
   ColorSchemeName,
   Dimensions,
   FlatList,

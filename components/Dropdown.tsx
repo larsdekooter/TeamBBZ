@@ -1,12 +1,6 @@
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
-import {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useState,
-  useEffect,
-} from "react";
+import { ReactNode, useState } from "react";
 import {
   ActivityIndicator,
   Animated,

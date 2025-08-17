@@ -7,8 +7,6 @@ import {
   useColorScheme,
   StyleProp,
   ViewStyle,
-  PressableStateCallbackType,
-  RegisteredStyle,
 } from "react-native";
 import { useState } from "react";
 import { textColor } from "@/constants/functions";

@@ -1,11 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleProp,
-  StyleSheet,
-  useColorScheme,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, useColorScheme, ViewStyle } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 

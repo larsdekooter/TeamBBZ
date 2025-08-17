@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { ReactNode, useState } from "react";
 import {
   Dimensions,
@@ -22,7 +21,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonComponent from "./ButtonComponent";
 import { textColor } from "@/constants/functions";
 

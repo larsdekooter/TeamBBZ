@@ -1,11 +1,9 @@
-import { transform } from "@babel/core";
 import { useEffect, useState } from "react";
 import { Dimensions, Text, View, StyleSheet } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withSequence,
   withTiming,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";

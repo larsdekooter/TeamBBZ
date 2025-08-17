@@ -1,7 +1,6 @@
 import {
   Dimensions,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,

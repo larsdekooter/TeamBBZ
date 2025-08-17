@@ -1,6 +1,5 @@
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import {
-  Image,
   Pressable,
   Linking,
   StyleProp,
