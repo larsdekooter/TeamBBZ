@@ -16,15 +16,6 @@ import CheckBox from "@/components/Checkbox";
 import { getItem, setItem } from "@/utils/AsyncStorage";
 
 export default function Home() {
-  useEffect(() => {
-    const get = async () => {
-      const colorScheme = await getItem("colorScheme");
-      if (!colorScheme) {
-        await setItem("colorScheme", useColorScheme());
-      }
-      Appearance.setColorScheme(colorScheme.colorScheme);
-    };
-  });
   const colorScheme = useColorScheme();
   const [posts, setPosts] = useState([] as Post[]);
   const [compact, setCompact] = useState(true);

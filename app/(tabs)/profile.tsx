@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Alert,
+  ColorSchemeName,
   Dimensions,
   Modal,
   Pressable,
@@ -48,6 +49,168 @@ enum Tabs {
   Speciality = 5,
 }
 
+function ProfileHeader({
+  prepareData,
+  athleteData,
+  activeTab,
+  setActiveTab,
+}: {
+  athleteData: AthleteData;
+  activeTab: Tabs;
+  setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
+  prepareData: (
+    aData: AthleteData,
+    history25mFreestyle: {
+      year: string;
+      points: {
+        time: string;
+        points: string;
+        date: Date;
+        location: string;
+      };
+    }[]
+  ) => void;
+}) {
+  const [userSwitchLoading, setUserSwitchLoading] = useState(false);
+  const colorScheme = useColorScheme();
+  const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
+
+  return (
+    <View
+      style={{
+        backgroundColor: "#181c20",
+        zIndex: 2,
+      }}
+    >
+      <Pressable
+        style={{
+          width: "100%",
+          paddingVertical: 5,
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+        onPress={async () => {
+          setUserSwitchLoading(true);
+          setMainSwimmerSelected(!mainSwimmerSelected);
+          const swimmer = await getItem(
+            mainSwimmerSelected ? "swimmers" : "username"
+          );
+          if (swimmer) {
+            const { aData, history25mFreestyle } =
+              await fetchSwimrankingSwimmer(
+                swimmer.swimmer ?? swimmer.username
+              );
+            if (aData) {
+              prepareData(aData, history25mFreestyle);
+              setUserSwitchLoading(false);
+            } else {
+              setUserSwitchLoading(false);
+            }
+          } else setUserSwitchLoading(false);
+        }}
+      >
+        {!userSwitchLoading && (
+          <View
+            style={{
+              flexDirection: "column",
+              flex: 1,
+              width: "90%",
+              marginVertical: 10,
+              borderColor: "#ef8b22",
+              borderWidth: 1,
+              borderRadius: 6,
+              paddingHorizontal: 20,
+              paddingVertical: 5,
+            }}
+          >
+            <View
+              style={{
+                justifyContent: "space-between",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+                {athleteData.name}
+              </Text>
+              <Text style={[textColor(colorScheme)]}>
+                {athleteData.birthYear}
+              </Text>
+            </View>
+            <View
+              style={{
+                justifyContent: "space-between",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+                {athleteData.nation}
+              </Text>
+              <Text style={[textColor(colorScheme)]}>{athleteData.club}</Text>
+            </View>
+          </View>
+        )}
+        {userSwitchLoading && <ActivityIndicator color="#ef8b22" size={25} />}
+      </Pressable>
+      <View
+        style={{
+          // marginTop: 50,
+          flexDirection: "row",
+          borderBottomWidth: 1,
+          borderColor: "grey",
+          width: Dimensions.get("window").width,
+          display: "flex",
+          justifyContent: "space-around",
+          paddingBottom: 5,
+        }}
+      >
+        <ButtonComponent
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderWidth: activeTab === Tabs.Pbs ? 2 : 1,
+          }}
+          onPress={() => {
+            setActiveTab(Tabs.Pbs);
+          }}
+        >
+          <Octicons
+            name="stopwatch"
+            color={textColor(colorScheme).color}
+            size={20}
+          />
+        </ButtonComponent>
+        <ButtonComponent
+          onPress={() => setActiveTab(Tabs.Meets)}
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderWidth: activeTab === Tabs.Meets ? 2 : 1,
+          }}
+        >
+          <Entypo name="medal" color={textColor(colorScheme).color} size={20} />
+        </ButtonComponent>
+        <ButtonComponent
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderWidth: activeTab === Tabs.Speciality ? 2 : 1,
+          }}
+          onPress={async () => {
+            setActiveTab(Tabs.Speciality);
+            getSpecialityData(athleteData);
+          }}
+        >
+          <AntDesign
+            name="staro"
+            color={textColor(colorScheme).color}
+            size={20}
+          />
+        </ButtonComponent>
+      </View>
+    </View>
+  );
+}
+
 export default function Profile() {
   const colorScheme = useColorScheme();
 
@@ -62,7 +225,6 @@ export default function Profile() {
   const [labels, setLabels] = useState([] as string[]);
   const [shouldShow25, setShouldShow25] = useState(false);
   const [userSwitchLoading, setUserSwitchLoading] = useState(false);
-  const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<{
@@ -72,7 +234,23 @@ export default function Profile() {
     event: SwimrakingEventId["100m vrije slag"],
     poolSize: "25m",
   });
-  const [headerHeight, setHeaderHeight] = useState(0);
+
+  function prepareData(
+    aData: AthleteData,
+    history25mFreestyle: {
+      year: string;
+      points: {
+        time: string;
+        points: string;
+        date: Date;
+        location: string;
+      };
+    }[]
+  ) {
+    setAthleteData(aData);
+    setData(history25mFreestyle.map(({ points }) => parseInt(points.points)));
+    setLabels(history25mFreestyle.map(({ year }) => year));
+  }
 
   async function fetchUser() {
     const response = await getItem("username");
@@ -87,11 +265,7 @@ export default function Profile() {
         response.username
       );
       if (aData) {
-        setAthleteData(aData);
-        setData(
-          history25mFreestyle.map(({ points }) => parseInt(points.points))
-        );
-        setLabels(history25mFreestyle.map(({ year }) => year));
+        prepareData(aData, history25mFreestyle);
         setSelectedEvent({
           event:
             SwimrakingEventId[
@@ -111,6 +285,7 @@ export default function Profile() {
   useFocusEffect(
     useCallback(() => {
       const getI = async () => {
+        if (username.length! > 0) return;
         await fetchUser();
       };
       getI();
@@ -223,151 +398,12 @@ export default function Profile() {
     if (athleteData.name) {
       return (
         <Page style={{ justifyContent: "flex-start" }}>
-          <View style={{ flex: 1, backgroundColor: "#181c20", zIndex: 2 }}>
-            <Pressable
-              style={{
-                width: "100%",
-                paddingVertical: 5,
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-              onPress={async () => {
-                setUserSwitchLoading(true);
-                setMainSwimmerSelected(!mainSwimmerSelected);
-                const swimmer = await getItem(
-                  mainSwimmerSelected ? "swimmers" : "username"
-                );
-                if (swimmer) {
-                  const { aData, history25mFreestyle } =
-                    await fetchSwimrankingSwimmer(
-                      swimmer.swimmer ?? swimmer.username
-                    );
-                  if (aData) {
-                    setAthleteData(aData);
-                    setData(
-                      history25mFreestyle.map(({ points }) =>
-                        parseInt(points.points)
-                      )
-                    );
-                    setLabels(history25mFreestyle.map(({ year }) => year));
-                    setUserSwitchLoading(false);
-                  } else {
-                    setUserSwitchLoading(false);
-                  }
-                } else setUserSwitchLoading(false);
-              }}
-            >
-              {!userSwitchLoading && (
-                <View
-                  style={{
-                    flexDirection: "column",
-                    flex: 1,
-                    width: "90%",
-                    marginVertical: 10,
-                    borderColor: "#ef8b22",
-                    borderWidth: 1,
-                    borderRadius: 6,
-                    paddingHorizontal: 20,
-                    paddingVertical: 5,
-                  }}
-                >
-                  <View
-                    style={{
-                      justifyContent: "space-between",
-                      flexDirection: "row",
-                    }}
-                  >
-                    <Text
-                      style={[textColor(colorScheme), { textAlign: "left" }]}
-                    >
-                      {athleteData.name}
-                    </Text>
-                    <Text style={[textColor(colorScheme)]}>
-                      {athleteData.birthYear}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      justifyContent: "space-between",
-                      flexDirection: "row",
-                    }}
-                  >
-                    <Text
-                      style={[textColor(colorScheme), { textAlign: "left" }]}
-                    >
-                      {athleteData.nation}
-                    </Text>
-                    <Text style={[textColor(colorScheme)]}>
-                      {athleteData.club}
-                    </Text>
-                  </View>
-                </View>
-              )}
-              {userSwitchLoading && (
-                <ActivityIndicator color="#ef8b22" size={25} />
-              )}
-            </Pressable>
-            <View
-              style={{
-                // marginTop: 50,
-                flexDirection: "row",
-                borderBottomWidth: 1,
-                borderColor: "grey",
-                width: Dimensions.get("window").width,
-                display: "flex",
-                justifyContent: "space-around",
-                paddingBottom: 5,
-              }}
-            >
-              <ButtonComponent
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderWidth: activeTab === Tabs.Pbs ? 2 : 1,
-                }}
-                onPress={() => {
-                  setActiveTab(Tabs.Pbs);
-                }}
-              >
-                <Octicons
-                  name="stopwatch"
-                  color={textColor(colorScheme).color}
-                  size={20}
-                />
-              </ButtonComponent>
-              <ButtonComponent
-                onPress={() => setActiveTab(Tabs.Meets)}
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderWidth: activeTab === Tabs.Meets ? 2 : 1,
-                }}
-              >
-                <Entypo
-                  name="medal"
-                  color={textColor(colorScheme).color}
-                  size={20}
-                />
-              </ButtonComponent>
-              <ButtonComponent
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderWidth: activeTab === Tabs.Speciality ? 2 : 1,
-                }}
-                onPress={async () => {
-                  setActiveTab(Tabs.Speciality);
-                  getSpecialityData(athleteData);
-                }}
-              >
-                <AntDesign
-                  name="staro"
-                  color={textColor(colorScheme).color}
-                  size={20}
-                />
-              </ButtonComponent>
-            </View>
-          </View>
+          <ProfileHeader
+            activeTab={activeTab}
+            athleteData={athleteData}
+            prepareData={prepareData}
+            setActiveTab={setActiveTab}
+          />
           {activeTab === Tabs.Pbs && (
             <PbTable
               top={0}
