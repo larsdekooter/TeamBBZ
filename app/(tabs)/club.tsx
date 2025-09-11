@@ -492,7 +492,7 @@ function WedstrijdenComponent({
               paddingVertical: 10,
               marginBottom: 5,
               marginTop: 10,
-              backgroundColor: "#2a3140",
+              backgroundColor: "#2a3137",
             }}
           >
             <Text style={[textColor(colorScheme)]}>Schrijf in</Text>
@@ -501,7 +501,7 @@ function WedstrijdenComponent({
         {selectedWedstrijd.program && (
           <FlatList
             data={selectedWedstrijd.program.filter(
-              (p) => !selectedWedstrijd.enterable || !p.name.includes("pauze")
+              (p) => !p.name.includes("pauze")
             )}
             style={{
               width: "100%",
@@ -588,7 +588,35 @@ function WedstrijdenComponent({
                   </Pressable>
                 );
               } else {
-                return <View></View>;
+                return (
+                  <View
+                    style={{
+                      backgroundColor:
+                        colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+                      margin: 5,
+                      flex: 1,
+                      borderRadius: 10,
+                      paddingHorizontal: 5,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      paddingVertical: 15,
+                      flexDirection: "row",
+                      minHeight: 10,
+                      borderColor: "#ef8b22",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...textColor(colorScheme),
+                        textAlign: "center",
+                        flex: 1,
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                  </View>
+                );
               }
             }}
           />

@@ -327,7 +327,6 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
           ? Number.parseInt(p.match(MeetRegexes.TripleNumberRegex)?.[0] ?? "-1")
           : i,
       }));
-
     wedstrijd.livetimeLink = page
       .match(MeetRegexes.LivetimingRegex)![0]
       .match(GeneralRegexes.HrefRegex)![1];
