@@ -53,6 +53,16 @@ export default function SwipeModal({
     closeValue ?? (customHeight ? customHeight / 2 : height / 4);
   const animationDuration = 200;
 
+  const handleClose = () => {
+    top.value = withTiming(height, { duration: animationDuration });
+    opened.value === 1
+      ? (opened.value = withTiming(0, { duration: animationDuration }))
+      : null;
+    setTimeout(() => {
+      onClose();
+    }, animationDuration);
+  };
+
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       const { translationY } = e;
@@ -93,15 +103,6 @@ export default function SwipeModal({
   const colorScheme = useColorScheme();
 
   const flex = customHeight ? customHeight / height : 1 / 2;
-  const handleClose = () => {
-    top.value = withTiming(height, { duration: animationDuration });
-    opened.value === 1
-      ? (opened.value = withTiming(0, { duration: animationDuration }))
-      : null;
-    setTimeout(() => {
-      onClose();
-    }, animationDuration);
-  };
 
   return (
     <Modal
