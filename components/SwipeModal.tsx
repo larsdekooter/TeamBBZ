@@ -24,6 +24,7 @@ import Animated, {
 import { SafeAreaView } from "react-native-safe-area-context";
 import ButtonComponent from "./ButtonComponent";
 import { textColor } from "@/constants/functions";
+import { Colors } from "@/constants/enums";
 
 type SwipeModalProps = {
   children?: ReactNode;
@@ -133,9 +134,11 @@ export default function SwipeModal({
                     width,
                     flex,
                     backgroundColor:
-                      colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                      colorScheme === "dark"
+                        ? Colors.ModalDarkBackground
+                        : Colors.ModalLightBackground,
                     borderRadius: 20,
-                    borderColor: "#ef8b22",
+                    borderColor: Colors.Orange,
                     borderWidth: 1,
                     top: 0,
                   },
@@ -172,7 +175,9 @@ export default function SwipeModal({
                       width: "95%",
                       paddingVertical: 10,
                       backgroundColor:
-                        colorScheme === "light" ? "#f3f5f6" : "#2a3137",
+                        colorScheme === "light"
+                          ? Colors.ModalLightBackground
+                          : Colors.ModalDarkBackground,
                     }}
                   >
                     <Text

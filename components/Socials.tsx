@@ -1,5 +1,6 @@
 import { useColorScheme, View } from "react-native";
 import SocialLink from "./SocialLink";
+import { Colors } from "@/constants/enums";
 
 export default function Socials() {
   const colorScheme = useColorScheme();
@@ -10,7 +11,10 @@ export default function Socials() {
         size={28}
         url="https://www.b-b-z.nl/"
         style={{
-          backgroundColor: colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.ModalDarkBackground
+              : Colors.ModalLightBackground,
           padding: 10,
           borderRadius: 100,
           margin: 10,
@@ -25,7 +29,10 @@ export default function Socials() {
         size={28}
         url="https://www.instagram.com/biesboschzwemmers/"
         style={{
-          backgroundColor: colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.ModalDarkBackground
+              : Colors.ModalLightBackground,
           padding: 10,
           borderRadius: 100,
           margin: 10,
@@ -39,7 +46,10 @@ export default function Socials() {
         size={28}
         url="https://x.com/BiesBoschzw"
         style={{
-          backgroundColor: colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.ModalDarkBackground
+              : Colors.ModalLightBackground,
           padding: 10,
           borderRadius: 100,
           margin: 10,
@@ -54,7 +64,10 @@ export default function Socials() {
         size={28}
         url="https://www.facebook.com/Biesboschzwemmers"
         style={{
-          backgroundColor: colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.ModalDarkBackground
+              : Colors.ModalLightBackground,
           padding: 10,
           borderRadius: 100,
           margin: 10,
@@ -69,7 +82,10 @@ export default function Socials() {
         size={28}
         url="https://www.flickr.com/photos/biesboschzwemmers"
         style={{
-          backgroundColor: colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.ModalDarkBackground
+              : Colors.ModalLightBackground,
           padding: 10,
           borderRadius: 100,
           margin: 10,

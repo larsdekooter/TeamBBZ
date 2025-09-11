@@ -20,6 +20,7 @@ import Socials from "@/components/Socials";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "@/components/SwipeModal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Colors } from "@/constants/enums";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -276,7 +277,9 @@ export default function Settings() {
                   paddingVertical: 10,
                   width: 200,
                   backgroundColor:
-                    colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                    colorScheme === "dark"
+                      ? Colors.ModalDarkBackground
+                      : Colors.ModalLightBackground,
                   zIndex: 1000,
                 }}
                 onPress={async (e) => {
@@ -326,12 +329,18 @@ export default function Settings() {
             style={{
               width: "95%",
               paddingVertical: 10,
-              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+              backgroundColor:
+                colorScheme === "dark"
+                  ? Colors.ModalDarkBackground
+                  : Colors.ModalLightBackground,
             }}
           >
             <Text
               style={{
-                color: colorScheme === "dark" ? "#d76e72" : "#dd4345",
+                color:
+                  colorScheme === "dark"
+                    ? Colors.DarkmodeRed
+                    : Colors.LightmodeRed,
                 fontWeight: "bold",
               }}
             >
@@ -346,7 +355,10 @@ export default function Settings() {
             style={{
               width: "95%",
               paddingVertical: 10,
-              backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+              backgroundColor:
+                colorScheme === "dark"
+                  ? Colors.ModalDarkBackground
+                  : Colors.ModalLightBackground,
             }}
           >
             <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
@@ -385,20 +397,20 @@ const styles = StyleSheet.create({
   },
   modalLightView: {
     margin: 20,
-    backgroundColor: "#f3f5f6",
+    backgroundColor: Colors.ModalLightBackground,
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    borderColor: "#ef8b22",
+    borderColor: Colors.Orange,
     borderWidth: 1,
   },
   modalDarkView: {
     margin: 20,
-    backgroundColor: "#2a3137",
+    backgroundColor: Colors.ModalDarkBackground,
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    borderColor: "#ef8b22",
+    borderColor: Colors.Orange,
     borderWidth: 1,
   },
   button: {

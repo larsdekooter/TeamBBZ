@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleProp, StyleSheet, useColorScheme, ViewStyle } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Colors } from "@/constants/enums";
 
 export default function Page({
   children,
@@ -45,7 +46,7 @@ const stylesDark = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#181c20",
+    backgroundColor: Colors.DarkBackground,
   },
   text: {
     color: "#FFF",

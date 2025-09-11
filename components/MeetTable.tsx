@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "./SwipeModal";
+import { Colors } from "@/constants/enums";
 
 export default function MeetsTable({
   top,
@@ -104,7 +105,7 @@ export default function MeetsTable({
                       justifyContent: "space-between",
                       alignItems: "center",
                       borderWidth: 1,
-                      borderColor: "#ef8b22",
+                      borderColor: Colors.Orange,
                       borderRadius: 6,
                       margin: 5,
                       padding: 5,
@@ -141,7 +142,7 @@ export default function MeetsTable({
                             return (
                               <FontAwesome6
                                 name={name}
-                                color="#D4af37"
+                                color={Colors.Gold}
                                 size={size}
                               />
                             );
@@ -149,7 +150,7 @@ export default function MeetsTable({
                             return (
                               <FontAwesome5
                                 name={name}
-                                color="#C0c0c0"
+                                color={Colors.Silver}
                                 size={size}
                               />
                             );
@@ -157,7 +158,7 @@ export default function MeetsTable({
                             return (
                               <FontAwesome6
                                 name={name}
-                                color="#Cd7f32"
+                                color={Colors.Bronze}
                                 size={size}
                               />
                             );
@@ -212,7 +213,8 @@ export default function MeetsTable({
         renderItem={({ item, index }) => (
           <Pressable
             style={{
-              backgroundColor: colorScheme === "light" ? "#FFF" : "#181c20",
+              backgroundColor:
+                colorScheme === "light" ? "#FFF" : Colors.DarkBackground,
               borderWidth: 1,
               borderColor: "grey",
               display: "flex",
@@ -238,7 +240,7 @@ export default function MeetsTable({
             >
               {mapDates(item.date)}
             </Text>
-            {loading === index && <ActivityIndicator color="#ef8b22" />}
+            {loading === index && <ActivityIndicator color={Colors.Orange} />}
             <Text
               style={{
                 textAlign: "center",

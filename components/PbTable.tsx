@@ -15,11 +15,11 @@ import {
   View,
 } from "react-native";
 import ButtonComponent from "./ButtonComponent";
-import { Strokes, SwimrakingEventId } from "@/constants/enums";
+import { Colors, Strokes, SwimrakingEventId } from "@/constants/enums";
 import { FontAwesome } from "@expo/vector-icons";
 import SectionComponent from "./SectionComponent";
 import SwipeModal from "./SwipeModal";
-import { PressableProps } from "react-native-gesture-handler";
+import { PressableProps } from "react-native";
 
 export default function PbTable({
   data,
@@ -316,14 +316,17 @@ function QuickViewModal({
         <ButtonComponent
           onPress={(e) => (onPressChoose ? onPressChoose(e) : null)}
           style={{
-            backgroundColor: colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+            backgroundColor:
+              colorScheme === "dark"
+                ? Colors.ModalDarkBackground
+                : Colors.ModalLightBackground,
             paddingVertical: 10,
           }}
         >
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
             Bekijk geschiedenis
           </Text>
-          {loading && <ActivityIndicator size="small" color="#ef8b22" />}
+          {loading && <ActivityIndicator size="small" color={Colors.Orange} />}
         </ButtonComponent>
       </View>
     </SwipeModal>

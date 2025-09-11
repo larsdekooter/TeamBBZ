@@ -39,6 +39,7 @@ import {
   SimpleLineIcons,
   Octicons,
 } from "@expo/vector-icons";
+import { Colors } from "@/constants/enums";
 
 enum Tabs {
   Pbs = 1,
@@ -77,7 +78,7 @@ function ProfileHeader({
   return (
     <View
       style={{
-        backgroundColor: "#181c20",
+        backgroundColor: Colors.DarkBackground,
         zIndex: 2,
       }}
     >
@@ -115,7 +116,7 @@ function ProfileHeader({
               flex: 1,
               width: "90%",
               marginVertical: 10,
-              borderColor: "#ef8b22",
+              borderColor: Colors.Orange,
               borderWidth: 1,
               borderRadius: 6,
               paddingHorizontal: 20,
@@ -148,7 +149,9 @@ function ProfileHeader({
             </View>
           </View>
         )}
-        {userSwitchLoading && <ActivityIndicator color="#ef8b22" size={25} />}
+        {userSwitchLoading && (
+          <ActivityIndicator color={Colors.Orange} size={25} />
+        )}
       </Pressable>
       <View
         style={{
@@ -370,7 +373,9 @@ export default function Profile() {
                   paddingVertical: 10,
                   width: 200,
                   backgroundColor:
-                    colorScheme === "dark" ? "#2a3137" : "#f3f5f6",
+                    colorScheme === "dark"
+                      ? Colors.ModalDarkBackground
+                      : Colors.ModalLightBackground,
                 }}
                 onPress={async () => {
                   if (!(usernameSet.length > 0)) {
@@ -450,8 +455,8 @@ export default function Profile() {
                 size={300}
                 axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
                 rings={4}
-                fillColor="rgba(162, 94, 23, 0.5)"
-                strokeColor="#ef8b22"
+                fillColor={Colors.TransparantOrange}
+                strokeColor={Colors.Orange}
               />
               <Text style={[textColor(colorScheme), { fontStyle: "italic" }]}>
                 Gemiddeld aantal punten:{" "}
@@ -483,7 +488,7 @@ export default function Profile() {
                 labels={labels}
                 size={{ width: Dimensions.get("window").width, height: 300 }}
                 lineColor="rgba(162, 94, 23, 0.8)"
-                pointColor="#ef8b22"
+                pointColor={Colors.Orange}
               />
               <Dropdown
                 data={athleteData.pbs
@@ -542,7 +547,7 @@ export default function Profile() {
     } else {
       return (
         <Page>
-          <ActivityIndicator size="large" color="#ef8b22" />
+          <ActivityIndicator size="large" color={Colors.Orange} />
         </Page>
       );
     }
@@ -557,20 +562,20 @@ const styles = StyleSheet.create({
   },
   modalLightView: {
     margin: 20,
-    backgroundColor: "#f3f5f6",
+    backgroundColor: Colors.ModalLightBackground,
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    borderColor: "#ef8b22",
+    borderColor: Colors.Orange,
     borderWidth: 1,
   },
   modalDarkView: {
     margin: 20,
-    backgroundColor: "#2a3137",
+    backgroundColor: Colors.ModalDarkBackground,
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
-    borderColor: "#ef8b22",
+    borderColor: Colors.Orange,
     borderWidth: 1,
   },
   button: {

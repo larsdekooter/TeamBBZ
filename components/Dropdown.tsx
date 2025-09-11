@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/enums";
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
 import { ReactNode, useState } from "react";
@@ -107,7 +108,9 @@ export default function Dropdown<T extends ReactNode>({
         >
           {selected}
         </Text>
-        {shouldLoad && <ActivityIndicator color="#ef8b22" size={"small"} />}
+        {shouldLoad && (
+          <ActivityIndicator color={Colors.Orange} size={"small"} />
+        )}
         <Animated.View
           style={{
             transform: [{ rotate }],

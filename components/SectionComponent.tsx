@@ -12,6 +12,7 @@ import { useState } from "react";
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
 import SkeletonLoader from "./SkeletonLoader";
+import { Colors } from "@/constants/enums";
 
 export default function SectionComponent({
   children,
@@ -63,7 +64,7 @@ export default function SectionComponent({
     <Pressable
       style={{
         width: Dimensions.get("window").width * 0.95,
-        borderColor: "#ef8b22",
+        borderColor: Colors.Orange,
         borderWidth: 1,
         borderRadius: 6,
         paddingVertical: 10,

@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/enums";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   GestureResponderEvent,
@@ -27,14 +28,14 @@ export default function CheckBox({
         {
           backgroundColor: !checked
             ? colorScheme === "dark"
-              ? "#2a3137"
+              ? Colors.ModalDarkBackground
               : "#fff"
-            : "#ef8b22",
+            : Colors.Orange,
           width: 30,
           height: 30,
           borderRadius: 6,
           borderWidth: 2,
-          borderColor: !checked ? "grey" : "#ff9f40",
+          borderColor: !checked ? "grey" : Colors.LightOrange,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",

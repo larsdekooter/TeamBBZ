@@ -36,3 +36,22 @@ export enum Strokes {
   "vrije slag" = 3,
   "wisselslag" = 4,
 }
+
+export enum Colors {
+  Orange = "#ef8b22",
+  DarkBackground = "#181c20",
+  ModalDarkBackground = "#2a3137",
+  SelectedGreen = "#133914",
+  ModalLightBackground = "#f3f5f6",
+  CheckboxGreen = "#b7f1b9",
+  TransparantOrange = "rgba(162, 94, 23, 0.5)",
+  DarkmodeRed = "#d76e72",
+  LightmodeRed = "#dd4345",
+  SelectedBackground = "#133914",
+  LightOrange = "#ff9f40",
+  Gold = "#D4af37",
+  Silver = "#C0c0c0",
+  Bronze = "#Cd7f32",
+  ErrorRedBorder = "#ff3333",
+  ErrorRedMessage = "#ff2a27",
+}

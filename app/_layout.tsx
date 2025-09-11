@@ -1,5 +1,6 @@
 import { Stack } from "expo-router/stack";
 import { useColorScheme } from "react-native";
+import { Colors } from "@/constants/enums";
 
 export default function Layout() {
   const colorScheme = useColorScheme();
@@ -7,7 +8,8 @@ export default function Layout() {
     <Stack
       screenOptions={{
         contentStyle: {
-          backgroundColor: colorScheme === "dark" ? "#181c20" : "#FFF",
+          backgroundColor:
+            colorScheme === "dark" ? Colors.DarkBackground : "#FFF",
         },
       }}
     >

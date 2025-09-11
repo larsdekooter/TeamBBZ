@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/enums";
 import {
   StyleProp,
   Text,
@@ -27,7 +28,7 @@ export default function TextInputComponent(props: TextInputComponentProps) {
             paddingHorizontal: 10,
             height: 40,
             borderColor: props.errorMessage
-              ? "#ff3333"
+              ? Colors.ErrorRedBorder
               : colorScheme === "light"
               ? "grey"
               : "",
@@ -40,7 +41,7 @@ export default function TextInputComponent(props: TextInputComponentProps) {
         ]}
       />
       {props.errorMessage && (
-        <Text style={{ color: "#ff2a27", fontStyle: "italic" }}>
+        <Text style={{ color: Colors.ErrorRedMessage, fontStyle: "italic" }}>
           {props.errorMessage}
         </Text>
       )}

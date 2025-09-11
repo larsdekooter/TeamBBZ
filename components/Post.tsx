@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/enums";
 import { textColor } from "@/constants/functions";
 import { PostRegexes } from "@/constants/regex";
 import { Post } from "@/constants/types";
@@ -54,7 +55,7 @@ export default function PostComponent({
       <View
         style={{
           flex: 1,
-          borderColor: "#ef8b22",
+          borderColor: Colors.Orange,
           borderWidth: 1,
           width: compact ? "auto" : "80%",
           justifyContent: "center",

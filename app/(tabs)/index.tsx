@@ -14,6 +14,7 @@ import { Post } from "@/constants/types";
 import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
 import { getItem, setItem } from "@/utils/AsyncStorage";
+import { Colors } from "@/constants/enums";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -74,7 +75,7 @@ export default function Home() {
   } else {
     return (
       <Page>
-        <ActivityIndicator color="#ef8b22" size="large" />
+        <ActivityIndicator color={Colors.Orange} size="large" />
       </Page>
     );
   }

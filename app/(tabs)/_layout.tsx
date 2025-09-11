@@ -1,6 +1,7 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Image, StyleSheet, useColorScheme, View } from "react-native";
+import { Colors } from "@/constants/enums";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -9,16 +10,18 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#ef8b22",
+        tabBarActiveTintColor: Colors.Orange,
         animation: "shift",
         tabBarShowLabel: false,
         tabBarLabelStyle: { height: 0 },
         tabBarStyle: {
-          backgroundColor: colorScheme == "dark" ? "#181c20" : "#FFF",
+          backgroundColor:
+            colorScheme == "dark" ? Colors.DarkBackground : "#FFF",
           height: 60,
         },
         sceneStyle: {
-          backgroundColor: colorScheme === "dark" ? "#181c20" : "#FFF",
+          backgroundColor:
+            colorScheme === "dark" ? Colors.DarkBackground : "#FFF",
         },
       }}
     >

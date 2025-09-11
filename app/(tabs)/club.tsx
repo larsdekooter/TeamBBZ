@@ -28,6 +28,7 @@ import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
 import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
+import { Colors } from "@/constants/enums";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -173,7 +174,7 @@ function CompetitieStandComponent({
                   <View
                     key={index}
                     style={{
-                      borderColor: "#ef8b22",
+                      borderColor: Colors.Orange,
                       borderWidth: 1,
                       borderRadius: 6,
                       padding: 5,
@@ -377,7 +378,7 @@ function SchemaComponent({
       <Pressable
         style={{
           width: Dimensions.get("window").width * 0.95,
-          borderColor: "#ef8b22",
+          borderColor: Colors.Orange,
           borderWidth: 1,
           borderRadius: 6,
           paddingVertical: 10,
@@ -442,7 +443,7 @@ function WedstrijdenComponent({
       >
         <View
           style={{
-            borderColor: "#ef8b22",
+            borderColor: Colors.Orange,
             borderWidth: 1,
             borderRadius: 8,
             paddingHorizontal: 20,
@@ -492,7 +493,7 @@ function WedstrijdenComponent({
               paddingVertical: 10,
               marginBottom: 5,
               marginTop: 10,
-              backgroundColor: "#2a3137",
+              backgroundColor: Colors.ModalDarkBackground,
             }}
           >
             <Text style={[textColor(colorScheme)]}>Schrijf in</Text>
@@ -515,9 +516,9 @@ function WedstrijdenComponent({
                         parseInt(item.name.split(/\s/)[0])
                       )
                         ? colorScheme === "dark"
-                          ? "#2a3137"
-                          : "#d6d6d6"
-                        : "#133914",
+                          ? Colors.ModalDarkBackground
+                          : Colors.ModalLightBackground
+                        : Colors.SelectedBackground,
                       margin: 5,
                       flex: 1,
                       borderRadius: 10,
@@ -530,8 +531,8 @@ function WedstrijdenComponent({
                       borderColor: chosenProgram.includes(
                         parseInt(item.name.split(/\s/)[0])
                       )
-                        ? "#b7f1b9"
-                        : "#ef8b22",
+                        ? Colors.CheckboxGreen
+                        : Colors.Orange,
                       borderWidth: 1,
                     }}
                     onPress={() => {
@@ -553,9 +554,9 @@ function WedstrijdenComponent({
                           parseInt(item.name.split(/\s/)[0])
                         )
                           ? colorScheme === "dark"
-                            ? "#2a3137"
+                            ? Colors.ModalDarkBackground
                             : "#fff"
-                          : "#90ea93",
+                          : Colors.CheckboxGreen,
                         borderColor: "#fff",
                         borderWidth: 1,
                         borderRadius: 3,
@@ -592,7 +593,9 @@ function WedstrijdenComponent({
                   <View
                     style={{
                       backgroundColor:
-                        colorScheme === "dark" ? "#2a3137" : "#d6d6d6",
+                        colorScheme === "dark"
+                          ? Colors.ModalDarkBackground
+                          : Colors.ModalLightBackground,
                       margin: 5,
                       flex: 1,
                       borderRadius: 10,
@@ -602,7 +605,7 @@ function WedstrijdenComponent({
                       paddingVertical: 15,
                       flexDirection: "row",
                       minHeight: 10,
-                      borderColor: "#ef8b22",
+                      borderColor: Colors.Orange,
                       borderWidth: 1,
                     }}
                   >
@@ -662,7 +665,7 @@ function WedstrijdenComponent({
                 {wedstrijd.name}
               </Text>
               {programLoading && selectedWedstrijd.id === wedstrijd.id && (
-                <ActivityIndicator color="#ef8b22" />
+                <ActivityIndicator color={Colors.Orange} />
               )}
               <Text
                 style={{
@@ -810,7 +813,7 @@ function ClubrecordsComponent({
           style={{ display: "flex", alignItems: "center", marginBottom: 10 }}
         >
           <Dropdown
-            style={{ borderColor: "#ef8b22" }}
+            style={{ borderColor: Colors.Orange }}
             onPress={(item) => setSelected(item)}
             data={["Mannen", "Vrouwen"]}
             renderItem={({ item, index }) => (
@@ -832,7 +835,7 @@ function ClubrecordsComponent({
         </View>
         <View
           style={{
-            borderColor: "#ef8b22",
+            borderColor: Colors.Orange,
             borderWidth: 1,
             padding: 10,
             borderRadius: 6,
