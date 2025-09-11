@@ -21,7 +21,7 @@ import {
 } from "../../constants/functions";
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { getItem, setItem, clear } from "@/utils/AsyncStorage";
 import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
@@ -36,8 +36,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   AntDesign,
   Entypo,
-  FontAwesome,
-  FontAwesome5,
+  SimpleLineIcons,
   Octicons,
 } from "@expo/vector-icons";
 
@@ -200,8 +199,8 @@ function ProfileHeader({
             getSpecialityData(athleteData);
           }}
         >
-          <AntDesign
-            name="staro"
+          <Octicons
+            name="star"
             color={textColor(colorScheme).color}
             size={20}
           />
@@ -269,9 +268,9 @@ export default function Profile() {
         setSelectedEvent({
           event:
             SwimrakingEventId[
-              athleteData.pbs[0].event as keyof typeof SwimrakingEventId
+              aData.pbs[0].event as keyof typeof SwimrakingEventId
             ],
-          poolSize: athleteData.pbs[0].poolSize,
+          poolSize: aData.pbs[0].poolSize,
         });
         return true;
       } else {
@@ -282,15 +281,22 @@ export default function Profile() {
     }
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      const getI = async () => {
-        if (username.length! > 0) return;
-        await fetchUser();
-      };
-      getI();
-    }, [])
-  );
+  // useFocusEffect( () =>
+  //   useCallback(() => {
+  //     const getI = async () => {
+  //       // if (username.length! > 0) return;
+  //       await fetchUser();
+  //     };
+  //     getI();
+  //   }, [])
+  // );
+
+  useEffect(() => {
+    const getI = async () => {
+      await fetchUser();
+    };
+    getI();
+  });
 
   if (!(username.length > 0)) {
     if (athleteData.name) {
