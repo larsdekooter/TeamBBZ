@@ -78,7 +78,8 @@ function ProfileHeader({
   return (
     <View
       style={{
-        backgroundColor: Colors.DarkBackground,
+        backgroundColor:
+          colorScheme === "light" ? "#fff" : Colors.DarkBackground,
         zIndex: 2,
       }}
     >
@@ -226,7 +227,6 @@ export default function Profile() {
   const [data, setData] = useState([] as number[]);
   const [labels, setLabels] = useState([] as string[]);
   const [shouldShow25, setShouldShow25] = useState(false);
-  const [userSwitchLoading, setUserSwitchLoading] = useState(false);
   const [nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<{
@@ -284,22 +284,22 @@ export default function Profile() {
     }
   }
 
-  // useFocusEffect( () =>
-  //   useCallback(() => {
-  //     const getI = async () => {
-  //       // if (username.length! > 0) return;
-  //       await fetchUser();
-  //     };
-  //     getI();
-  //   }, [])
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      const getI = async () => {
+        if (username.length! > 0) return;
+        await fetchUser();
+      };
+      getI();
+    }, [])
+  );
 
-  useEffect(() => {
-    const getI = async () => {
-      await fetchUser();
-    };
-    getI();
-  });
+  // useEffect(() => {
+  //   const getI = async () => {
+  //     await fetchUser();
+  //   };
+  //   getI();
+  // });
 
   if (!(username.length > 0)) {
     if (athleteData.name) {
@@ -455,7 +455,11 @@ export default function Profile() {
                 size={300}
                 axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
                 rings={4}
-                fillColor={Colors.TransparantOrange}
+                fillColor={
+                  colorScheme === "light"
+                    ? Colors.TransparantLightOrange
+                    : Colors.TransparantDarkOrange
+                }
                 strokeColor={Colors.Orange}
               />
               <Text style={[textColor(colorScheme), { fontStyle: "italic" }]}>
@@ -487,7 +491,11 @@ export default function Profile() {
                 data={data}
                 labels={labels}
                 size={{ width: Dimensions.get("window").width, height: 300 }}
-                lineColor="rgba(162, 94, 23, 0.8)"
+                lineColor={
+                  colorScheme === "light"
+                    ? "rgba(162,94,23,0.5)"
+                    : "rgba(162, 94, 23, 0.8)"
+                }
                 pointColor={Colors.Orange}
               />
               <Dropdown

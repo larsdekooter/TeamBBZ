@@ -13,6 +13,9 @@ import {
 import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "./SwipeModal";
 import { Colors } from "@/constants/enums";
+import { SwimrankingsRegexes } from "@/constants/regex";
+
+//TODO: add points to visualization
 
 export default function MeetsTable({
   top,
@@ -101,9 +104,6 @@ export default function MeetsTable({
                   <View
                     key={index}
                     style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
                       borderWidth: 1,
                       borderColor: Colors.Orange,
                       borderRadius: 6,
@@ -111,85 +111,153 @@ export default function MeetsTable({
                       padding: 5,
                     }}
                   >
-                    <Text
-                      style={[
-                        textColor(colorScheme),
-                        { textAlign: "left", width: "33%" },
-                      ]}
-                    >
-                      {event
-                        .replace("Breaststroke", "schoolslag")
-                        .replace("Freestyle", "vrije slag")
-                        .replace("Medley", "wisselslag")
-                        .replace("Backstroke", "rugslag")
-                        .replace("Butterfly", "vlinderslag")}
-                    </Text>
                     <View
                       style={{
-                        width: "33%",
-                        flex: 1,
-                        justifyContent: "center",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        borderBottomWidth: 1,
+                        borderBottomColor: "gray",
+                      }}
+                    >
+                      <Text
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "left", width: "33%" },
+                        ]}
+                      >
+                        {event
+                          .replace("Breaststroke", "schoolslag")
+                          .replace("Freestyle", "vrije slag")
+                          .replace("Medley", "wisselslag")
+                          .replace("Backstroke", "rugslag")
+                          .replace("Butterfly", "vlinderslag")}
+                      </Text>
+                      <View
+                        style={{
+                          width: "33%",
+                          flex: 1,
+                          justifyContent: "center",
 
+                          alignItems: "center",
+                        }}
+                      >
+                        {(() => {
+                          const place = currentItem.data.places[index].trim();
+                          const name = "medal";
+                          const size = 17;
+                          switch (place) {
+                            case "1.":
+                              return (
+                                <FontAwesome6
+                                  name={name}
+                                  color={Colors.Gold}
+                                  size={size}
+                                />
+                              );
+                            case "2.":
+                              return (
+                                <FontAwesome5
+                                  name={name}
+                                  color={Colors.Silver}
+                                  size={size}
+                                />
+                              );
+                            case "3.":
+                              return (
+                                <FontAwesome6
+                                  name={name}
+                                  color={Colors.Bronze}
+                                  size={size}
+                                />
+                              );
+                            default:
+                              return (
+                                <Text
+                                  style={[
+                                    textColor(colorScheme),
+                                    {
+                                      fontWeight: !place.includes("Split")
+                                        ? "bold"
+                                        : "normal",
+                                    },
+                                  ]}
+                                >
+                                  {place}
+                                </Text>
+                              );
+                          }
+                        })()}
+                      </View>
+                      <View style={{ width: "33%" }}>
+                        <Text
+                          style={[
+                            {
+                              textAlign: "right",
+                              color:
+                                parseFloat(
+                                  currentItem.data.percentages[index]
+                                ) >= 100
+                                  ? colorScheme === "light"
+                                    ? Colors.LightModeGreen
+                                    : Colors.DarkmodeGreen
+                                  : currentItem.data.percentages[index]
+                                  ? colorScheme === "light"
+                                    ? Colors.LightmodeRed
+                                    : Colors.DarkmodeRed
+                                  : textColor(colorScheme).color,
+                            },
+                          ]}
+                        >
+                          {currentItem.data.times[index]}
+                        </Text>
+                        <Text
+                          style={[
+                            textColor(colorScheme),
+                            { textAlign: "right" },
+                          ]}
+                        >
+                          {currentItem.data.percentages[index]}
+                        </Text>
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
                         alignItems: "center",
                       }}
                     >
-                      {(() => {
-                        const place = currentItem.data.places[index].trim();
-                        const name = "medal";
-                        const size = 17;
-                        switch (place) {
-                          case "1.":
-                            return (
-                              <FontAwesome6
-                                name={name}
-                                color={Colors.Gold}
-                                size={size}
-                              />
-                            );
-                          case "2.":
-                            return (
-                              <FontAwesome5
-                                name={name}
-                                color={Colors.Silver}
-                                size={size}
-                              />
-                            );
-                          case "3.":
-                            return (
-                              <FontAwesome6
-                                name={name}
-                                color={Colors.Bronze}
-                                size={size}
-                              />
-                            );
-                          default:
-                            return (
-                              <Text
-                                style={[
-                                  textColor(colorScheme),
-                                  {
-                                    fontWeight: !place.includes("Split")
-                                      ? "bold"
-                                      : "normal",
-                                  },
-                                ]}
-                              >
-                                {place}
-                              </Text>
-                            );
-                        }
-                      })()}
-                    </View>
-                    <View style={{ width: "33%" }}>
                       <Text
-                        style={[textColor(colorScheme), { textAlign: "right" }]}
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "left", width: "33%" },
+                        ]}
                       >
-                        {currentItem.data.times[index]}
+                        {currentItem.data.types[index]
+                          .replace("-", "")
+                          .replace("Final", "Finale")
+                          .replace("Prelim", "Voorronde")
+                          .replace("Timed Finale", "Series")}
                       </Text>
                       <Text
-                        style={[textColor(colorScheme), { textAlign: "right" }]}
+                        style={[
+                          textColor(colorScheme),
+                          { textAlign: "center", width: "33%" },
+                        ]}
                       >
-                        {currentItem.data.percentages[index]}
+                        {currentItem.data.points[index]} pts.
+                      </Text>
+                      <Text
+                        style={[
+                          textColor(colorScheme),
+                          {
+                            textAlign: "right",
+                            width: "33%",
+                          },
+                        ]}
+                      >
+                        {currentItem.data.pbs[index]}
                       </Text>
                     </View>
                   </View>
