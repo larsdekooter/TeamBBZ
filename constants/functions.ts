@@ -42,6 +42,7 @@ export async function getResult(id: string): Promise<Result[]> {
       /<table[\s\S]*?>[\s\S]*?<\/table>[\s\S]*?<table[\s\S]*?>[\s\S]*?<\/table>[\s\S]*?<table[\s\S]*?>[\s\S]*?<\/table>/gm
     )!
     .toSpliced(0, 2);
+
   for (const table of personTables) {
     const textMatches = table.match(/(?<=<em id=f9>)[\s\S]*?(?=<\/td>)/gm)!;
     const obj = {
@@ -57,7 +58,13 @@ export async function getResult(id: string): Promise<Result[]> {
       points: [] as string[],
     };
     textMatches[4].split("<br>").forEach((m, i) => (obj.events[i] = m));
-    textMatches[5].split("<br>").forEach((m, i) => (obj.places[i] = m));
+    table
+      .match(/(?<=<td align=right width=4%>)[\s\S]*?(?=<\/td>)/gm)![0]
+      .match(/<[\s\S]*?>\d*/gm)!
+      .forEach(
+        (m, i) =>
+          (obj.places[i] = m.replace("<br>", "").replace("<em id=f9>", ""))
+      );
     textMatches[6].split("<br>").forEach((m, i) => (obj.times[i] = m));
     textMatches[7]
       .split("<br>")
@@ -73,7 +80,6 @@ export async function getResult(id: string): Promise<Result[]> {
 
     data.push(obj);
   }
-
   return data;
 }
 

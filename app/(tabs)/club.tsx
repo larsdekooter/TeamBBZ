@@ -76,9 +76,9 @@ export default function Club() {
       setResultsMeets(res);
       setLoading(false);
     };
-    // if (loading) {
-    getS();
-    // }
+    if (loading) {
+      getS();
+    }
   }, []);
 
   const colorScheme = useColorScheme();
@@ -132,6 +132,7 @@ function ResultsComponent({
 }) {
   const [id, setId] = useState<string>("");
   const [results, setResults] = useState<Result[] | null>(null);
+  const [resultsLoading, setResultsLoading] = useState("");
 
   return (
     <Fragment>
@@ -279,7 +280,9 @@ function ResultsComponent({
                 justifyContent: "space-between",
               }}
               onPress={async () => {
+                setResultsLoading(item.id);
                 setResults(await getResult(item.id));
+                setResultsLoading("");
                 setId(item.id);
               }}
             >
@@ -292,6 +295,9 @@ function ResultsComponent({
               >
                 {item.name}
               </Text>
+              {resultsLoading && resultsLoading === item.id && (
+                <ActivityIndicator color={Colors.Orange} />
+              )}
               <Text style={[textColor(colorScheme), { textAlign: "center" }]}>
                 {item.location}
               </Text>
