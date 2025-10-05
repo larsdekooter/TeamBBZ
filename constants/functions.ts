@@ -29,6 +29,63 @@ export function textColor(colorScheme: ColorSchemeName | boolean) {
   return { color: colorScheme === "light" ? "#000" : "#FFF" };
 }
 
+export async function getResultMeets(): Promise<
+  {
+    date: Date;
+    name: string;
+    poolSize: "25" | "50" | "OW";
+    location: string;
+    category: "competitie" | "masters" | "minioren" | "limiet" | "lac";
+    id: string;
+  }[]
+> {
+  const resultData: {
+    date: Date;
+    name: string;
+    poolSize: "25" | "50" | "OW";
+    location: string;
+    category: "competitie" | "masters" | "minioren" | "limiet" | "lac";
+    id: string;
+  }[] = [];
+
+  const page = await fetch("https://www.b-b-z.nl/zwemmen/uitslagen/").then(
+    (res) => res.text()
+  );
+  const resultTable = page.match(GeneralRegexes.GlobalTableRegex)![1];
+  const tableRows = resultTable
+    .match(GeneralRegexes.RowRegex)!
+    .toSpliced(0, 1)
+    .toSpliced(-1, 1)
+    .filter(
+      (row) =>
+        !row.includes("strong") &&
+        !row.includes('<td colspan="5" height="10"></td>')
+    )
+    .splice(0, 10);
+  for (const row of tableRows) {
+    const data = {
+      date: new Date(
+        row
+          .match(DateRegexes.DateRegex)![0]
+          .replace(GeneralRegexes.dMYToMDYDateFormat, "$2/$1/$3")
+      ),
+      name: row.match(MeetRegexes.ResultNameRegex)![0],
+      poolSize: row.match(MeetRegexes.PoolSizeRegex)![0] as "25" | "50" | "OW",
+      location: row.match(MeetRegexes.LocationRegex)![0],
+      category: row.match(MeetRegexes.CategoryRegex)![0] as
+        | "competitie"
+        | "masters"
+        | "minioren"
+        | "limiet"
+        | "lac",
+      id: row.match(MeetRegexes.ResultIdRegex)![0],
+    };
+    resultData.push(data);
+  }
+  console.log(resultData.length);
+  return resultData;
+}
+
 function getAthleteInfo(athletePage: string, athleteId: string): AthleteData {
   const nameDiv = athletePage.match(
     SwimrankingsRegexes.Athlete.AthleteNameDivRegex
@@ -808,4 +865,11 @@ export async function getCompetitieStand(): Promise<CompetitieStand[]> {
       };
     });
   return rows;
+}
+
+async function time(func: () => Promise<any>) {
+  const start = Date.now();
+  await func();
+  const elapsed = Date.now() - start;
+  console.log(elapsed / 1000 + "s");
 }

@@ -85,3 +85,17 @@ export type CompetitieStand = {
   round5: number;
   total: number;
 };
+
+export type Result = {
+  name: string;
+  birthDate: Date;
+  id: string;
+  events: {
+    distance: string;
+    place: string;
+    time: string;
+    oldPb: string;
+    percentage: number;
+    points: number;
+  }[];
+};

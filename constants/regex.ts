@@ -3,12 +3,14 @@ export class GeneralRegexes {
   static OnMouseOverRegex = /onmouseover="([\s\S]*?)"/gi;
   static ContentRegex = /<div\s+class="entry-content"[^>]*>([\s\S]*?)<\/div>/i;
   static TableRegex = /<table[^>]*>([\s\S]*?)<\/table>/i;
+  static GlobalTableRegex = /<table[^>]*>([\s\S]*?)<\/table>/gi;
   static CellRegex2 = /<td[^>]*>([\s\S]*?)<\/td>/gi;
   static CarrotRegex = />([\s\S]*?)</g;
   static IdRegex = /\?id=\d+/;
   static DivRegex = /<div[^>]*>([\s\S]*?)<\/div>/gm;
   static HrefRegex = /href\s*=\s*["']([^"']+)["']/i;
   static DataRegex = />([^<]*)</g;
+  static dMYToMDYDateFormat = /(\d{2})-(\d{2})-(\d{4})/;
 }
 
 export class SwimrankingsRegexes {
@@ -36,6 +38,11 @@ export class MeetRegexes {
   static ProgramNumberCheckRegex = /^\d{1,3}m/gm;
   static TripleNumberRegex = /\d{1,3}/g;
   static LivetimingRegex = /<a\s[^>]*>Livetiming([\s\S]*?)<\/a>/gm;
+  static ResultNameRegex = /(?<=title=")[\s\S]*?(?=")/gm;
+  static PoolSizeRegex = /(?<=\>)(25|50|OW)(?=\<)/gm;
+  static LocationRegex = /(?<=\>)([A-Z][a-z\-A-Z\(\)\s]*)(?=\n\<)/gm;
+  static CategoryRegex = /(?<=soort=)[\s\S]*?(?=")/gm;
+  static ResultIdRegex = /(?<=id=)\d*?(?=")/gm;
 }
 
 export class DateRegexes {
