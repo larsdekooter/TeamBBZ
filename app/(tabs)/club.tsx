@@ -147,14 +147,18 @@ function ResultsComponent({
             <SectionComponent
               title={item.name}
               width={Dimensions.get("window").width * 0.85}
+              onPress={() => console.log(item)}
             >
               <FlatList
-                data={item.events}
+                data={item.events.filter((event) => event.length > 0)}
                 renderItem={({ item: event, index }) => (
                   <View
                     style={{
                       flexDirection: "row",
                       justifyContent: "space-between",
+                      borderBottomWidth: 1,
+                      borderBottomColor: "grey",
+                      marginBottom: 2,
                     }}
                   >
                     <Text
@@ -168,7 +172,18 @@ function ResultsComponent({
                     <Text
                       style={[
                         textColor(colorScheme),
-                        { textAlign: "center", width: "20%" },
+                        {
+                          textAlign: "center",
+                          width: "20%",
+                          color:
+                            parseInt(item.percentages[index]) < 100
+                              ? colorScheme === "dark"
+                                ? Colors.DarkmodeRed
+                                : Colors.LightmodeRed
+                              : colorScheme === "dark"
+                              ? Colors.DarkmodeGreen
+                              : Colors.LightModeGreen,
+                        },
                       ]}
                     >
                       {item.times[index]}
@@ -193,18 +208,8 @@ function ResultsComponent({
                     </Text>
                     <Text
                       style={[
-                        {
-                          textAlign: "center",
-                          color:
-                            parseInt(item.percentages[index]) < 100
-                              ? colorScheme === "dark"
-                                ? Colors.DarkmodeRed
-                                : Colors.LightmodeRed
-                              : colorScheme === "dark"
-                              ? Colors.DarkmodeGreen
-                              : Colors.LightModeGreen,
-                          width: "20%",
-                        },
+                        textColor(colorScheme),
+                        { textAlign: "center", width: "20%" },
                       ]}
                     >
                       {item.pbs[index]}
