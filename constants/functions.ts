@@ -17,6 +17,7 @@ import {
   MeetResultData,
   Pb,
   Post,
+  Result,
   Wedstrijd,
 } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
@@ -27,6 +28,53 @@ export function textColor(colorScheme: ColorSchemeName | boolean) {
     return { color: colorScheme ? "#000" : "#FFF" };
   }
   return { color: colorScheme === "light" ? "#000" : "#FFF" };
+}
+
+export async function getResult(id: string): Promise<Result[]> {
+  const page = await fetch(
+    "https://www.b-b-z.nl/zwemmen/uitslagen/?id=" + id
+  ).then((res) => res.text());
+
+  const data = [];
+
+  const personTables = page
+    .match(
+      /<table[\s\S]*?>[\s\S]*?<\/table>[\s\S]*?<table[\s\S]*?>[\s\S]*?<\/table>[\s\S]*?<table[\s\S]*?>[\s\S]*?<\/table>/gm
+    )!
+    .toSpliced(0, 2);
+  for (const table of personTables) {
+    const textMatches = table.match(/(?<=<em id=f9>)[\s\S]*?(?=<\/td>)/gm)!;
+    const obj = {
+      name: textMatches[0],
+      birtDate: textMatches[1],
+      id: textMatches[2],
+      team: textMatches[3],
+      events: [] as string[],
+      places: [] as string[],
+      times: [] as string[],
+      pbs: [] as string[],
+      percentages: [] as string[],
+      points: [] as string[],
+    };
+    textMatches[4].split("<br>").forEach((m, i) => (obj.events[i] = m));
+    textMatches[5].split("<br>").forEach((m, i) => (obj.places[i] = m));
+    textMatches[6].split("<br>").forEach((m, i) => (obj.times[i] = m));
+    textMatches[7]
+      .split("<br>")
+      .forEach(
+        (m, i) => (obj.pbs[i] = m.replace("<i>", "").replace("</i>", ""))
+      );
+    textMatches[8].split("<br>").forEach((m, i) => (obj.percentages[i] = m));
+    textMatches[textMatches.length - 1]
+      .split("<br>")
+      .forEach((m, i) =>
+        m.length > 0 ? (obj.points[i] = m.replace("&nbsp;Pnt.", "")) : null
+      );
+
+    data.push(obj);
+  }
+
+  return data;
 }
 
 export async function getResultMeets(): Promise<
@@ -82,7 +130,6 @@ export async function getResultMeets(): Promise<
     };
     resultData.push(data);
   }
-  console.log(resultData.length);
   return resultData;
 }
 

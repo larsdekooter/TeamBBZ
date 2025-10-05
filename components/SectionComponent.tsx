@@ -7,6 +7,7 @@ import {
   useColorScheme,
   StyleProp,
   ViewStyle,
+  DimensionValue,
 } from "react-native";
 import { useState } from "react";
 import { textColor } from "@/constants/functions";
@@ -21,6 +22,7 @@ export default function SectionComponent({
   onPress,
   loading,
   bold,
+  width = Dimensions.get("window").width * 0.95,
 }: {
   children: React.ReactNode;
   title: string;
@@ -28,6 +30,7 @@ export default function SectionComponent({
   onPress?: () => void;
   loading?: boolean;
   bold?: boolean;
+  width?: DimensionValue;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -63,7 +66,7 @@ export default function SectionComponent({
   return (
     <Pressable
       style={{
-        width: Dimensions.get("window").width * 0.95,
+        width,
         borderColor: Colors.Orange,
         borderWidth: 1,
         borderRadius: 6,

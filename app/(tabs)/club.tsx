@@ -5,12 +5,19 @@ import {
   getClubRecords,
   getCompetitieStand,
   getMeetCalendar,
+  getResult,
+  getResultMeets,
   getSchemaData,
   getWedstrijdData,
   textColor,
 } from "@/constants/functions";
-import { Clubrecord, CompetitieStand, Wedstrijd } from "@/constants/types";
-import { FontAwesome } from "@expo/vector-icons";
+import {
+  Clubrecord,
+  CompetitieStand,
+  Result,
+  Wedstrijd,
+} from "@/constants/types";
+import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { Fragment, useEffect, useState } from "react";
 import {
   Dimensions,
@@ -42,6 +49,17 @@ export default function Club() {
   const [competitieStanden, setCompetitieStanden] = useState(
     [] as CompetitieStand[]
   );
+  const [resultsMeets, setResultsMeets] = useState(
+    [] as {
+      date: Date; //
+      name: string; //
+      poolSize: "25" | "50" | "OW"; //
+      location: string; //
+      category: "competitie" | "masters" | "minioren" | "limiet" | "lac"; //
+      id: string; //
+    }[]
+  );
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,15 +68,17 @@ export default function Club() {
       const wden = await getMeetCalendar();
       const crs = await getClubRecords();
       const compStanden = await getCompetitieStand();
+      const res = await getResultMeets();
       setSchema(schem);
       setWedstrijden(wden);
       setClubrecords(crs);
       setCompetitieStanden(compStanden);
+      setResultsMeets(res);
       setLoading(false);
     };
-    if (loading) {
-      getS();
-    }
+    // if (loading) {
+    getS();
+    // }
   }, []);
 
   const colorScheme = useColorScheme();
@@ -85,7 +105,201 @@ export default function Club() {
         competitieStanden={competitieStanden}
         loading={loading}
       />
+      <ResultsComponent
+        colorScheme={colorScheme}
+        loading={loading}
+        resultMeets={resultsMeets}
+      />
     </Page>
+  );
+}
+
+function ResultsComponent({
+  colorScheme,
+  resultMeets,
+  loading,
+}: {
+  colorScheme: ColorSchemeName;
+  resultMeets: {
+    date: Date;
+    name: string;
+    poolSize: "25" | "50" | "OW";
+    location: string;
+    category: "competitie" | "masters" | "minioren" | "limiet" | "lac";
+    id: string;
+  }[];
+  loading?: boolean;
+}) {
+  const [id, setId] = useState<string>("");
+  const [results, setResults] = useState<Result[] | null>(null);
+
+  return (
+    <Fragment>
+      <SwipeModal
+        visible={id.length > 0}
+        onClose={() => setId("")}
+        height={Dimensions.get("window").height}
+      >
+        <FlatList
+          data={results}
+          renderItem={({ item }) => (
+            <SectionComponent
+              title={item.name}
+              width={Dimensions.get("window").width * 0.85}
+            >
+              <FlatList
+                data={item.events}
+                renderItem={({ item: event, index }) => (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textAlign: "left", width: "30%" },
+                      ]}
+                    >
+                      {event}
+                    </Text>
+                    <Text
+                      style={[
+                        textColor(colorScheme),
+                        { textAlign: "center", width: "20%" },
+                      ]}
+                    >
+                      {item.times[index]}
+                    </Text>
+                    <Text
+                      style={[
+                        {
+                          textAlign: "right",
+                          color:
+                            parseInt(item.percentages[index]) < 100
+                              ? colorScheme === "dark"
+                                ? Colors.DarkmodeRed
+                                : Colors.LightmodeRed
+                              : colorScheme === "dark"
+                              ? Colors.DarkmodeGreen
+                              : Colors.LightModeGreen,
+                          width: "20%",
+                        },
+                      ]}
+                    >
+                      {item.percentages[index]}
+                    </Text>
+                    <Text
+                      style={[
+                        {
+                          textAlign: "center",
+                          color:
+                            parseInt(item.percentages[index]) < 100
+                              ? colorScheme === "dark"
+                                ? Colors.DarkmodeRed
+                                : Colors.LightmodeRed
+                              : colorScheme === "dark"
+                              ? Colors.DarkmodeGreen
+                              : Colors.LightModeGreen,
+                          width: "20%",
+                        },
+                      ]}
+                    >
+                      {item.pbs[index]}
+                    </Text>
+                    {(() => {
+                      switch (item.places[index]) {
+                        case "1":
+                          return (
+                            <Text style={{ width: "10%", textAlign: "right" }}>
+                              <FontAwesome6
+                                name={"medal"}
+                                color={Colors.Gold}
+                                size={15}
+                              />
+                            </Text>
+                          );
+                        case "2":
+                          return (
+                            <Text style={{ width: "10%", textAlign: "right" }}>
+                              <FontAwesome5
+                                name={"medal"}
+                                color={Colors.Silver}
+                                size={15}
+                              />
+                            </Text>
+                          );
+                        case "3":
+                          return (
+                            <Text style={{ width: "10%", textAlign: "right" }}>
+                              <FontAwesome6
+                                name={"medal"}
+                                color={Colors.Bronze}
+                                size={15}
+                              />
+                            </Text>
+                          );
+                        default:
+                          return (
+                            <Text
+                              style={[
+                                textColor(colorScheme),
+                                { width: "10%", textAlign: "right" },
+                              ]}
+                            >
+                              {item.places[index]}
+                            </Text>
+                          );
+                      }
+                    })()}
+                  </View>
+                )}
+              />
+            </SectionComponent>
+          )}
+          style={{ height: "100%" }}
+        />
+      </SwipeModal>
+      <SectionComponent title="Resultaten" loading={loading}>
+        <FlatList
+          data={resultMeets}
+          style={{ height: 350 }}
+          renderItem={({ item }) => (
+            <Pressable
+              style={{
+                margin: 5,
+                paddingVertical: 5,
+                borderColor: "grey",
+                borderWidth: 1,
+                borderRadius: 6,
+                paddingHorizontal: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+              onPress={async () => {
+                setResults(await getResult(item.id));
+                setId(item.id);
+              }}
+            >
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  { textAlign: "left", width: "30%", overflow: "hidden" },
+                ]}
+                numberOfLines={1}
+              >
+                {item.name}
+              </Text>
+              <Text style={[textColor(colorScheme), { textAlign: "center" }]}>
+                {item.location}
+              </Text>
+            </Pressable>
+          )}
+        />
+      </SectionComponent>
+    </Fragment>
   );
 }
 

@@ -88,14 +88,13 @@ export type CompetitieStand = {
 
 export type Result = {
   name: string;
-  birthDate: Date;
+  birtDate: string;
   id: string;
-  events: {
-    distance: string;
-    place: string;
-    time: string;
-    oldPb: string;
-    percentage: number;
-    points: number;
-  }[];
+  team: string;
+  events: string[];
+  places: string[];
+  times: string[];
+  pbs: string[];
+  percentages: string[];
+  points: string[];
 };
