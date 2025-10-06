@@ -874,7 +874,7 @@ export function calculateAveragePoints(
 export async function getCompetitieStand(): Promise<CompetitieStand[]> {
   const response = await (
     await fetch(
-      "https://zwemcompetitie.knzb.nl/competitieservice/index.php?klasse=A&district=2"
+      "https://zwemcompetitie.knzb.nl/competitieservice/index.php?klasse=B&district=2"
     )
   ).text();
   const rows = response
