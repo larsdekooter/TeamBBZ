@@ -147,7 +147,6 @@ function ResultsComponent({
             <SectionComponent
               title={item.name}
               width={Dimensions.get("window").width * 0.85}
-              onPress={() => console.log(item)}
             >
               <FlatList
                 data={item.events.filter((event) => event.length > 0)}
@@ -325,10 +324,9 @@ function CompetitieStandComponent({
 }) {
   const [selected, setSelected] = useState({} as CompetitieStand);
   const [position, setPosition] = useState(0);
+  const sortedStanden = competitieStanden.sort((a, b) => b.total - a.total);
   const huidigePlek =
-    competitieStanden
-      .sort((a, b) => a.total - b.total)
-      .findIndex(({ team }) => team === "De Biesboschzwemmers") + 1;
+    sortedStanden.findIndex(({ team }) => team === "De Biesboschzwemmers") + 1;
 
   return (
     <Fragment>
@@ -444,7 +442,7 @@ function CompetitieStandComponent({
         loading={loading}
       >
         <FlatList
-          data={competitieStanden.sort((a, b) => a.total - b.total)}
+          data={sortedStanden}
           style={{ height: 350 }}
           renderItem={({ item, index }) => (
             <Pressable
