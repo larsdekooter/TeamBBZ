@@ -41,6 +41,8 @@ import {
 } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
 
+const POINTS_FOR_25M = false;
+
 enum Tabs {
   Pbs = 1,
   Records = 2,
@@ -466,26 +468,41 @@ export default function Profile() {
                 Gemiddeld aantal punten:{" "}
                 {calculateAveragePoints(athleteData, !shouldShow25)}
               </Text>
-              <Pressable
-                style={{
-                  flexDirection: "row",
-                  width: Dimensions.get("window").width,
-                  paddingHorizontal: 20,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onPress={() => setShouldShow25(!shouldShow25)}
-              >
-                <CheckBox
-                  checked={shouldShow25}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setShouldShow25(!setShouldShow25);
+              {POINTS_FOR_25M ? (
+                <Pressable
+                  style={{
+                    flexDirection: "row",
+                    width: Dimensions.get("window").width,
+                    paddingHorizontal: 20,
+                    display: "flex",
+                    alignItems: "center",
                   }}
-                />
-                <View style={{ width: 10 }} />
-                <Text style={textColor(colorScheme)}>Inclusief 25m tijden</Text>
-              </Pressable>
+                  onPress={() => setShouldShow25(!shouldShow25)}
+                >
+                  <CheckBox
+                    checked={shouldShow25}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      setShouldShow25(!setShouldShow25);
+                    }}
+                  />
+                  <View style={{ width: 10 }} />
+                  <Text style={textColor(colorScheme)}>
+                    Inclusief 25m tijden
+                  </Text>
+                </Pressable>
+              ) : (
+                <View
+                  style={{
+                    width: "90%",
+                    height: 5,
+                    backgroundColor: "grey",
+                    borderRadius: 10,
+                    marginTop: 5,
+                    marginBottom: -10,
+                  }}
+                ></View>
+              )}
 
               <LineChart
                 data={data}
