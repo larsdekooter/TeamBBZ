@@ -64,11 +64,14 @@ export default function Club() {
 
   useEffect(() => {
     const getS = async () => {
-      const schem = await getSchemaData();
-      const wden = await getMeetCalendar();
-      const crs = await getClubRecords();
-      const compStanden = await getCompetitieStand();
-      const res = await getResultMeets();
+      const [schem, wden, crs, compStanden, res] = await Promise.all([
+        getSchemaData(),
+        getMeetCalendar(),
+        getClubRecords(),
+        getCompetitieStand(),
+        getResultMeets(),
+      ]);
+
       setSchema(schem);
       setWedstrijden(wden);
       setClubrecords(crs);
