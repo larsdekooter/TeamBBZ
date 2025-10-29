@@ -105,13 +105,15 @@ select.listen().then((value) => {
   let [major, semver, minor] = currentVersion
     .match(/\d*./gm)
     .map((x) => parseInt(x));
-  switch (value) {
-    case "Major":
-      major++;
-    case "Semver":
-      semver++;
-    case "Minor":
-      minor++;
+  if (value === "Major") {
+    major++;
+    semver = 0;
+    minor = 0;
+  } else if (value === "Semver") {
+    semver++;
+    minor = 0;
+  } else if (value === "Minor") {
+    minor++;
   }
   const newVersion = `${major}.${semver}.${minor}`;
   appFile.expo.version = newVersion;
