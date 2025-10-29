@@ -500,7 +500,7 @@ export default function Profile() {
               />
               <Dropdown
                 data={athleteData.pbs
-                  .filter(({ points }) => points !== "-")
+                  // .filter(({ points }) => points !== "-")
                   .map(
                     (pb) =>
                       pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC")

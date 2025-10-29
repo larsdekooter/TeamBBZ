@@ -66,11 +66,13 @@ export async function getResult(id: string): Promise<Result[]> {
           (obj.places[i] = m.replace("<br>", "").replace("<em id=f9>", ""))
       );
     textMatches[6].split("<br>").forEach((m, i) => (obj.times[i] = m));
-    textMatches[7]
-      .split("<br>")
-      .forEach(
-        (m, i) => (obj.pbs[i] = m.replace("<i>", "").replace("</i>", ""))
-      );
+    textMatches[7].split("<br>").forEach(
+      (m, i) =>
+        (obj.pbs[i] = m
+          .replace("<i>", "")
+          .replace("</i>", "")
+          .replace(/&#8211;/gm, "-"))
+    );
     textMatches[8].split("<br>").forEach((m, i) => (obj.percentages[i] = m));
     textMatches[textMatches.length - 1]
       .split("<br>")
@@ -686,6 +688,10 @@ export async function getProgression(
 
   const result = Object.keys(groupedPoints).map((year) => {
     const points = groupedPoints[parseInt(year) as keyof typeof groupedPoints];
+    points.map((point, i) => {
+      if (point.points === "-") point.points = "0";
+      return point;
+    });
     points.sort((a, b) => parseInt(b.points) - parseInt(a.points));
     return { year, points: points[0] };
   });
