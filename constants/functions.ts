@@ -378,16 +378,14 @@ export async function fetchSwimrankingSwimmer(username: string) {
     .find((t) => !t.includes("*"))
     ?.match(SwimrankingsRegexes.Athlete.AthleteIdRegex)![0];
   if (athleteId) {
-    const athletePage = await (
-      await fetch(
+    const [athletePage, meetsPage] = await Promise.all([
+      fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`
-      )
-    ).text();
-    const meetsPage = await (
-      await fetch(
+      ).then((r) => r.text()),
+      fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`
-      )
-    ).text();
+      ).then((r) => r.text()),
+    ]);
     const aData = getAthleteData(athletePage, meetsPage, athleteId);
     //TODO: rework this to historyFirstStroke
     const history25mFreestyle = await getProgression(

@@ -34,9 +34,11 @@ export default function Settings() {
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {
-        const us = await getItem("username");
-        const em = await getItem("email");
-        const sw = await getItem("swimmers");
+        const [us, em, sw] = await Promise.all([
+          await getItem("username"),
+          await getItem("email"),
+          await getItem("swimmers"),
+        ]);
         if (us && us.username !== username) {
           setUsername(us.username);
         }
