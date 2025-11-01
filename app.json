@@ -54,6 +54,12 @@
         "projectId": "bc128322-54b1-4178-9bde-45ec4967a666"
       }
     },
-    "owner": "ldekooter"
+    "owner": "ldekooter",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bc128322-54b1-4178-9bde-45ec4967a666"
+    }
   }
 }
