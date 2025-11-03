@@ -8,8 +8,9 @@ import {
   StyleProp,
   ViewStyle,
   DimensionValue,
+  TextStyle,
 } from "react-native";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
 import SkeletonLoader from "./SkeletonLoader";
@@ -23,14 +24,20 @@ export default function SectionComponent({
   loading,
   bold,
   width = Dimensions.get("window").width * 0.95,
+  containerStyle,
+  titleStyle,
+  numberOfTitleLines,
 }: {
   children: React.ReactNode;
-  title: string;
+  title: string | ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   loading?: boolean;
   bold?: boolean;
   width?: DimensionValue;
+  containerStyle?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  numberOfTitleLines?: number;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -65,16 +72,19 @@ export default function SectionComponent({
 
   return (
     <Pressable
-      style={{
-        width,
-        borderColor: Colors.Orange,
-        borderWidth: 1,
-        borderRadius: 6,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        overflow: "hidden",
-        marginVertical: 10,
-      }}
+      style={[
+        {
+          width,
+          borderColor: Colors.Orange,
+          borderWidth: 1,
+          borderRadius: 6,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          overflow: "hidden",
+          marginVertical: 10,
+        },
+        containerStyle,
+      ]}
       onPress={(e) => {
         toggleExpand();
         onPress?.();
@@ -91,7 +101,9 @@ export default function SectionComponent({
           style={[
             textColor(colorScheme),
             { fontWeight: bold ? "500" : "normal" },
+            titleStyle,
           ]}
+          numberOfLines={numberOfTitleLines}
         >
           {title}
         </Text>
