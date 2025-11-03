@@ -816,35 +816,66 @@ function WedstrijdenComponent({
                 );
               } else {
                 return (
-                  <View
-                    style={{
-                      backgroundColor:
-                        colorScheme === "dark"
-                          ? Colors.ModalDarkBackground
-                          : Colors.ModalLightBackground,
-                      margin: 5,
-                      flex: 1,
-                      borderRadius: 10,
-                      paddingHorizontal: 5,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      paddingVertical: 15,
-                      flexDirection: "row",
-                      minHeight: 10,
-                      borderColor: Colors.Orange,
-                      borderWidth: 1,
-                    }}
+                  <SectionComponent
+                    title={
+                      <Fragment>
+                        <Text
+                          style={[
+                            textColor(colorScheme),
+                            { fontWeight: "bold" },
+                          ]}
+                        >
+                          {item.name.slice(0, item.name.indexOf(" "))} -
+                        </Text>
+                        {item.name.slice(
+                          item.name.indexOf(" "),
+                          item.name.length
+                        )}
+                      </Fragment>
+                    }
+                    containerStyle={{ paddingHorizontal: 10, width: "100%" }}
+                    numberOfTitleLines={1}
+                    titleStyle={{ maxWidth: "90%" }}
                   >
-                    <Text
-                      style={{
-                        ...textColor(colorScheme),
-                        textAlign: "center",
-                        flex: 1,
-                      }}
-                    >
-                      {item.name}
-                    </Text>
-                  </View>
+                    <FlatList
+                      style={{ width: "100%" }}
+                      data={selectedWedstrijd.swimmers.filter((swimmer) =>
+                        swimmer.programs
+                          .map(({ number }) => number)
+                          .includes(item.no.toString())
+                      )}
+                      keyExtractor={(item, index) => `${index}`}
+                      renderItem={({ item: swimmer }) => (
+                        <View
+                          style={{
+                            borderColor: "grey",
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            padding: 5,
+                            marginVertical: 5,
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Text style={[textColor(colorScheme)]}>
+                            {swimmer.name}
+                          </Text>
+                          <Text
+                            style={[
+                              textColor(colorScheme),
+                              { textAlign: "right" },
+                            ]}
+                          >
+                            {
+                              swimmer.programs.find(
+                                ({ number }) => number === item.no.toString()
+                              )?.pb
+                            }
+                          </Text>
+                        </View>
+                      )}
+                    />
+                  </SectionComponent>
                 );
               }
             }}

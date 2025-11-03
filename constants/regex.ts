@@ -11,6 +11,8 @@ export class GeneralRegexes {
   static HrefRegex = /href\s*=\s*["']([^"']+)["']/i;
   static DataRegex = />([^<]*)</g;
   static dMYToMDYDateFormat = /(\d{2})-(\d{2})-(\d{4})/;
+  static LookupRowRegex = /(?<=<tr\b[^>]*>)[\s\S]*?(?=<\/tr>)/gi;
+  static CellRegexLookup = /(?<=<td[^>]*>)([\s\S]*?)(?=<\/td>)/gi;
 }
 
 export class SwimrankingsRegexes {
@@ -43,6 +45,7 @@ export class MeetRegexes {
   static LocationRegex = /(?<=\>)([A-Z][a-z\-A-Z\(\)\s]*)(?=\n\<)/gm;
   static CategoryRegex = /(?<=soort=)[\s\S]*?(?=")/gm;
   static ResultIdRegex = /(?<=id=)\d*?(?=")/gm;
+  static EnterersRegex = /(?<=<ol>)[\s\S]*?(?=<\/ol>)/g;
 }
 
 export class DateRegexes {

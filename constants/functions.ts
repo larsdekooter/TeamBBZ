@@ -11,6 +11,7 @@ import {
 } from "./regex";
 import {
   AthleteData,
+  CalendarSwimmer,
   Clubrecord,
   CompetitieStand,
   MeetData,
@@ -437,14 +438,78 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
           ? Number.parseInt(p.match(MeetRegexes.TripleNumberRegex)?.[0] ?? "-1")
           : i,
       }));
-    wedstrijd.livetimeLink = page
-      .match(MeetRegexes.LivetimingRegex)![0]
-      .match(GeneralRegexes.HrefRegex)![1];
+    wedstrijd.livetimeLink =
+      page
+        .match(MeetRegexes.LivetimingRegex)?.[0]
+        .match(GeneralRegexes.HrefRegex)?.[1] ?? "";
+    let swimmers: CalendarSwimmer[];
 
+    try {
+      // Means there is an opstelling
+      swimmers = getOpstellingFromPageIfOpstelling(page);
+    } catch {
+      // Means there is no opstelling
+      const entered = page.match(MeetRegexes.EnterersRegex)![0];
+      swimmers = [];
+      entered.match(/(?<=<li>)[\s\S]*?(?=<\/li>)/gi)?.forEach((match, i) => {
+        const nameAndNumbers = match.replace("nummer(s):", "");
+        swimmers[i] = {
+          name: nameAndNumbers.match(/[a-zA-Z]+/g)?.join(" ") ?? "ERROR",
+          id: "",
+          programs: [],
+        };
+        match.match(/\d+/g)?.forEach((programNumber, j) => {
+          const programName = wedstrijd.program?.find(
+            (p) => p.no === parseInt(programNumber)
+          )?.name;
+          swimmers[i].programs[j] = {
+            name: programName ?? "ERROR",
+            number: programNumber,
+            pb: "",
+          };
+        });
+      });
+    }
+    wedstrijd.swimmers = swimmers;
     return wedstrijd;
-  } catch {
+  } catch (e) {
+    // console.error(e);
     return wedstrijd;
   }
+}
+
+function getOpstellingFromPageIfOpstelling(page: string) {
+  const opstellingTable = page.match(GeneralRegexes.GlobalTableRegex)![5];
+  const rows = opstellingTable.match(GeneralRegexes.LookupRowRegex)!;
+  const swimmers: CalendarSwimmer[] = [];
+
+  for (const row of rows) {
+    const cells = row
+      .match(GeneralRegexes.CellRegexLookup)
+      ?.map((cell) =>
+        cell
+          .replace(/<em id=f8>/g, "")
+          .replace(/&eacute;/g, "é")
+          .replace(/<br>/g, " ")
+          .trim()
+      )!
+      .filter((l) => l.length > 0)!;
+    const swimmer = {} as CalendarSwimmer;
+    swimmer.id = cells[0];
+    swimmer.name = cells[1];
+    swimmer.programs = [];
+    cells[3]
+      .split(" ")
+      .forEach(
+        (n, i) => (swimmer.programs[i] = { number: n, name: "", pb: "" })
+      );
+    cells[4]
+      .split(/\s(?=\d)/g)
+      .forEach((p, i) => (swimmer.programs[i].name = p));
+    cells[5].split(" ").forEach((pb, i) => (swimmer.programs[i].pb = pb));
+    swimmers.push(swimmer);
+  }
+  return swimmers;
 }
 
 export async function getSchemaData(group?: string) {

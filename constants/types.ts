@@ -58,6 +58,7 @@ export type Wedstrijd = {
   enterable: boolean | undefined;
   program: { name: string; no: number }[] | undefined;
   livetimeLink: string;
+  swimmers: CalendarSwimmer[];
 };
 
 export type Post = {
@@ -97,4 +98,11 @@ export type Result = {
   pbs: string[];
   percentages: string[];
   points: string[];
+};
+
+export type CalendarSwimmer = {
+  id: string;
+  name: string;
+  programs: { number: string; name: string; pb: string }[];
+  // prs: [];
 };
