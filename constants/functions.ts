@@ -995,3 +995,11 @@ async function time(func: () => Promise<any>) {
   const elapsed = Date.now() - start;
   console.log(elapsed / 1000 + "s");
 }
+
+export function filterSwimmers(wedstrijd: Wedstrijd, programNumber: number) {
+  return wedstrijd.swimmers.filter((swimmer) =>
+    swimmer.programs
+      .map(({ number }) => number)
+      .includes(programNumber.toString())
+  );
+}

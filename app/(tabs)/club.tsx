@@ -2,6 +2,7 @@ import ButtonComponent from "@/components/ButtonComponent";
 import Page from "@/components/Page";
 import {
   enterMeet,
+  filterSwimmers,
   getClubRecords,
   getCompetitieStand,
   getMeetCalendar,
@@ -36,6 +37,7 @@ import SwipeModal from "@/components/SwipeModal";
 import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import { Colors } from "@/constants/enums";
+import { getItem } from "@/utils/AsyncStorage";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -59,18 +61,22 @@ export default function Club() {
       id: string; //
     }[]
   );
+  const [usernames, setUsernames] = useState<Array<string>>([]);
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getS = async () => {
-      const [schem, wden, crs, compStanden, res] = await Promise.all([
-        getSchemaData(),
-        getMeetCalendar(),
-        getClubRecords(),
-        getCompetitieStand(),
-        getResultMeets(),
-      ]);
+      const [schem, wden, crs, compStanden, res, username, secondUsername] =
+        await Promise.all([
+          getSchemaData(),
+          getMeetCalendar(),
+          getClubRecords(),
+          getCompetitieStand(),
+          getResultMeets(),
+          getItem("username"),
+          getItem("swimmers"),
+        ]);
 
       setSchema(schem);
       setWedstrijden(wden);
@@ -78,6 +84,7 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setResultsMeets(res);
       setLoading(false);
+      setUsernames([username.username, secondUsername.swimmer]);
     };
     if (loading) {
       getS();
@@ -97,6 +104,7 @@ export default function Club() {
         colorScheme={colorScheme}
         wedstrijden={wedstrijden}
         loading={loading}
+        usernames={usernames}
       />
       <ClubrecordsComponent
         colorScheme={colorScheme}
@@ -642,10 +650,12 @@ function WedstrijdenComponent({
   colorScheme,
   wedstrijden,
   loading,
+  usernames,
 }: {
   colorScheme: ColorSchemeName;
   wedstrijden: Wedstrijd[];
   loading?: boolean;
+  usernames: Array<string>;
 }) {
   const [modalShown, setModalShown] = useState(false);
   const [selectedWedstrijd, setSelectedWedstrijd] = useState({} as Wedstrijd);
@@ -833,18 +843,33 @@ function WedstrijdenComponent({
                         )}
                       </Fragment>
                     }
-                    containerStyle={{ paddingHorizontal: 10, width: "100%" }}
+                    containerStyle={[
+                      {
+                        paddingHorizontal: 10,
+                        width: "100%",
+                        borderWidth: filterSwimmers(
+                          selectedWedstrijd,
+                          item.no
+                        ).find((swimmer) => usernames.includes(swimmer.name))
+                          ? 3
+                          : 1,
+                      },
+                    ]}
                     numberOfTitleLines={1}
-                    titleStyle={{ maxWidth: "90%" }}
+                    titleStyle={{
+                      maxWidth: "90%",
+                      textDecorationLine: filterSwimmers(
+                        selectedWedstrijd,
+                        item.no
+                      ).find((swimmer) => usernames.includes(swimmer.name))
+                        ? "underline"
+                        : undefined,
+                    }}
                   >
                     <FlatList
                       style={{ width: "100%" }}
-                      data={selectedWedstrijd.swimmers.filter((swimmer) =>
-                        swimmer.programs
-                          .map(({ number }) => number)
-                          .includes(item.no.toString())
-                      )}
-                      keyExtractor={(item, index) => `${index}`}
+                      data={filterSwimmers(selectedWedstrijd, item.no)}
+                      keyExtractor={(_, index) => `${index}`}
                       renderItem={({ item: swimmer }) => (
                         <View
                           style={{
