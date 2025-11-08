@@ -25,6 +25,7 @@ export default function PbTable({
   data,
   athleteData,
   top,
+  mainSwimmerSelected,
 }: {
   data: {
     title: { distance: string; time: string; poolSize: "25m" | "50m" };
@@ -33,6 +34,7 @@ export default function PbTable({
   }[];
   athleteData: AthleteData;
   top: number;
+  mainSwimmerSelected: boolean;
 }) {
   const strokes = {
     vlinderslag: data.filter(({ title }) =>
@@ -65,6 +67,7 @@ export default function PbTable({
   return (
     <Fragment>
       <QuickViewModal
+        mainSwimmerSelected={mainSwimmerSelected}
         athleteData={athleteData}
         colorScheme={colorScheme}
         loading={loading}
@@ -93,6 +96,7 @@ export default function PbTable({
           setHistoryModalShown(SwimrakingEventId.None);
           setQuickViewModalShown(true);
         }}
+        mainSwimmerSelected={mainSwimmerSelected}
       />
       <View
         style={{
@@ -111,6 +115,7 @@ export default function PbTable({
               setTitle(item.title);
               setQuickViewModalShown(true);
             }}
+            mainSwimmerSelected={mainSwimmerSelected}
           />
         ))}
       </View>
@@ -122,6 +127,7 @@ function StrokeComponent({
   stroke,
   strokeData,
   onItemPress,
+  mainSwimmerSelected,
 }: {
   onItemPress?:
     | null
@@ -153,6 +159,7 @@ function StrokeComponent({
     key: string;
     id: number;
   }[];
+  mainSwimmerSelected: boolean;
 }) {
   const colorScheme = useColorScheme();
 
@@ -160,6 +167,9 @@ function StrokeComponent({
     <SectionComponent
       title={stroke.charAt(0).toUpperCase() + stroke.slice(1)}
       bold
+      containerStyle={{
+        borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+      }}
     >
       <FlatList
         data={strokeData}
@@ -221,6 +231,7 @@ function QuickViewModal({
   loading,
   onPressChoose,
   onPressClose,
+  mainSwimmerSelected,
 }: {
   visible: boolean;
   onRequestClose: ((event: NativeSyntheticEvent<any>) => void) | undefined;
@@ -230,6 +241,7 @@ function QuickViewModal({
   onPressChoose: PressableProps["onPress"];
   loading: boolean;
   onPressClose: null | ((event?: GestureResponderEvent) => void) | undefined;
+  mainSwimmerSelected: boolean;
 }) {
   const findPb = (event: string, poolSize: string, time: string) => {
     return athleteData.pbs.find(
@@ -242,6 +254,12 @@ function QuickViewModal({
       onRequestClose={onRequestClose}
       height={300}
       onClose={() => onPressClose?.()}
+      containerStyle={{
+        borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+      }}
+      buttonStyle={{
+        borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+      }}
     >
       <View
         style={{
@@ -321,12 +339,18 @@ function QuickViewModal({
                 ? Colors.ModalDarkBackground
                 : Colors.ModalLightBackground,
             paddingVertical: 10,
+            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
           }}
         >
           <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
             Bekijk geschiedenis
           </Text>
-          {loading && <ActivityIndicator size="small" color={Colors.Orange} />}
+          {loading && (
+            <ActivityIndicator
+              size="small"
+              color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+            />
+          )}
         </ButtonComponent>
       </View>
     </SwipeModal>
@@ -340,6 +364,7 @@ function HistoryModal({
   onPressClose,
   colorScheme,
   title,
+  mainSwimmerSelected,
 }: {
   visible: boolean;
   onRequestClose?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
@@ -347,6 +372,7 @@ function HistoryModal({
   sData: { time: string; date: Date; points: string; location: string }[];
   colorScheme: ColorSchemeName;
   title: { distance: string; time: string; poolSize: "25m" | "50m" };
+  mainSwimmerSelected: boolean;
 }) {
   return (
     <SwipeModal
@@ -354,6 +380,12 @@ function HistoryModal({
       onRequestClose={onRequestClose}
       onClose={onPressClose as () => void}
       height={Dimensions.get("window").height * 0.9}
+      containerStyle={{
+        borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+      }}
+      buttonStyle={{
+        borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+      }}
     >
       <View
         style={{

@@ -16,6 +16,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import Animated, {
+  AnimatedStyle,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
@@ -34,6 +35,8 @@ type SwipeModalProps = {
   height?: number;
   closeValue?: number;
   style?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
+  buttonStyle?: StyleProp<ViewStyle>;
 };
 
 const { height, width } = Dimensions.get("window");
@@ -46,6 +49,8 @@ export default function SwipeModal({
   height: customHeight,
   closeValue,
   style,
+  containerStyle,
+  buttonStyle,
 }: SwipeModalProps) {
   const top = useSharedValue(height);
   const opened = useSharedValue(0);
@@ -143,6 +148,7 @@ export default function SwipeModal({
                     top: 0,
                   },
                   modalAnimatedStyle,
+                  containerStyle,
                 ]}
               >
                 <View
@@ -171,14 +177,17 @@ export default function SwipeModal({
                   {children}
                   <ButtonComponent
                     onPress={handleClose}
-                    style={{
-                      width: "95%",
-                      paddingVertical: 10,
-                      backgroundColor:
-                        colorScheme === "light"
-                          ? Colors.ModalLightBackground
-                          : Colors.ModalDarkBackground,
-                    }}
+                    style={[
+                      {
+                        width: "95%",
+                        paddingVertical: 10,
+                        backgroundColor:
+                          colorScheme === "light"
+                            ? Colors.ModalLightBackground
+                            : Colors.ModalDarkBackground,
+                      },
+                      buttonStyle,
+                    ]}
                   >
                     <Text
                       style={[textColor(colorScheme), { fontWeight: "bold" }]}

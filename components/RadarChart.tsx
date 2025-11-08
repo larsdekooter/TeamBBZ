@@ -7,8 +7,8 @@ interface RadarChartProps {
   size: number;
   axes: string[];
   rings?: number;
-  fillColor: string;
-  strokeColor: string;
+  fillColor?: string;
+  strokeColor?: string;
 }
 
 interface Coordinate {
@@ -21,8 +21,8 @@ const RadarChart: React.FC<RadarChartProps> = ({
   size,
   axes,
   rings = 5,
-  fillColor,
-  strokeColor,
+  fillColor = "rgba(0, 150, 200, 0.4)",
+  strokeColor = "rgba(0, 150, 200)",
 }) => {
   const colorScheme = useColorScheme();
   const center: number = size / 2;

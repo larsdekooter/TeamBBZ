@@ -56,6 +56,8 @@ function ProfileHeader({
   athleteData,
   activeTab,
   setActiveTab,
+  mainSwimmerSelected,
+  setMainSwimmerSelected,
 }: {
   athleteData: AthleteData;
   activeTab: Tabs;
@@ -72,10 +74,12 @@ function ProfileHeader({
       };
     }[]
   ) => void;
+  mainSwimmerSelected: boolean;
+  setMainSwimmerSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [userSwitchLoading, setUserSwitchLoading] = useState(false);
   const colorScheme = useColorScheme();
-  const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
+  // const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
 
   return (
     <View
@@ -94,7 +98,6 @@ function ProfileHeader({
         }}
         onPress={async () => {
           setUserSwitchLoading(true);
-          setMainSwimmerSelected(!mainSwimmerSelected);
           const swimmer = await getItem(
             mainSwimmerSelected ? "swimmers" : "username"
           );
@@ -110,6 +113,7 @@ function ProfileHeader({
               setUserSwitchLoading(false);
             }
           } else setUserSwitchLoading(false);
+          setMainSwimmerSelected(!mainSwimmerSelected);
         }}
       >
         {!userSwitchLoading && (
@@ -119,7 +123,7 @@ function ProfileHeader({
               flex: 1,
               width: "90%",
               marginVertical: 10,
-              borderColor: Colors.Orange,
+              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
               borderWidth: 1,
               borderRadius: 6,
               paddingHorizontal: 20,
@@ -153,7 +157,10 @@ function ProfileHeader({
           </View>
         )}
         {userSwitchLoading && (
-          <ActivityIndicator color={Colors.Orange} size={25} />
+          <ActivityIndicator
+            color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+            size={25}
+          />
         )}
       </Pressable>
       <View
@@ -173,6 +180,7 @@ function ProfileHeader({
             paddingHorizontal: 10,
             paddingVertical: 5,
             borderWidth: activeTab === Tabs.Pbs ? 2 : 1,
+            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
           }}
           onPress={() => {
             setActiveTab(Tabs.Pbs);
@@ -190,6 +198,7 @@ function ProfileHeader({
             paddingHorizontal: 10,
             paddingVertical: 5,
             borderWidth: activeTab === Tabs.Meets ? 2 : 1,
+            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
           }}
         >
           <Entypo name="medal" color={textColor(colorScheme).color} size={20} />
@@ -199,6 +208,7 @@ function ProfileHeader({
             paddingHorizontal: 10,
             paddingVertical: 5,
             borderWidth: activeTab === Tabs.Speciality ? 2 : 1,
+            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
           }}
           onPress={async () => {
             setActiveTab(Tabs.Speciality);
@@ -238,6 +248,7 @@ export default function Profile() {
     event: SwimrakingEventId["100m vrije slag"],
     poolSize: "25m",
   });
+  const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
 
   function prepareData(
     aData: AthleteData,
@@ -416,6 +427,8 @@ export default function Profile() {
             athleteData={athleteData}
             prepareData={prepareData}
             setActiveTab={setActiveTab}
+            mainSwimmerSelected={mainSwimmerSelected}
+            setMainSwimmerSelected={setMainSwimmerSelected}
           />
           {activeTab === Tabs.Pbs && (
             <PbTable
@@ -434,6 +447,7 @@ export default function Profile() {
                 };
               })}
               athleteData={athleteData}
+              mainSwimmerSelected={mainSwimmerSelected}
             />
           )}
           {activeTab === Tabs.Meets && (
@@ -441,6 +455,7 @@ export default function Profile() {
               top={0}
               athleteData={athleteData}
               data={athleteData.meets}
+              mainSwimmerSelected={mainSwimmerSelected}
             />
           )}
           {activeTab === Tabs.Speciality && (
@@ -458,11 +473,13 @@ export default function Profile() {
                 axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
                 rings={4}
                 fillColor={
-                  colorScheme === "light"
-                    ? Colors.TransparantLightOrange
-                    : Colors.TransparantDarkOrange
+                  mainSwimmerSelected
+                    ? colorScheme === "light"
+                      ? Colors.TransparantLightOrange
+                      : Colors.TransparantDarkOrange
+                    : undefined
                 }
-                strokeColor={Colors.Orange}
+                strokeColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
               />
               <Text style={[textColor(colorScheme), { fontStyle: "italic" }]}>
                 Gemiddeld aantal punten:{" "}
@@ -509,11 +526,13 @@ export default function Profile() {
                 labels={labels}
                 size={{ width: Dimensions.get("window").width, height: 300 }}
                 lineColor={
-                  colorScheme === "light"
-                    ? "rgba(162,94,23,0.5)"
-                    : "rgba(162, 94, 23, 0.8)"
+                  mainSwimmerSelected
+                    ? colorScheme === "light"
+                      ? "rgba(162,94,23,0.5)"
+                      : "rgba(162, 94, 23, 0.8)"
+                    : undefined
                 }
-                pointColor={Colors.Orange}
+                pointColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
               />
               <Dropdown
                 data={athleteData.pbs
@@ -572,7 +591,10 @@ export default function Profile() {
     } else {
       return (
         <Page>
-          <ActivityIndicator size="large" color={Colors.Orange} />
+          <ActivityIndicator
+            size="large"
+            color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+          />
         </Page>
       );
     }

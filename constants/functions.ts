@@ -433,7 +433,7 @@ export async function getWedstrijdData(wedstrijd: Wedstrijd) {
     wedstrijd.program = program
       .filter((p) => p.length > 1)
       .map((p, i) => ({
-        name: p,
+        name: p.replace(/\t/g, " "),
         no: !p.match(MeetRegexes.ProgramNumberCheckRegex)
           ? Number.parseInt(p.match(MeetRegexes.TripleNumberRegex)?.[0] ?? "-1")
           : i,

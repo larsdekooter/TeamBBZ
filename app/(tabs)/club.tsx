@@ -304,7 +304,7 @@ function ResultsComponent({
               <Text
                 style={[
                   textColor(colorScheme),
-                  { textAlign: "left", width: "30%", overflow: "hidden" },
+                  { textAlign: "left", width: "65%", overflow: "hidden" },
                 ]}
                 numberOfLines={1}
               >
@@ -835,12 +835,12 @@ function WedstrijdenComponent({
                             { fontWeight: "bold" },
                           ]}
                         >
-                          {item.name.slice(0, item.name.indexOf(" "))} -
-                        </Text>
-                        {item.name.slice(
-                          item.name.indexOf(" "),
-                          item.name.length
-                        )}
+                          {item.name.slice(0, item.name.indexOf(" "))}
+                        </Text>{" "}
+                        -{" "}
+                        {item.name
+                          .slice(item.name.indexOf(" "), item.name.length)
+                          .trim()}
                       </Fragment>
                     }
                     containerStyle={[
@@ -853,6 +853,12 @@ function WedstrijdenComponent({
                         ).find((swimmer) => usernames.includes(swimmer.name))
                           ? 3
                           : 1,
+                        borderColor: filterSwimmers(
+                          selectedWedstrijd,
+                          item.no
+                        ).find((swimmer) => usernames[1] === swimmer.name)
+                          ? Colors.Blue
+                          : Colors.Orange,
                       },
                     ]}
                     numberOfTitleLines={1}
@@ -920,6 +926,7 @@ function WedstrijdenComponent({
                 setProgramLoading(true);
                 setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
                 const w = await getWedstrijdData(wedstrijd);
+                console.log(JSON.stringify(w, null, 2));
                 setProgramLoading(false);
                 setSelectedWedstrijd(w);
                 setModalShown(true);

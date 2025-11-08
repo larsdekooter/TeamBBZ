@@ -21,10 +21,12 @@ export default function MeetsTable({
   top,
   athleteData,
   data,
+  mainSwimmerSelected,
 }: {
   top: number;
   athleteData: AthleteData;
   data: MeetData[];
+  mainSwimmerSelected: boolean;
 }) {
   const colorScheme = useColorScheme();
   const [modalShown, setModalShown] = useState(false);
@@ -38,6 +40,12 @@ export default function MeetsTable({
         onRequestClose={() => setModalShown(false)}
         onClose={() => setModalShown(false)}
         height={550}
+        containerStyle={{
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+        }}
+        buttonStyle={{
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+        }}
       >
         <View
           style={{
@@ -105,7 +113,10 @@ export default function MeetsTable({
                     key={index}
                     style={{
                       borderWidth: 1,
-                      borderColor: Colors.Orange,
+                      borderColor: mainSwimmerSelected
+                        ? Colors.Orange
+                        : Colors.Blue,
+
                       borderRadius: 6,
                       margin: 5,
                       padding: 5,
