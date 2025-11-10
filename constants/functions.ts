@@ -989,11 +989,12 @@ export async function getCompetitieStand(): Promise<CompetitieStand[]> {
   return rows;
 }
 
-async function time(func: () => Promise<any>) {
+export async function time<T>(func: () => Promise<T>): Promise<T> {
   const start = Date.now();
-  await func();
+  const value = await func();
   const elapsed = Date.now() - start;
-  console.log(elapsed / 1000 + "s");
+  console.log(elapsed / 1000 + "s " + func.name);
+  return value;
 }
 
 export function filterSwimmers(wedstrijd: Wedstrijd, programNumber: number) {
@@ -1002,4 +1003,19 @@ export function filterSwimmers(wedstrijd: Wedstrijd, programNumber: number) {
       .map(({ number }) => number)
       .includes(programNumber.toString())
   );
+}
+
+export function convertTimestringToNumber(time: string) {
+  if (time.length > 5) {
+    const [minutes, seconds] = time.split(":") as string[];
+    return parseInt(minutes) * 60 + parseFloat(seconds);
+  } else {
+    return parseFloat(time);
+  }
+}
+
+export function isImprovement(time: string, pb: string) {
+  const timeNumber = convertTimestringToNumber(time);
+  const pbNumber = convertTimestringToNumber(pb);
+  return timeNumber < pbNumber;
 }

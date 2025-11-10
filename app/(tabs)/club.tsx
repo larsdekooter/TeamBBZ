@@ -10,7 +10,9 @@ import {
   getResultMeets,
   getSchemaData,
   getWedstrijdData,
+  isImprovement,
   textColor,
+  time,
 } from "@/constants/functions";
 import {
   Clubrecord,
@@ -186,7 +188,8 @@ function ResultsComponent({
                           textAlign: "center",
                           width: "20%",
                           color:
-                            parseInt(item.percentages[index]) < 100
+                            parseInt(item.percentages[index]) <= 100 &&
+                            !isImprovement(item.times[index], item.pbs[index])
                               ? colorScheme === "dark"
                                 ? Colors.DarkmodeRed
                                 : Colors.LightmodeRed
@@ -203,7 +206,8 @@ function ResultsComponent({
                         {
                           textAlign: "right",
                           color:
-                            parseInt(item.percentages[index]) < 100
+                            parseInt(item.percentages[index]) <= 100 &&
+                            !isImprovement(item.times[index], item.pbs[index])
                               ? colorScheme === "dark"
                                 ? Colors.DarkmodeRed
                                 : Colors.LightmodeRed
@@ -926,7 +930,6 @@ function WedstrijdenComponent({
                 setProgramLoading(true);
                 setSelectedWedstrijd({ id: wedstrijd.id } as Wedstrijd);
                 const w = await getWedstrijdData(wedstrijd);
-                console.log(JSON.stringify(w, null, 2));
                 setProgramLoading(false);
                 setSelectedWedstrijd(w);
                 setModalShown(true);
