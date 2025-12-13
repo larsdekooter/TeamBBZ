@@ -161,15 +161,12 @@ function ProfileHeader({
             </View>
           )}
           {userSwitchLoading && (
-            <ActivityIndicator
-              color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
-              size={25}
-            />
+            <SkeletonLoader loaderHeightMultiplier={2} loaderHeightAdder={10} />
           )}
         </Pressable>
       ) : (
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <SkeletonLoader loaderHeightMultiplier={2} />
+          <SkeletonLoader loaderHeightMultiplier={2} loaderHeightAdder={20} />
         </View>
       )}
 

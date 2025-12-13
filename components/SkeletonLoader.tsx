@@ -14,10 +14,12 @@ export default function SkeletonLoader({
   loaderHeight,
   loaderWidth,
   loaderHeightMultiplier = 1,
+  loaderHeightAdder = 20,
 }: {
   loaderHeight?: number;
   loaderWidth?: number;
   loaderHeightMultiplier?: number;
+  loaderHeightAdder?: number;
 }) {
   const translateX = useSharedValue(-screenWidth);
   const [height, setHeight] = useState(0);
@@ -67,7 +69,8 @@ export default function SkeletonLoader({
           style={{ height: 0 }}
           onTextLayout={(e) =>
             setHeight(
-              e.nativeEvent.lines[0].height * loaderHeightMultiplier + 20
+              e.nativeEvent.lines[0].height * loaderHeightMultiplier +
+                loaderHeightAdder
             )
           }
         >
