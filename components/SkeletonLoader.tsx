@@ -8,12 +8,15 @@ import Animated, {
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width } = Dimensions.get("window");
-const duration = 1200;
-
 const screenWidth = Dimensions.get("window").width;
 
-export default function SkeletonLoader() {
+export default function SkeletonLoader({
+  loaderHeight,
+  loaderWidth,
+}: {
+  loaderHeight?: number;
+  loaderWidth?: number;
+}) {
   const translateX = useSharedValue(-screenWidth);
   const [height, setHeight] = useState(0);
 
@@ -34,8 +37,8 @@ export default function SkeletonLoader() {
       style={{
         backgroundColor: "rgb(17, 17, 17)",
         overflow: "hidden",
-        height,
-        width: screenWidth * 0.95,
+        height: loaderHeight || height,
+        width: loaderWidth || screenWidth * 0.95,
         borderRadius: 6,
         marginVertical: 10,
       }}
