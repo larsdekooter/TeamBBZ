@@ -1,20 +1,10 @@
-import {
-  ActivityIndicator,
-  Appearance,
-  Dimensions,
-  FlatList,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
+import { Dimensions, FlatList, Text, useColorScheme, View } from "react-native";
 import Page from "../../components/Page";
 import { getPosts, textColor } from "../../constants/functions";
 import { useEffect, useState } from "react";
 import { Post } from "@/constants/types";
 import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
-import { getItem, setItem } from "@/utils/AsyncStorage";
-import { Colors } from "@/constants/enums";
 import SkeletonLoader from "@/components/SkeletonLoader";
 
 export default function Home() {

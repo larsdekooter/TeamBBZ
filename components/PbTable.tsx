@@ -7,7 +7,6 @@ import {
   Dimensions,
   FlatList,
   GestureResponderEvent,
-  Modal,
   NativeSyntheticEvent,
   Pressable,
   Text,
@@ -16,7 +15,6 @@ import {
 } from "react-native";
 import ButtonComponent from "./ButtonComponent";
 import { Colors, Strokes, SwimrakingEventId } from "@/constants/enums";
-import { FontAwesome } from "@expo/vector-icons";
 import SectionComponent from "./SectionComponent";
 import SwipeModal from "./SwipeModal";
 import { PressableProps } from "react-native";

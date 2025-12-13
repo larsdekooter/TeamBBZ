@@ -12,7 +12,6 @@ import {
   getWedstrijdData,
   isImprovement,
   textColor,
-  time,
 } from "@/constants/functions";
 import {
   Clubrecord,

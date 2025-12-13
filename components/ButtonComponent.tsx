@@ -1,5 +1,4 @@
 import { StyleProp, useColorScheme, ViewStyle } from "react-native";
-// import { Pressable, PressableProps } from "react-native-gesture-handler";
 import { Pressable, PressableProps } from "react-native";
 import { Colors } from "@/constants/enums";
 

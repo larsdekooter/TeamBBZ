@@ -1,7 +1,5 @@
 import {
-  ActivityIndicator,
   Alert,
-  ColorSchemeName,
   Dimensions,
   Modal,
   Pressable,
@@ -21,8 +19,8 @@ import {
 } from "../../constants/functions";
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
-import { Fragment, useCallback, useEffect, useState } from "react";
-import { getItem, setItem, clear } from "@/utils/AsyncStorage";
+import { Fragment, useCallback, useState } from "react";
+import { getItem, setItem } from "@/utils/AsyncStorage";
 import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
 import MeetsTable from "@/components/MeetTable";
@@ -33,12 +31,7 @@ import Dropdown from "@/components/Dropdown";
 import CheckBox from "@/components/Checkbox";
 import TextInputComponent from "@/components/TextInputComponent";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {
-  AntDesign,
-  Entypo,
-  SimpleLineIcons,
-  Octicons,
-} from "@expo/vector-icons";
+import { Entypo, Octicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
 import SkeletonLoader from "@/components/SkeletonLoader";
 

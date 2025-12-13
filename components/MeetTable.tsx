@@ -13,7 +13,6 @@ import {
 import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "./SwipeModal";
 import { Colors } from "@/constants/enums";
-import { SwimrankingsRegexes } from "@/constants/regex";
 
 //TODO: add points to visualization
 
