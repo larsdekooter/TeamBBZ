@@ -15,6 +15,7 @@ import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
 import { getItem, setItem } from "@/utils/AsyncStorage";
 import { Colors } from "@/constants/enums";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -30,53 +31,52 @@ export default function Home() {
     }
   }, []);
 
-  if (posts.length > 1) {
-    return (
-      <Page>
-        <Text
-          style={{
-            ...textColor(colorScheme),
-            top: 30,
-            fontWeight: "bold",
-            fontSize: 50,
-          }}
-        >
-          Berichten
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            top: 40,
-            justifyContent: "space-between",
-            display: "flex",
-            width: Dimensions.get("window").width,
-            paddingHorizontal: 100,
-          }}
-        >
-          <Text style={[textColor(colorScheme)]}>Compact</Text>
-          <CheckBox checked={compact} onPress={() => setCompact(!compact)} />
-        </View>
+  return (
+    <Page>
+      <Text
+        style={{
+          ...textColor(colorScheme),
+          top: 30,
+          fontWeight: "bold",
+          fontSize: 50,
+        }}
+      >
+        Berichten
+      </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          top: 40,
+          justifyContent: "space-between",
+          display: "flex",
+          width: Dimensions.get("window").width,
+          paddingHorizontal: 100,
+        }}
+      >
+        <Text style={[textColor(colorScheme)]}>Compact</Text>
+        <CheckBox checked={compact} onPress={() => setCompact(!compact)} />
+      </View>
 
-        <FlatList
-          data={posts}
-          renderItem={({ item, index }) => (
+      <FlatList
+        data={posts}
+        renderItem={({ item, index }) =>
+          posts.length > 1 ? (
             <PostComponent post={item} key={index} compact={compact} />
-          )}
-          style={{
-            height: 100,
-            width: Dimensions.get("window").width,
-            top: 50,
-            marginBottom: 50,
-            zIndex: 10,
-          }}
-        />
-      </Page>
-    );
-  } else {
-    return (
-      <Page>
-        <ActivityIndicator color={Colors.Orange} size="large" />
-      </Page>
-    );
-  }
+          ) : (
+            <SkeletonLoader loaderHeight={300 / 5} />
+          )
+        }
+        style={{
+          height: 100,
+          width: Dimensions.get("window").width,
+          top: 50,
+          marginBottom: 50,
+          zIndex: 10,
+        }}
+        contentContainerStyle={{
+          alignItems: posts.length > 1 ? "stretch" : "center",
+        }}
+      />
+    </Page>
+  );
 }
