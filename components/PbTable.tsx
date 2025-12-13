@@ -20,12 +20,14 @@ import { FontAwesome } from "@expo/vector-icons";
 import SectionComponent from "./SectionComponent";
 import SwipeModal from "./SwipeModal";
 import { PressableProps } from "react-native";
+import SkeletonLoader from "./SkeletonLoader";
 
 export default function PbTable({
   data,
   athleteData,
   top,
   mainSwimmerSelected,
+  initialLoading,
 }: {
   data: {
     title: { distance: string; time: string; poolSize: "25m" | "50m" };
@@ -35,6 +37,7 @@ export default function PbTable({
   athleteData: AthleteData;
   top: number;
   mainSwimmerSelected: boolean;
+  initialLoading: boolean;
 }) {
   const strokes = {
     vlinderslag: data.filter(({ title }) =>
@@ -63,6 +66,23 @@ export default function PbTable({
     [] as { time: string; date: Date; points: string; location: string }[]
   );
   const [loading, setLoading] = useState(false);
+
+  if (initialLoading) {
+    return (
+      <View
+        style={{
+          minHeight: "83%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {[...Array(5)].map((_, index) => (
+          <SkeletonLoader key={index} />
+        ))}
+      </View>
+    );
+  }
 
   return (
     <Fragment>

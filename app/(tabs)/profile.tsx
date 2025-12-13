@@ -40,6 +40,7 @@ import {
   Octicons,
 } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
+import SkeletonLoader from "@/components/SkeletonLoader";
 
 const POINTS_FOR_25M = false;
 
@@ -58,6 +59,7 @@ function ProfileHeader({
   setActiveTab,
   mainSwimmerSelected,
   setMainSwimmerSelected,
+  loading,
 }: {
   athleteData: AthleteData;
   activeTab: Tabs;
@@ -76,6 +78,7 @@ function ProfileHeader({
   ) => void;
   mainSwimmerSelected: boolean;
   setMainSwimmerSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
 }) {
   const [userSwitchLoading, setUserSwitchLoading] = useState(false);
   const colorScheme = useColorScheme();
@@ -89,80 +92,87 @@ function ProfileHeader({
         zIndex: 2,
       }}
     >
-      <Pressable
-        style={{
-          width: "100%",
-          paddingVertical: 5,
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-        onPress={async () => {
-          setUserSwitchLoading(true);
-          const swimmer = await getItem(
-            mainSwimmerSelected ? "swimmers" : "username"
-          );
-          if (swimmer) {
-            const { aData, history25mFreestyle } =
-              await fetchSwimrankingSwimmer(
-                swimmer.swimmer ?? swimmer.username
-              );
-            if (aData) {
-              prepareData(aData, history25mFreestyle);
-              setUserSwitchLoading(false);
-            } else {
-              setUserSwitchLoading(false);
-            }
-          } else setUserSwitchLoading(false);
-          setMainSwimmerSelected(!mainSwimmerSelected);
-        }}
-      >
-        {!userSwitchLoading && (
-          <View
-            style={{
-              flexDirection: "column",
-              flex: 1,
-              width: "90%",
-              marginVertical: 10,
-              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
-              borderWidth: 1,
-              borderRadius: 6,
-              paddingHorizontal: 20,
-              paddingVertical: 5,
-            }}
-          >
+      {!loading ? (
+        <Pressable
+          style={{
+            width: "100%",
+            paddingVertical: 5,
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+          onPress={async () => {
+            setUserSwitchLoading(true);
+            const swimmer = await getItem(
+              mainSwimmerSelected ? "swimmers" : "username"
+            );
+            if (swimmer) {
+              const { aData, history25mFreestyle } =
+                await fetchSwimrankingSwimmer(
+                  swimmer.swimmer ?? swimmer.username
+                );
+              if (aData) {
+                prepareData(aData, history25mFreestyle);
+                setUserSwitchLoading(false);
+              } else {
+                setUserSwitchLoading(false);
+              }
+            } else setUserSwitchLoading(false);
+            setMainSwimmerSelected(!mainSwimmerSelected);
+          }}
+        >
+          {!userSwitchLoading && (
             <View
               style={{
-                justifyContent: "space-between",
-                flexDirection: "row",
+                flexDirection: "column",
+                flex: 1,
+                width: "90%",
+                marginVertical: 10,
+                borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+                borderWidth: 1,
+                borderRadius: 6,
+                paddingHorizontal: 20,
+                paddingVertical: 5,
               }}
             >
-              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
-                {athleteData.name}
-              </Text>
-              <Text style={[textColor(colorScheme)]}>
-                {athleteData.birthYear}
-              </Text>
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                }}
+              >
+                <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+                  {athleteData.name}
+                </Text>
+                <Text style={[textColor(colorScheme)]}>
+                  {athleteData.birthYear}
+                </Text>
+              </View>
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                }}
+              >
+                <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+                  {athleteData.nation}
+                </Text>
+                <Text style={[textColor(colorScheme)]}>{athleteData.club}</Text>
+              </View>
             </View>
-            <View
-              style={{
-                justifyContent: "space-between",
-                flexDirection: "row",
-              }}
-            >
-              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
-                {athleteData.nation}
-              </Text>
-              <Text style={[textColor(colorScheme)]}>{athleteData.club}</Text>
-            </View>
-          </View>
-        )}
-        {userSwitchLoading && (
-          <ActivityIndicator
-            color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
-            size={25}
-          />
-        )}
-      </Pressable>
+          )}
+          {userSwitchLoading && (
+            <ActivityIndicator
+              color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+              size={25}
+            />
+          )}
+        </Pressable>
+      ) : (
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <SkeletonLoader loaderHeightMultiplier={2} />
+        </View>
+      )}
+
       <View
         style={{
           // marginTop: 50,
@@ -175,52 +185,62 @@ function ProfileHeader({
           paddingBottom: 5,
         }}
       >
-        <ButtonComponent
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            borderWidth: activeTab === Tabs.Pbs ? 2 : 1,
-            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
-          }}
-          onPress={() => {
-            setActiveTab(Tabs.Pbs);
-          }}
-        >
-          <Octicons
-            name="stopwatch"
-            color={textColor(colorScheme).color}
-            size={20}
-          />
-        </ButtonComponent>
-        <ButtonComponent
-          onPress={() => setActiveTab(Tabs.Meets)}
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            borderWidth: activeTab === Tabs.Meets ? 2 : 1,
-            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
-          }}
-        >
-          <Entypo name="medal" color={textColor(colorScheme).color} size={20} />
-        </ButtonComponent>
-        <ButtonComponent
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 5,
-            borderWidth: activeTab === Tabs.Speciality ? 2 : 1,
-            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
-          }}
-          onPress={async () => {
-            setActiveTab(Tabs.Speciality);
-            getSpecialityData(athleteData);
-          }}
-        >
-          <Octicons
-            name="star"
-            color={textColor(colorScheme).color}
-            size={20}
-          />
-        </ButtonComponent>
+        {loading ? (
+          <SkeletonLoader />
+        ) : (
+          <>
+            <ButtonComponent
+              style={{
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                borderWidth: activeTab === Tabs.Pbs ? 2 : 1,
+                borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+              }}
+              onPress={() => {
+                setActiveTab(Tabs.Pbs);
+              }}
+            >
+              <Octicons
+                name="stopwatch"
+                color={textColor(colorScheme).color}
+                size={20}
+              />
+            </ButtonComponent>
+            <ButtonComponent
+              onPress={() => setActiveTab(Tabs.Meets)}
+              style={{
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                borderWidth: activeTab === Tabs.Meets ? 2 : 1,
+                borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+              }}
+            >
+              <Entypo
+                name="medal"
+                color={textColor(colorScheme).color}
+                size={20}
+              />
+            </ButtonComponent>
+            <ButtonComponent
+              style={{
+                paddingHorizontal: 10,
+                paddingVertical: 5,
+                borderWidth: activeTab === Tabs.Speciality ? 2 : 1,
+                borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+              }}
+              onPress={async () => {
+                setActiveTab(Tabs.Speciality);
+                getSpecialityData(athleteData);
+              }}
+            >
+              <Octicons
+                name="star"
+                color={textColor(colorScheme).color}
+                size={20}
+              />
+            </ButtonComponent>
+          </>
+        )}
       </View>
     </View>
   );
@@ -249,6 +269,7 @@ export default function Profile() {
     poolSize: "25m",
   });
   const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   function prepareData(
     aData: AthleteData,
@@ -302,126 +323,117 @@ export default function Profile() {
       const getI = async () => {
         if (username.length! > 0) return;
         await fetchUser();
+        setInitialLoading(false);
       };
       getI();
     }, [])
   );
 
-  // useEffect(() => {
-  //   const getI = async () => {
-  //     await fetchUser();
-  //   };
-  //   getI();
-  // });
-
-  if (!(username.length > 0)) {
-    if (athleteData.name) {
-      setAthleteData({} as AthleteData);
-    }
-    return (
-      <Page>
-        <Text style={textColor(colorScheme)}>
-          Login om statistieken te zien
-        </Text>
-        <ButtonComponent
-          onPress={() => {
-            setModalShown(true);
-            setEmailSet("");
-            setUsernameSet("");
-          }}
-          style={{ width: "95%", paddingVertical: 10, marginVertical: 10 }}
-        >
-          <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
-            Login
+  return (
+    <Page>
+      {!initialLoading && username.length === 0 ? (
+        <Fragment>
+          <Text style={textColor(colorScheme)}>
+            Login om statistieken te zien
           </Text>
-        </ButtonComponent>
+          <ButtonComponent
+            onPress={() => {
+              setModalShown(true);
+              setEmailSet("");
+              setUsernameSet("");
+            }}
+            style={{ width: "95%", paddingVertical: 10, marginVertical: 10 }}
+          >
+            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+              Login
+            </Text>
+          </ButtonComponent>
 
-        <Modal
-          animationType="slide"
-          transparent
-          visible={modalShown}
-          onRequestClose={() => {
-            setModalShown(false);
-          }}
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            width: Dimensions.get("window").width,
-            height: Dimensions.get("window").height,
-          }}
-        >
-          <GestureHandlerRootView style={styles.centeredView}>
-            <View
-              style={
-                colorScheme === "light"
-                  ? styles.modalLightView
-                  : styles.modalDarkView
-              }
-            >
-              <TextInputComponent
-                contentContainerStyle={{ marginVertical: 20 }}
-                placeholder="Naam"
-                errorMessage={nameError.length > 0 ? nameError : undefined}
-                id="username"
-                onChangeText={(input) => {
-                  if (nameError.length > 0) setNameError("");
-                  setUsernameSet(input);
-                }}
-                autoComplete="name"
-              />
-              <TextInputComponent
-                contentContainerStyle={{ marginVertical: 20 }}
-                errorMessage={emailError.length > 0 ? emailError : undefined}
-                placeholder="Email"
-                id="email"
-                onChangeText={(input) => {
-                  if (nameError.length > 0) setNameError("");
-                  setEmailSet(input);
-                }}
-                inputMode="email"
-              />
-              <ButtonComponent
-                style={{
-                  paddingVertical: 10,
-                  width: 200,
-                  backgroundColor:
-                    colorScheme === "dark"
-                      ? Colors.ModalDarkBackground
-                      : Colors.ModalLightBackground,
-                }}
-                onPress={async () => {
-                  if (!(usernameSet.length > 0)) {
-                    return setNameError("Voer een naam in!");
-                  } else if (!(emailSet.length > 0)) {
-                    return setEmailError("Voer een email addres in!");
-                  } else {
-                    setLoading(true);
-                    await setItem("username", { username: usernameSet });
-                    setUsername(usernameSet);
-                    await setItem("email", { email: emailSet });
-                    setEmailSet(emailSet);
-                    setModalShown(false);
-                    const userFound = await fetchUser();
-                    setLoading(false);
-                    if (!userFound)
-                      setNameError(`${usernameSet} werd niet gevonden!`);
-                  }
-                }}
+          <Modal
+            animationType="slide"
+            transparent
+            visible={modalShown}
+            onRequestClose={() => {
+              setModalShown(false);
+            }}
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              width: Dimensions.get("window").width,
+              height: Dimensions.get("window").height,
+            }}
+          >
+            <GestureHandlerRootView style={styles.centeredView}>
+              <View
+                style={
+                  colorScheme === "light"
+                    ? styles.modalLightView
+                    : styles.modalDarkView
+                }
               >
-                <Text style={[textColor(colorScheme), { textAlign: "right" }]}>
-                  Login
-                </Text>
-              </ButtonComponent>
-            </View>
-          </GestureHandlerRootView>
-        </Modal>
-      </Page>
-    );
-  } else {
-    if (athleteData.name) {
-      return (
-        <Page style={{ justifyContent: "flex-start" }}>
+                <TextInputComponent
+                  contentContainerStyle={{ marginVertical: 20 }}
+                  placeholder="Naam"
+                  errorMessage={nameError.length > 0 ? nameError : undefined}
+                  id="username"
+                  onChangeText={(input) => {
+                    if (nameError.length > 0) setNameError("");
+                    setUsernameSet(input);
+                  }}
+                  autoComplete="name"
+                />
+                <TextInputComponent
+                  contentContainerStyle={{ marginVertical: 20 }}
+                  errorMessage={emailError.length > 0 ? emailError : undefined}
+                  placeholder="Email"
+                  id="email"
+                  onChangeText={(input) => {
+                    if (nameError.length > 0) setNameError("");
+                    setEmailSet(input);
+                  }}
+                  inputMode="email"
+                />
+                <ButtonComponent
+                  style={{
+                    paddingVertical: 10,
+                    width: 200,
+                    backgroundColor:
+                      colorScheme === "dark"
+                        ? Colors.ModalDarkBackground
+                        : Colors.ModalLightBackground,
+                  }}
+                  onPress={async () => {
+                    if (!(usernameSet.length > 0)) {
+                      return setNameError("Voer een naam in!");
+                    } else if (!(emailSet.length > 0)) {
+                      return setEmailError("Voer een email addres in!");
+                    } else {
+                      setLoading(true);
+                      await setItem("username", { username: usernameSet });
+                      setUsername(usernameSet);
+                      await setItem("email", { email: emailSet });
+                      setEmailSet(emailSet);
+                      setModalShown(false);
+                      const userFound = await fetchUser();
+                      setLoading(false);
+                      if (!userFound)
+                        setNameError(`${usernameSet} werd niet gevonden!`);
+                    }
+                  }}
+                >
+                  <Text
+                    style={[textColor(colorScheme), { textAlign: "right" }]}
+                  >
+                    Login
+                  </Text>
+                </ButtonComponent>
+              </View>
+            </GestureHandlerRootView>
+          </Modal>
+        </Fragment>
+      ) : (
+        <Fragment>
           <ProfileHeader
             activeTab={activeTab}
             athleteData={athleteData}
@@ -429,25 +441,31 @@ export default function Profile() {
             setActiveTab={setActiveTab}
             mainSwimmerSelected={mainSwimmerSelected}
             setMainSwimmerSelected={setMainSwimmerSelected}
+            loading={initialLoading}
           />
           {activeTab === Tabs.Pbs && (
             <PbTable
               top={0}
-              data={athleteData.pbs.map((pb) => {
-                return {
-                  key: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
-                  title: {
-                    distance: pb.event,
-                    poolSize: pb.poolSize,
-                    time: pb.time,
-                  },
-                  id: SwimrakingEventId[
-                    pb.event as keyof typeof SwimrakingEventId
-                  ],
-                };
-              })}
+              data={
+                initialLoading
+                  ? []
+                  : athleteData.pbs.map((pb) => {
+                      return {
+                        key: `${pb.event} - ${pb.poolSize} - ${pb.date}`,
+                        title: {
+                          distance: pb.event,
+                          poolSize: pb.poolSize,
+                          time: pb.time,
+                        },
+                        id: SwimrakingEventId[
+                          pb.event as keyof typeof SwimrakingEventId
+                        ],
+                      };
+                    })
+              }
               athleteData={athleteData}
               mainSwimmerSelected={mainSwimmerSelected}
+              initialLoading={initialLoading}
             />
           )}
           {activeTab === Tabs.Meets && (
@@ -586,19 +604,10 @@ export default function Profile() {
               <View style={{ height: 50 }} />
             </ScrollView>
           )}
-        </Page>
-      );
-    } else {
-      return (
-        <Page>
-          <ActivityIndicator
-            size="large"
-            color={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
-          />
-        </Page>
-      );
-    }
-  }
+        </Fragment>
+      )}
+    </Page>
+  );
 }
 
 const styles = StyleSheet.create({
