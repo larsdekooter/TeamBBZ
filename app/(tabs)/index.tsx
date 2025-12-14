@@ -48,7 +48,7 @@ export default function Home() {
       </View>
 
       <FlatList
-        data={posts}
+        data={posts.length > 1 ? posts : new Array(10)}
         renderItem={({ item, index }) =>
           posts.length > 1 ? (
             <PostComponent post={item} key={index} compact={compact} />
