@@ -998,9 +998,9 @@ export async function time<T>(func: () => Promise<T>): Promise<T> {
 }
 
 export function filterSwimmers(wedstrijd: Wedstrijd, programNumber: number) {
-  return wedstrijd.swimmers.filter((swimmer) =>
+  return wedstrijd.swimmers?.filter((swimmer) =>
     swimmer.programs
-      .map(({ number }) => number)
+      ?.map(({ number }) => number)
       .includes(programNumber.toString())
   );
 }

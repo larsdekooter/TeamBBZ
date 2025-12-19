@@ -853,13 +853,13 @@ function WedstrijdenComponent({
                         borderWidth: filterSwimmers(
                           selectedWedstrijd,
                           item.no
-                        ).find((swimmer) => usernames.includes(swimmer.name))
+                        )?.find((swimmer) => usernames.includes(swimmer.name))
                           ? 3
                           : 1,
                         borderColor: filterSwimmers(
                           selectedWedstrijd,
                           item.no
-                        ).find((swimmer) => usernames[1] === swimmer.name)
+                        )?.find((swimmer) => usernames[1] === swimmer.name)
                           ? Colors.Blue
                           : Colors.Orange,
                       },
@@ -870,7 +870,7 @@ function WedstrijdenComponent({
                       textDecorationLine: filterSwimmers(
                         selectedWedstrijd,
                         item.no
-                      ).find((swimmer) => usernames.includes(swimmer.name))
+                      )?.find((swimmer) => usernames.includes(swimmer.name))
                         ? "underline"
                         : undefined,
                     }}
