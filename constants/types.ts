@@ -106,3 +106,12 @@ export type CalendarSwimmer = {
   programs: { number: string; name: string; pb: string }[];
   // prs: [];
 };
+
+export type MeetResult = {
+  date: Date;
+  name: string;
+  poolSize: "25" | "50" | "OW";
+  location: string;
+  category: "competitie" | "masters" | "minioren" | "limiet" | "lac";
+  id: string;
+};

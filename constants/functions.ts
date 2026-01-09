@@ -15,6 +15,7 @@ import {
   Clubrecord,
   CompetitieStand,
   MeetData,
+  MeetResult,
   MeetResultData,
   Pb,
   Post,
@@ -96,19 +97,15 @@ export async function getResultMeets(): Promise<
     id: string;
   }[]
 > {
-  const resultData: {
-    date: Date;
-    name: string;
-    poolSize: "25" | "50" | "OW";
-    location: string;
-    category: "competitie" | "masters" | "minioren" | "limiet" | "lac";
-    id: string;
-  }[] = [];
+  const resultData: MeetResult[] = [];
 
   const page = await fetch("https://www.b-b-z.nl/zwemmen/uitslagen/").then(
     (res) => res.text()
   );
   const resultTable = page.match(GeneralRegexes.GlobalTableRegex)![1];
+  if (!resultTable.match(GeneralRegexes.RowRegex)) {
+    return [];
+  }
   const tableRows = resultTable
     .match(GeneralRegexes.RowRegex)!
     .toSpliced(0, 1)

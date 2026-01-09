@@ -283,7 +283,10 @@ function ResultsComponent({
       <SectionComponent title="Resultaten" loading={loading}>
         <FlatList
           data={resultMeets}
-          style={{ height: 350 }}
+          style={{
+            height:
+              resultMeets.length * 45 > 350 ? 350 : resultMeets.length * 45,
+          }}
           renderItem={({ item }) => (
             <Pressable
               style={{
