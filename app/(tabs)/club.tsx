@@ -2,7 +2,9 @@ import ButtonComponent from "@/components/ButtonComponent";
 import Page from "@/components/Page";
 import {
   enterMeet,
+  fetchSwimrankingSwimmer,
   filterSwimmers,
+  getAthleteData,
   getClubRecords,
   getCompetitieStand,
   getMeetCalendar,
@@ -14,13 +16,14 @@ import {
   textColor,
 } from "@/constants/functions";
 import {
+  AthleteData,
   Clubrecord,
   CompetitieStand,
   Result,
   Wedstrijd,
 } from "@/constants/types";
 import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
   Pressable,
@@ -39,10 +42,11 @@ import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import { Colors } from "@/constants/enums";
 import { getItem } from "@/utils/AsyncStorage";
+import { useFocusEffect } from "expo-router";
 
 export default function Club() {
   const [schema, setSchema] = useState(
-    {} as { schema: string; groups: string[] }
+    {} as { schema: string; groups: string[] },
   );
   const [wedstrijden, setWedstrijden] = useState([] as Wedstrijd[]);
   const [clubrecords, setClubrecords] = useState({ male: [], female: [] } as {
@@ -50,7 +54,7 @@ export default function Club() {
     female: Clubrecord[];
   });
   const [competitieStanden, setCompetitieStanden] = useState(
-    [] as CompetitieStand[]
+    [] as CompetitieStand[],
   );
   const [resultsMeets, setResultsMeets] = useState(
     [] as {
@@ -60,7 +64,7 @@ export default function Club() {
       location: string; //
       category: "competitie" | "masters" | "minioren" | "limiet" | "lac"; //
       id: string; //
-    }[]
+    }[],
   );
   const [usernames, setUsernames] = useState<Array<string>>([]);
 
@@ -193,8 +197,8 @@ function ResultsComponent({
                                 ? Colors.DarkmodeRed
                                 : Colors.LightmodeRed
                               : colorScheme === "dark"
-                              ? Colors.DarkmodeGreen
-                              : Colors.LightModeGreen,
+                                ? Colors.DarkmodeGreen
+                                : Colors.LightModeGreen,
                         },
                       ]}
                     >
@@ -211,8 +215,8 @@ function ResultsComponent({
                                 ? Colors.DarkmodeRed
                                 : Colors.LightmodeRed
                               : colorScheme === "dark"
-                              ? Colors.DarkmodeGreen
-                              : Colors.LightModeGreen,
+                                ? Colors.DarkmodeGreen
+                                : Colors.LightModeGreen,
                           width: "20%",
                         },
                       ]}
@@ -604,7 +608,7 @@ function SchemaComponent({
                       "Geen trainen vandaag!",
                     ].includes(schemaState.schema)
                       ? 50
-                      : 0)
+                      : 0),
                 );
               }
             }}
@@ -744,7 +748,7 @@ function WedstrijdenComponent({
         {selectedWedstrijd.program && (
           <FlatList
             data={selectedWedstrijd.program.filter(
-              (p) => !p.name.includes("pauze")
+              (p) => !p.name.includes("pauze"),
             )}
             style={{
               width: "100%",
@@ -755,7 +759,7 @@ function WedstrijdenComponent({
                   <Pressable
                     style={{
                       backgroundColor: !chosenProgram.includes(
-                        parseInt(item.name.split(/\s/)[0])
+                        parseInt(item.name.split(/\s/)[0]),
                       )
                         ? colorScheme === "dark"
                           ? Colors.ModalDarkBackground
@@ -771,7 +775,7 @@ function WedstrijdenComponent({
                       flexDirection: "row",
                       minHeight: 10,
                       borderColor: chosenProgram.includes(
-                        parseInt(item.name.split(/\s/)[0])
+                        parseInt(item.name.split(/\s/)[0]),
                       )
                         ? Colors.CheckboxGreen
                         : Colors.Orange,
@@ -781,7 +785,7 @@ function WedstrijdenComponent({
                       const programNumber = parseInt(item.name.split(/\s/)[0]);
                       if (chosenProgram.includes(programNumber)) {
                         setChosenProgram(
-                          chosenProgram.filter((num) => num !== programNumber)
+                          chosenProgram.filter((num) => num !== programNumber),
                         );
                       } else {
                         setChosenProgram([...chosenProgram, programNumber]);
@@ -793,7 +797,7 @@ function WedstrijdenComponent({
                         height: 20,
                         width: 20,
                         backgroundColor: !chosenProgram.includes(
-                          parseInt(item.name.split(/\s/)[0])
+                          parseInt(item.name.split(/\s/)[0]),
                         )
                           ? colorScheme === "dark"
                             ? Colors.ModalDarkBackground
@@ -809,7 +813,7 @@ function WedstrijdenComponent({
                       }}
                     >
                       {chosenProgram.includes(
-                        parseInt(item.name.split(/\s/)[0])
+                        parseInt(item.name.split(/\s/)[0]),
                       ) && (
                         <FontAwesome
                           name="check"
@@ -855,13 +859,13 @@ function WedstrijdenComponent({
                         width: "100%",
                         borderWidth: filterSwimmers(
                           selectedWedstrijd,
-                          item.no
+                          item.no,
                         )?.find((swimmer) => usernames.includes(swimmer.name))
                           ? 3
                           : 1,
                         borderColor: filterSwimmers(
                           selectedWedstrijd,
-                          item.no
+                          item.no,
                         )?.find((swimmer) => usernames[1] === swimmer.name)
                           ? Colors.Blue
                           : Colors.Orange,
@@ -872,7 +876,7 @@ function WedstrijdenComponent({
                       maxWidth: "90%",
                       textDecorationLine: filterSwimmers(
                         selectedWedstrijd,
-                        item.no
+                        item.no,
                       )?.find((swimmer) => usernames.includes(swimmer.name))
                         ? "underline"
                         : undefined,
@@ -905,7 +909,7 @@ function WedstrijdenComponent({
                           >
                             {
                               swimmer.programs.find(
-                                ({ number }) => number === item.no.toString()
+                                ({ number }) => number === item.no.toString(),
                               )?.pb
                             }
                           </Text>
@@ -996,6 +1000,24 @@ function ClubrecordsComponent({
   colorScheme: ColorSchemeName;
   loading?: boolean;
 }) {
+  const [atheleteData, setAthleteData] = useState<AthleteData>(
+    {} as AthleteData,
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const getSwimmer = async () => {
+        let username = await getItem("username");
+        if (!username) username = { username: null };
+        const { aData, history25mFreestyle } = username.username
+          ? await fetchSwimrankingSwimmer(username.username)
+          : { aData: {} as AthleteData, history25mFreestyle: [] };
+        aData ? setAthleteData(aData) : null;
+      };
+      getSwimmer();
+    }, []),
+  );
+
   const ages = [
     "onder 8",
     "onder 10",
@@ -1043,7 +1065,7 @@ function ClubrecordsComponent({
             meets: [],
           })
         }
-        height={700}
+        height={725}
         closeValue={200}
       >
         <View
@@ -1052,14 +1074,31 @@ function ClubrecordsComponent({
             width: "100%",
           }}
         >
-          <Text
-            style={[
-              textColor(colorScheme),
-              { fontWeight: "bold", textAlign: "center", fontSize: 25 },
-            ]}
-          >
-            {selectedClubrecord.distance} {selectedClubrecord.event}
-          </Text>
+          <View style={{ flexDirection: "row", justifyContent: "center" }}>
+            <Text
+              style={[
+                textColor(colorScheme),
+                { fontWeight: "bold", textAlign: "center", fontSize: 25 },
+              ]}
+            >
+              {selectedClubrecord.distance} {selectedClubrecord.event} -{" "}
+            </Text>
+            <Text
+              style={[
+                textColor(colorScheme),
+                { fontStyle: "italic", fontSize: 25 },
+              ]}
+            >
+              {
+                atheleteData?.pbs?.find(
+                  (pb) =>
+                    pb.event ===
+                      `${selectedClubrecord.distance} ${selectedClubrecord.event}` &&
+                    pb.poolSize === "25m",
+                )?.time
+              }
+            </Text>
+          </View>
           <View>
             {selectedClubrecord.times.map((time, index) => (
               <View
@@ -1172,7 +1211,7 @@ function ClubrecordsComponent({
                   {
                     item.times[
                       item.times.findLastIndex(
-                        (swimmer) => swimmer?.length && swimmer.length > 0
+                        (swimmer) => swimmer?.length && swimmer.length > 0,
                       )
                     ]
                   }
@@ -1187,7 +1226,7 @@ function ClubrecordsComponent({
                   {
                     item.swimmers[
                       item.swimmers.findLastIndex(
-                        (swimmer) => swimmer?.length && swimmer.length > 0
+                        (swimmer) => swimmer?.length && swimmer.length > 0,
                       )
                     ]
                   }
