@@ -67,7 +67,7 @@ function ProfileHeader({
         date: Date;
         location: string;
       };
-    }[]
+    }[],
   ) => void;
   mainSwimmerSelected: boolean;
   setMainSwimmerSelected: React.Dispatch<React.SetStateAction<boolean>>;
@@ -96,12 +96,12 @@ function ProfileHeader({
           onPress={async () => {
             setUserSwitchLoading(true);
             const swimmer = await getItem(
-              mainSwimmerSelected ? "swimmers" : "username"
+              mainSwimmerSelected ? "swimmers" : "username",
             );
             if (swimmer) {
               const { aData, history25mFreestyle } =
                 await fetchSwimrankingSwimmer(
-                  swimmer.swimmer ?? swimmer.username
+                  swimmer.swimmer ?? swimmer.username,
                 );
               if (aData) {
                 prepareData(aData, history25mFreestyle);
@@ -271,24 +271,23 @@ export default function Profile() {
         date: Date;
         location: string;
       };
-    }[]
+    }[],
   ) {
     setAthleteData(aData);
     setData(history25mFreestyle.map(({ points }) => parseInt(points.points)));
     setLabels(history25mFreestyle.map(({ year }) => year));
   }
 
-  async function fetchUser() {
-    const response = await getItem("username");
+  async function fetchUser(username?: string) {
+    const response = username ?? (await getItem("username"));
     if (response === null) {
       setUsername("");
       return false;
     } else if (response.username === username) {
       return true;
     } else {
-      setUsername(response.username);
       const { aData, history25mFreestyle } = await fetchSwimrankingSwimmer(
-        response.username
+        username ?? response.username,
       );
       if (aData) {
         prepareData(aData, history25mFreestyle);
@@ -299,6 +298,7 @@ export default function Profile() {
             ],
           poolSize: aData.pbs[0].poolSize,
         });
+        setUsername(username ?? response.username);
         return true;
       } else {
         Alert.alert(`'${response.username}' is niet gevonden in SwimRankings!`);
@@ -316,7 +316,7 @@ export default function Profile() {
         setInitialLoading(false);
       };
       getI();
-    }, [])
+    }, []),
   );
 
   return (
@@ -401,11 +401,11 @@ export default function Profile() {
                     } else {
                       setLoading(true);
                       await setItem("username", { username: usernameSet });
-                      setUsername(usernameSet);
                       await setItem("email", { email: emailSet });
+                      const userFound = await fetchUser(usernameSet);
+                      // setUsername(usernameSet);
                       setEmailSet(emailSet);
                       setModalShown(false);
-                      const userFound = await fetchUser();
                       setLoading(false);
                       if (!userFound)
                         setNameError(`${usernameSet} werd niet gevonden!`);
@@ -547,7 +547,7 @@ export default function Profile() {
                   // .filter(({ points }) => points !== "-")
                   .map(
                     (pb) =>
-                      pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC")
+                      pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC"),
                   )
                   .filter((e) => !e.includes("split"))}
                 onPress={async (item) => {
@@ -564,10 +564,10 @@ export default function Profile() {
                   const progression = await getProgression(
                     event,
                     athleteData.id,
-                    poolSize
+                    poolSize,
                   );
                   setData(
-                    progression.map(({ points }) => parseInt(points.points))
+                    progression.map(({ points }) => parseInt(points.points)),
                   );
                   setLabels(progression.map(({ year }) => year));
                   setLoading(false);
