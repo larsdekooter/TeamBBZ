@@ -49,9 +49,14 @@ export default function Club() {
     {} as { schema: string; groups: string[] },
   );
   const [wedstrijden, setWedstrijden] = useState([] as Wedstrijd[]);
-  const [clubrecords, setClubrecords] = useState({ male: [], female: [] } as {
+  const [clubrecords, setClubrecords] = useState({
+    male: [],
+    female: [],
+    relayMixed: [],
+  } as {
     male: Clubrecord[];
     female: Clubrecord[];
+    relayMixed: Clubrecord[];
   });
   const [competitieStanden, setCompetitieStanden] = useState(
     [] as CompetitieStand[],
@@ -996,7 +1001,11 @@ function ClubrecordsComponent({
   colorScheme,
   loading,
 }: {
-  clubrecords: { male: Clubrecord[]; female: Clubrecord[] };
+  clubrecords: {
+    male: Clubrecord[];
+    female: Clubrecord[];
+    relayMixed: Clubrecord[];
+  };
   colorScheme: ColorSchemeName;
   loading?: boolean;
 }) {
@@ -1028,7 +1037,9 @@ function ClubrecordsComponent({
     "onder 20",
     "Senioren",
   ];
-  const [selected, setSelected] = useState("Mannen" as "Mannen" | "Vrouwen");
+  const [selected, setSelected] = useState(
+    "Mannen" as "Mannen" | "Vrouwen" | "Gemengde Estafettes",
+  );
   const [selectedClubrecord, setSelectedClubrecord] = useState({
     distance: "",
     times: [],
@@ -1148,7 +1159,7 @@ function ClubrecordsComponent({
           <Dropdown
             style={{ borderColor: Colors.Orange }}
             onPress={(item) => setSelected(item)}
-            data={["Mannen", "Vrouwen"]}
+            data={["Mannen", "Vrouwen", "Gemengde Estafettes"]}
             renderItem={({ item, index }) => (
               <Text
                 style={{
@@ -1175,7 +1186,13 @@ function ClubrecordsComponent({
           }}
         >
           <FlatList
-            data={selected === "Mannen" ? clubrecords.male : clubrecords.female}
+            data={
+              selected === "Mannen"
+                ? clubrecords.male
+                : selected === "Vrouwen"
+                  ? clubrecords.female
+                  : clubrecords.relayMixed
+            }
             style={{ height: 350 }}
             renderItem={({ item, index }) => (
               <Pressable
@@ -1190,7 +1207,10 @@ function ClubrecordsComponent({
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
-                onPress={() => setSelectedClubrecord(item)}
+                onPress={() => {
+                  setSelectedClubrecord(item);
+                  console.log(item);
+                }}
               >
                 <Text
                   style={{
@@ -1216,21 +1236,23 @@ function ClubrecordsComponent({
                     ]
                   }
                 </Text>
-                <Text
-                  style={{
-                    ...textColor(colorScheme),
-                    width: "30%",
-                    textAlign: "center",
-                  }}
-                >
-                  {
-                    item.swimmers[
-                      item.swimmers.findLastIndex(
-                        (swimmer) => swimmer?.length && swimmer.length > 0,
-                      )
-                    ]
-                  }
-                </Text>
+                {selected !== "Gemengde Estafettes" && (
+                  <Text
+                    style={{
+                      ...textColor(colorScheme),
+                      width: "30%",
+                      textAlign: "center",
+                    }}
+                  >
+                    {
+                      item.swimmers[
+                        item.swimmers.findLastIndex(
+                          (swimmer) => swimmer?.length && swimmer.length > 0,
+                        )
+                      ]
+                    }
+                  </Text>
+                )}
               </Pressable>
             )}
           />

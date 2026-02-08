@@ -825,6 +825,7 @@ export function mapClubrecords(page: string) {
   return rows;
 }
 
+//TODO: Map the relays to all swimmers (currently the last swimmer is shown as the swimmer, need to add the rest as well)
 export async function getClubRecords() {
   const femalePage = await (
     await fetch(
@@ -836,11 +837,17 @@ export async function getClubRecords() {
       "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=1",
     )
   ).text();
+  const relayMixedPage = await (
+    await fetch(
+      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Gemengd&estafette=4",
+    )
+  ).text();
 
   const female = mapClubrecords(femalePage);
   const male = mapClubrecords(malePage);
+  const relayMixed = mapClubrecords(relayMixedPage);
 
-  return { male, female };
+  return { male, female, relayMixed };
 }
 
 export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
