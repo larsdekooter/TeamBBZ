@@ -1231,7 +1231,7 @@ function ClubrecordsComponent({
                       ? clubrecords.relayMen
                       : clubrecords.relayWomen
             }
-            style={{ height: 350 }}
+            style={{ height: 270 }}
             renderItem={({ item, index }) => (
               <Pressable
                 key={index}
