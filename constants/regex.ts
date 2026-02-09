@@ -80,6 +80,8 @@ export class ClubRecordRegex {
 
   static SwimmerRegex = /^.*?(?=&#013;)/gm;
 
+  static RelaySwimmerRegex = /^([^(\n\r&#]+)(?:\s\([vm]\))?/gm;
+
   static DateRegex = /(?<=&#013;).+?(?=&#013;)/gm;
 
   static LocationRegex = ClubRecordRegex.DateRegex;

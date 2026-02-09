@@ -4,6 +4,7 @@ import {
   enterMeet,
   fetchSwimrankingSwimmer,
   filterSwimmers,
+  getAgeGroupsForClubrecord,
   getAthleteData,
   getClubRecords,
   getCompetitieStand,
@@ -19,6 +20,7 @@ import {
   AthleteData,
   Clubrecord,
   CompetitieStand,
+  RelayClubrecord,
   Result,
   Wedstrijd,
 } from "@/constants/types";
@@ -53,10 +55,14 @@ export default function Club() {
     male: [],
     female: [],
     relayMixed: [],
+    relayWomen: [],
+    relayMen: [],
   } as {
     male: Clubrecord[];
     female: Clubrecord[];
-    relayMixed: Clubrecord[];
+    relayMixed: RelayClubrecord[];
+    relayWomen: RelayClubrecord[];
+    relayMen: RelayClubrecord[];
   });
   const [competitieStanden, setCompetitieStanden] = useState(
     [] as CompetitieStand[],
@@ -1004,7 +1010,9 @@ function ClubrecordsComponent({
   clubrecords: {
     male: Clubrecord[];
     female: Clubrecord[];
-    relayMixed: Clubrecord[];
+    relayMixed: RelayClubrecord[];
+    relayWomen: RelayClubrecord[];
+    relayMen: RelayClubrecord[];
   };
   colorScheme: ColorSchemeName;
   loading?: boolean;
@@ -1027,18 +1035,13 @@ function ClubrecordsComponent({
     }, []),
   );
 
-  const ages = [
-    "onder 8",
-    "onder 10",
-    "onder 12",
-    "onder 14",
-    "onder 16",
-    "onder 18",
-    "onder 20",
-    "Senioren",
-  ];
   const [selected, setSelected] = useState(
-    "Mannen" as "Mannen" | "Vrouwen" | "Gemengde Estafettes",
+    "Mannen" as
+      | "Mannen"
+      | "Vrouwen"
+      | "Gemengde Estafettes"
+      | "Heren Estafettes"
+      | "Dames Estafettes",
   );
   const [selectedClubrecord, setSelectedClubrecord] = useState({
     distance: "",
@@ -1048,7 +1051,7 @@ function ClubrecordsComponent({
     dates: [],
     locations: [],
     meets: [],
-  } as Clubrecord);
+  } as Clubrecord | RelayClubrecord);
 
   return (
     <Fragment>
@@ -1092,28 +1095,38 @@ function ClubrecordsComponent({
                 { fontWeight: "bold", textAlign: "center", fontSize: 25 },
               ]}
             >
-              {selectedClubrecord.distance} {selectedClubrecord.event} -{" "}
+              {selectedClubrecord.distance.replace(/\s{2,}/g, " ")}{" "}
+              {selectedClubrecord.event}
             </Text>
-            <Text
-              style={[
-                textColor(colorScheme),
-                { fontStyle: "italic", fontSize: 25 },
-              ]}
-            >
-              {
-                atheleteData?.pbs?.find(
-                  (pb) =>
-                    pb.event ===
-                      `${selectedClubrecord.distance} ${selectedClubrecord.event}` &&
-                    pb.poolSize === "25m",
-                )?.time
-              }
-            </Text>
+            {!selected.includes("Estafettes") && (
+              <Text
+                style={[
+                  textColor(colorScheme),
+                  { fontStyle: "italic", fontSize: 25 },
+                ]}
+              >
+                {" "}
+                -{" "}
+                {
+                  atheleteData?.pbs?.find(
+                    (pb) =>
+                      pb.event ===
+                        `${selectedClubrecord.distance} ${selectedClubrecord.event}` &&
+                      pb.poolSize === "25m",
+                  )?.time
+                }
+              </Text>
+            )}
           </View>
-          <View>
-            {selectedClubrecord.times.map((time, index) => (
+
+          <FlatList
+            data={selectedClubrecord.times.map((time, index) => ({
+              time,
+              index,
+            }))}
+            renderItem={({ item }) => (
               <View
-                key={index}
+                key={item.index}
                 style={{
                   display: "flex",
                   flexDirection: "row",
@@ -1133,23 +1146,38 @@ function ClubrecordsComponent({
                     { textTransform: "capitalize", flex: 1 },
                   ]}
                 >
-                  {ages[index]}
+                  {
+                    getAgeGroupsForClubrecord(
+                      selected.includes("Estafettes"),
+                      selected.includes("Gemengde")
+                        ? "mixed"
+                        : selected.includes("Heren") ||
+                            selected.includes("Mannen")
+                          ? "men"
+                          : "women",
+                    )[item.index]
+                  }
                 </Text>
                 <View style={{ flex: 1 }}>
                   <Text
                     style={[textColor(colorScheme), { textAlign: "center" }]}
                   >
-                    {time ?? "-.--.--"}
+                    {item.time ?? "-.--.--"}
                   </Text>
                   <Text
                     style={[textColor(colorScheme), { textAlign: "center" }]}
                   >
-                    {selectedClubrecord.swimmers[index] ?? "-"}
+                    {(() => {
+                      const swimmer = selectedClubrecord.swimmers[item.index];
+                      if (typeof swimmer !== "string")
+                        return swimmer?.join("\n");
+                      return swimmer;
+                    })() ?? "-"}
                   </Text>
                 </View>
               </View>
-            ))}
-          </View>
+            )}
+          />
         </View>
       </SwipeModal>
       <SectionComponent title="Clubrecords" loading={loading}>
@@ -1159,7 +1187,13 @@ function ClubrecordsComponent({
           <Dropdown
             style={{ borderColor: Colors.Orange }}
             onPress={(item) => setSelected(item)}
-            data={["Mannen", "Vrouwen", "Gemengde Estafettes"]}
+            data={[
+              "Mannen",
+              "Vrouwen",
+              "Gemengde Estafettes",
+              "Heren Estafettes",
+              "Dames Estafettes",
+            ]}
             renderItem={({ item, index }) => (
               <Text
                 style={{
@@ -1185,13 +1219,17 @@ function ClubrecordsComponent({
             borderRadius: 6,
           }}
         >
-          <FlatList
+          <FlatList<Clubrecord | RelayClubrecord>
             data={
               selected === "Mannen"
                 ? clubrecords.male
                 : selected === "Vrouwen"
                   ? clubrecords.female
-                  : clubrecords.relayMixed
+                  : selected === "Gemengde Estafettes"
+                    ? clubrecords.relayMixed
+                    : selected === "Heren Estafettes"
+                      ? clubrecords.relayMen
+                      : clubrecords.relayWomen
             }
             style={{ height: 350 }}
             renderItem={({ item, index }) => (
@@ -1207,10 +1245,7 @@ function ClubrecordsComponent({
                   flexDirection: "row",
                   justifyContent: "space-between",
                 }}
-                onPress={() => {
-                  setSelectedClubrecord(item);
-                  console.log(item);
-                }}
+                onPress={() => setSelectedClubrecord(item)}
               >
                 <Text
                   style={{
@@ -1236,7 +1271,7 @@ function ClubrecordsComponent({
                     ]
                   }
                 </Text>
-                {selected !== "Gemengde Estafettes" && (
+                {!selected.includes("Estafettes") && (
                   <Text
                     style={{
                       ...textColor(colorScheme),

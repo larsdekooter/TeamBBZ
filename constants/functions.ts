@@ -19,6 +19,7 @@ import {
   MeetResultData,
   Pb,
   Post,
+  RelayClubrecord,
   Result,
   Wedstrijd,
 } from "./types";
@@ -825,7 +826,106 @@ export function mapClubrecords(page: string) {
   return rows;
 }
 
-//TODO: Map the relays to all swimmers (currently the last swimmer is shown as the swimmer, need to add the rest as well)
+export function mapRelayClubrecords(page: string) {
+  const table = page.match(GeneralRegexes.TableRegex)![0];
+  const rs = table.match(ClubRecordRegex.TableRowRegex)!;
+  rs.splice(0, 2);
+  const rows = rs
+    .map((row) =>
+      row
+        .match(GeneralRegexes.CellRegex2)!
+        .map((cell) =>
+          cell
+            .replace(ClubRecordRegex.CellReplacementRegex, "")
+            .replace(/>/g, "./.")
+            .replace(/&#013;(?=.\/.)/gm, ""),
+        )
+        .filter((cell) => cell.length > 0),
+    )
+    .map((row) => {
+      const data = {
+        distance: row[0],
+        event: row[1],
+        swimmers: [],
+        dates: [],
+        locations: [],
+        meets: [],
+        times: [],
+      } as RelayClubrecord;
+      for (let i = 2; i < row.length; i++) {
+        const index = i - 2;
+        if (row[i].includes("0000") && row[i].length === 43) {
+          data.swimmers[index] = null;
+          data.dates[index] = null;
+          data.locations[index] = null;
+          data.meets[index] = null;
+          data.times[index] = null;
+        } else {
+          data.swimmers[index] = row[i].match(
+            ClubRecordRegex.RelaySwimmerRegex,
+          )!;
+          data.dates[index] = row[i].match(ClubRecordRegex.DateRegex)![0];
+          data.locations[index] = !row[i].includes("()")
+            ? row[i].match(ClubRecordRegex.LocationRegex)![1]
+            : null;
+          data.meets[index] = !row[i].includes("()")
+            ? row[i].match(ClubRecordRegex.MeetRegex)![0]
+            : null;
+          data.times[index] = row[i]
+            .match(ClubRecordRegex.TimeRegex)![0]
+            .replace(/(\.\/\.)|<strong|<i|<\/i|<\/strong/g, "");
+
+          if (data.locations[index] === undefined) {
+            data.locations[index] = data.meets[index];
+            data.meets[index] = null;
+          }
+        }
+      }
+      return data;
+    });
+  return rows;
+}
+
+export function getAgeGroupsForClubrecord(
+  relay: boolean,
+  gender: "mixed" | "women" | "men",
+) {
+  if (relay) {
+    if (gender === "mixed")
+      return [
+        "Onder 8",
+        "Onder 10",
+        "Onder 12",
+        "Onder 14",
+        "Onder 16",
+        "Onder 18",
+        "Senioren",
+      ];
+    if (gender === "women") return ["Onder 14", "Onder 16", "Senioren"];
+    else return ["Onder 14", "Onder 16", "Onder 18", "Senioren"];
+  } else if (gender === "men")
+    return [
+      "Onder 8",
+      "Onder 10",
+      "Onder 12",
+      "Onder 14",
+      "Onder 16",
+      "Onder 18",
+      "Onder 20",
+      "Senioren",
+    ];
+  else
+    return [
+      "Onder 8",
+      "Onder 10",
+      "Onder 12",
+      "Onder 14",
+      "Onder 16",
+      "Onder 18",
+      "Senioren",
+    ];
+}
+
 export async function getClubRecords() {
   const femalePage = await (
     await fetch(
@@ -842,12 +942,24 @@ export async function getClubRecords() {
       "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Gemengd&estafette=4",
     )
   ).text();
+  const relayFemalePage = await (
+    await fetch(
+      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Dames&estafette=4",
+    )
+  ).text();
+  const relayMalePage = await (
+    await fetch(
+      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=4",
+    )
+  ).text();
 
   const female = mapClubrecords(femalePage);
   const male = mapClubrecords(malePage);
-  const relayMixed = mapClubrecords(relayMixedPage);
+  const relayMixed = mapRelayClubrecords(relayMixedPage);
+  const relayWomen = mapRelayClubrecords(relayFemalePage);
+  const relayMen = mapRelayClubrecords(relayMalePage);
 
-  return { male, female, relayMixed };
+  return { male, female, relayMixed, relayWomen, relayMen };
 }
 
 export async function getMeetData(meet: MeetData, athleteData: AthleteData) {

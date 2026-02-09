@@ -77,6 +77,16 @@ export type Clubrecord = {
   times: (string | null)[];
 };
 
+export type RelayClubrecord = {
+  distance: string;
+  event: string;
+  swimmers: (string[] | null)[];
+  dates: (string | null)[] | (Date | null)[];
+  locations: (string | null)[];
+  meets: (string | null)[];
+  times: (string | null)[];
+};
+
 export type CompetitieStand = {
   team: string;
   round1: number;
