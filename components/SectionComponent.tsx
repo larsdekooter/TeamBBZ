@@ -55,12 +55,12 @@ export default function SectionComponent({
     Animated.parallel([
       Animated.timing(rotateAnim, {
         toValue: isExpanded ? 0 : 1,
-        duration: 200,
+        duration: 100,
         useNativeDriver: true,
       }),
       Animated.timing(heightAnim, {
         toValue: isExpanded ? 0 : 1,
-        duration: 500,
+        duration: 250,
         useNativeDriver: false,
       }),
     ]).start();
@@ -120,7 +120,7 @@ export default function SectionComponent({
           {
             maxHeight: heightAnim.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, 1000],
+              outputRange: [0, 350],
             }),
             opacity: heightAnim,
             marginTop: heightAnim.interpolate({
