@@ -1254,7 +1254,7 @@ function ClubrecordsComponent({
                     textAlign: "left",
                   }}
                 >
-                  {item.distance} {item.event}
+                  {item.distance.replace(/\s{2,}/g, " ")} {item.event}
                 </Text>
                 <Text
                   style={{
