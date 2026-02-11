@@ -1079,7 +1079,11 @@ function ClubrecordsComponent({
             meets: [],
           })
         }
-        height={725}
+        height={
+          !selected.includes("Estafettes")
+            ? 725
+            : Dimensions.get("window").height
+        }
         closeValue={200}
       >
         <View
@@ -1250,11 +1254,11 @@ function ClubrecordsComponent({
                 <Text
                   style={{
                     ...textColor(colorScheme),
-                    width: "25%",
+                    width: "30%",
                     textAlign: "left",
                   }}
                 >
-                  {item.distance.replace(/\s{2,}/g, " ")} {item.event}
+                  {item.distance.replace(/\s/g, "")} {item.event}
                 </Text>
                 <Text
                   style={{

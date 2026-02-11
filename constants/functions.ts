@@ -825,7 +825,7 @@ export function mapClubrecords(page: string) {
     });
   return rows;
 }
-
+//TODO: Fix this function to recognize two <td></td> as one empty entry
 export function mapRelayClubrecords(page: string) {
   const table = page.match(GeneralRegexes.TableRegex)![0];
   const rs = table.match(ClubRecordRegex.TableRowRegex)!;
@@ -854,7 +854,11 @@ export function mapRelayClubrecords(page: string) {
       } as RelayClubrecord;
       for (let i = 2; i < row.length; i++) {
         const index = i - 2;
-        if (row[i].includes("0000") && row[i].length === 43) {
+        if (
+          (row[i].includes("0000") &&
+            (row[i].length === 43 || row[i].length === 42)) ||
+          row[i] === "<td></td>"
+        ) {
           data.swimmers[index] = null;
           data.dates[index] = null;
           data.locations[index] = null;
@@ -874,7 +878,6 @@ export function mapRelayClubrecords(page: string) {
           data.times[index] = row[i]
             .match(ClubRecordRegex.TimeRegex)![0]
             .replace(/(\.\/\.)|<strong|<i|<\/i|<\/strong/g, "");
-
           if (data.locations[index] === undefined) {
             data.locations[index] = data.meets[index];
             data.meets[index] = null;
