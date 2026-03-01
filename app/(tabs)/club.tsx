@@ -100,7 +100,10 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setResultsMeets(res);
       setLoading(false);
-      if (username) setUsernames([username.username, secondUsername.swimmer]);
+      const swimmerArray = [];
+      if (username) swimmerArray.push(username.username);
+      if (secondUsername) swimmerArray.push(secondUsername.swimmer);
+      setUsernames(swimmerArray);
     };
     if (loading) {
       getS();
