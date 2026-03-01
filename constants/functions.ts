@@ -301,24 +301,24 @@ export function getAthleteData(
 export function convertToDate(dateString: string) {
   const [day, month, year] = dateString.split(" ");
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "jan",
+    "feb",
+    "mrt",
+    "apr",
+    "mei",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "okt",
+    "nov",
+    "dec",
   ];
-  const monthIndex = monthNames.indexOf(month);
+  const monthIndex = monthNames.indexOf(month.toLowerCase());
 
   if (monthIndex === -1) {
     // throw new Error("Invalid month format");
-    console.error(`Invalid date format, ${dateString}`);
+    console.log(`\u001b[1;31m Invalid date format, ${dateString}`);
   }
 
   return new Date(parseInt(year), monthIndex, parseInt(day));
