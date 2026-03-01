@@ -24,7 +24,7 @@ import {
   Wedstrijd,
 } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
-import { SwimrakingEventId } from "./enums";
+import { Colors, SwimrakingEventId } from "./enums";
 import { SwimrankingsRequestOptions } from "./options";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
@@ -364,7 +364,6 @@ export function getWeekNumber(date: Date): number {
 }
 
 export async function fetchSwimrankingSwimmer(username: string) {
-  console.log(username);
   const athleteWithUsername = await (
     await fetch(
       `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${username.replace(
@@ -374,12 +373,7 @@ export async function fetchSwimrankingSwimmer(username: string) {
       SwimrankingsRequestOptions,
     )
   ).text();
-  console.log(
-    `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${username.replace(
-      /\s/g,
-      "%20",
-    )}&athlete_firstname=`,
-  );
+
   const table = athleteWithUsername.split("<tr");
   table.splice(0, 2);
   const athleteId = table
@@ -1153,4 +1147,17 @@ export function isImprovement(time: string, pb: string) {
   const timeNumber = convertTimestringToNumber(time);
   const pbNumber = convertTimestringToNumber(pb);
   return timeNumber < pbNumber;
+}
+
+export function percentageColor(
+  percentage: string,
+  colorScheme: ColorSchemeName,
+) {
+  console.log(parseFloat(percentage));
+  if (parseFloat(percentage) >= 100) {
+    if (colorScheme === "light") return Colors.LightModeGreen;
+    return Colors.DarkmodeGreen;
+  }
+  if (colorScheme === "light") return Colors.LightmodeRed;
+  return Colors.DarkmodeRed;
 }
