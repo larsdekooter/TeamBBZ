@@ -49,7 +49,8 @@ export class MeetRegexes {
 }
 
 export class DateRegexes {
-  static MonthRegex = /Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec/g;
+  static MonthRegex =
+    /Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|jan|feb|mrt|apr|mei|jun|jul|aug|sep|okt|nov|dec/gm;
   static Number4Regex = /\b\d{4}\b/;
   static DateRegex = /\d{2}-\d{2}-\d{4}/g;
 }

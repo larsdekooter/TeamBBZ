@@ -1,4 +1,4 @@
-import { getMeetData, textColor } from "@/constants/functions";
+import { getMeetData, percentageColor, textColor } from "@/constants/functions";
 import { AthleteData, MeetData } from "@/constants/types";
 import { Fragment, useState } from "react";
 import {
@@ -204,18 +204,10 @@ export default function MeetsTable({
                           style={[
                             {
                               textAlign: "right",
-                              color:
-                                parseFloat(
-                                  currentItem.data.percentages[index]
-                                ) >= 100
-                                  ? colorScheme === "light"
-                                    ? Colors.LightModeGreen
-                                    : Colors.DarkmodeGreen
-                                  : currentItem.data.percentages[index]
-                                  ? colorScheme === "light"
-                                    ? Colors.LightmodeRed
-                                    : Colors.DarkmodeRed
-                                  : textColor(colorScheme).color,
+                              color: percentageColor(
+                                currentItem.data.percentages[index],
+                                colorScheme,
+                              ),
                             },
                           ]}
                         >
@@ -223,8 +215,13 @@ export default function MeetsTable({
                         </Text>
                         <Text
                           style={[
-                            textColor(colorScheme),
-                            { textAlign: "right" },
+                            {
+                              textAlign: "right",
+                              color: percentageColor(
+                                currentItem.data.percentages[index],
+                                colorScheme,
+                              ),
+                            },
                           ]}
                         >
                           {currentItem.data.percentages[index]}

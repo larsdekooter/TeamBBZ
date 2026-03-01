@@ -24,7 +24,8 @@ import {
   Wedstrijd,
 } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
-import { SwimrakingEventId } from "./enums";
+import { Colors, SwimrakingEventId } from "./enums";
+import { SwimrankingsRequestOptions } from "./options";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -300,24 +301,24 @@ export function getAthleteData(
 export function convertToDate(dateString: string) {
   const [day, month, year] = dateString.split(" ");
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "jan",
+    "feb",
+    "mrt",
+    "apr",
+    "mei",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "okt",
+    "nov",
+    "dec",
   ];
-  const monthIndex = monthNames.indexOf(month);
+  const monthIndex = monthNames.indexOf(month.toLowerCase());
 
   if (monthIndex === -1) {
     // throw new Error("Invalid month format");
-    console.error(`Invalid date format, ${dateString}`);
+    console.log(`\u001b[1;31m Invalid date format, ${dateString}`);
   }
 
   return new Date(parseInt(year), monthIndex, parseInt(day));
@@ -366,11 +367,13 @@ export async function fetchSwimrankingSwimmer(username: string) {
   const athleteWithUsername = await (
     await fetch(
       `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${username.replace(
-        " ",
+        /\s/g,
         "%20",
       )}&athlete_firstname=`,
+      SwimrankingsRequestOptions,
     )
   ).text();
+
   const table = athleteWithUsername.split("<tr");
   table.splice(0, 2);
   const athleteId = table
@@ -380,9 +383,11 @@ export async function fetchSwimrankingSwimmer(username: string) {
     const [athletePage, meetsPage] = await Promise.all([
       fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`,
+        SwimrankingsRequestOptions,
       ).then((r) => r.text()),
       fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`,
+        SwimrankingsRequestOptions,
       ).then((r) => r.text()),
     ]);
     const aData = getAthleteData(athletePage, meetsPage, athleteId);
@@ -649,6 +654,7 @@ export async function getHistory(
     await (
       await fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&styleId=${event}`,
+        SwimrankingsRequestOptions,
       )
     ).text()
   ).replace(GeneralRegexes.OnMouseOverRegex, "");
@@ -970,6 +976,7 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     await (
       await fetch(
         `https://www.swimrankings.net/index.php?page=meetDetail&meetId=${meet.id}&clubId=${meet.clubId}`,
+        SwimrankingsRequestOptions,
       )
     ).text()
   ).replace(GeneralRegexes.OnMouseOverRegex, "");
@@ -1140,4 +1147,17 @@ export function isImprovement(time: string, pb: string) {
   const timeNumber = convertTimestringToNumber(time);
   const pbNumber = convertTimestringToNumber(pb);
   return timeNumber < pbNumber;
+}
+
+export function percentageColor(
+  percentage: string,
+  colorScheme: ColorSchemeName,
+) {
+  console.log(parseFloat(percentage));
+  if (parseFloat(percentage) >= 100) {
+    if (colorScheme === "light") return Colors.LightModeGreen;
+    return Colors.DarkmodeGreen;
+  }
+  if (colorScheme === "light") return Colors.LightmodeRed;
+  return Colors.DarkmodeRed;
 }
