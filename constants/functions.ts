@@ -25,6 +25,7 @@ import {
 } from "./types";
 import { getItem } from "@/utils/AsyncStorage";
 import { SwimrakingEventId } from "./enums";
+import { SwimrankingsRequestOptions } from "./options";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -363,14 +364,22 @@ export function getWeekNumber(date: Date): number {
 }
 
 export async function fetchSwimrankingSwimmer(username: string) {
+  console.log(username);
   const athleteWithUsername = await (
     await fetch(
       `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${username.replace(
-        " ",
+        /\s/g,
         "%20",
       )}&athlete_firstname=`,
+      SwimrankingsRequestOptions,
     )
   ).text();
+  console.log(
+    `https://www.swimrankings.net/index.php?&internalRequest=athleteFind&athlete_clubId=-1&athlete_gender=-1&athlete_lastname=${username.replace(
+      /\s/g,
+      "%20",
+    )}&athlete_firstname=`,
+  );
   const table = athleteWithUsername.split("<tr");
   table.splice(0, 2);
   const athleteId = table
@@ -380,9 +389,11 @@ export async function fetchSwimrankingSwimmer(username: string) {
     const [athletePage, meetsPage] = await Promise.all([
       fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}`,
+        SwimrankingsRequestOptions,
       ).then((r) => r.text()),
       fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&athletePage=MEET`,
+        SwimrankingsRequestOptions,
       ).then((r) => r.text()),
     ]);
     const aData = getAthleteData(athletePage, meetsPage, athleteId);
@@ -649,6 +660,7 @@ export async function getHistory(
     await (
       await fetch(
         `https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=${athleteId}&styleId=${event}`,
+        SwimrankingsRequestOptions,
       )
     ).text()
   ).replace(GeneralRegexes.OnMouseOverRegex, "");
@@ -970,6 +982,7 @@ export async function getMeetData(meet: MeetData, athleteData: AthleteData) {
     await (
       await fetch(
         `https://www.swimrankings.net/index.php?page=meetDetail&meetId=${meet.id}&clubId=${meet.clubId}`,
+        SwimrankingsRequestOptions,
       )
     ).text()
   ).replace(GeneralRegexes.OnMouseOverRegex, "");

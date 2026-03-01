@@ -100,7 +100,7 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setResultsMeets(res);
       setLoading(false);
-      setUsernames([username.username, secondUsername.swimmer]);
+      if (username) setUsernames([username.username, secondUsername.swimmer]);
     };
     if (loading) {
       getS();
@@ -190,7 +190,7 @@ function ResultsComponent({
                     <Text
                       style={[
                         textColor(colorScheme),
-                        { textAlign: "left", width: "30%" },
+                        { textAlign: "left", width: "28%" },
                       ]}
                     >
                       {event}
@@ -200,7 +200,7 @@ function ResultsComponent({
                         textColor(colorScheme),
                         {
                           textAlign: "center",
-                          width: "20%",
+                          width: "22%",
                           color:
                             parseInt(item.percentages[index]) <= 100 &&
                             !isImprovement(item.times[index], item.pbs[index])
@@ -218,7 +218,7 @@ function ResultsComponent({
                     <Text
                       style={[
                         {
-                          textAlign: "right",
+                          textAlign: "center",
                           color:
                             parseInt(item.percentages[index]) <= 100 &&
                             !isImprovement(item.times[index], item.pbs[index])
@@ -228,7 +228,7 @@ function ResultsComponent({
                               : colorScheme === "dark"
                                 ? Colors.DarkmodeGreen
                                 : Colors.LightModeGreen,
-                          width: "20%",
+                          width: "15%",
                         },
                       ]}
                     >
@@ -237,7 +237,7 @@ function ResultsComponent({
                     <Text
                       style={[
                         textColor(colorScheme),
-                        { textAlign: "center", width: "20%" },
+                        { textAlign: "center", width: "25%" },
                       ]}
                     >
                       {item.pbs[index]}
