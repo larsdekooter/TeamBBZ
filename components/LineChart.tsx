@@ -9,6 +9,7 @@ interface LineChartProps {
   yAxisTicks?: number;
   pointColor?: string;
   lineColor?: string;
+  displayDataLabels?: (labelBefore: string) => string;
 }
 
 const LineChart: React.FC<LineChartProps> = ({
@@ -18,6 +19,7 @@ const LineChart: React.FC<LineChartProps> = ({
   yAxisTicks = 5,
   pointColor = "rgb(0, 150, 200)",
   lineColor = "rgb(0, 150, 200)",
+  displayDataLabels = (labelBefore) => labelBefore,
 }) => {
   const colorScheme = useColorScheme();
   const { width, height } = size;
@@ -62,7 +64,7 @@ const LineChart: React.FC<LineChartProps> = ({
       p1: any,
       p2: any,
       p3: any,
-      t: number
+      t: number,
     ) => {
       const t2 = t * t;
       const t3 = t2 * t;
@@ -128,7 +130,7 @@ const LineChart: React.FC<LineChartProps> = ({
             textAnchor="end"
             alignmentBaseline="middle"
           >
-            {value.toFixed(1)}
+            {displayDataLabels(value.toFixed(1))}
           </Text>
         </React.Fragment>
       );

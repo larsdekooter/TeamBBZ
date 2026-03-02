@@ -12,6 +12,8 @@ import {
 import Page from "../../components/Page";
 import {
   calculateAveragePoints,
+  convertTimeNumberToString,
+  convertTimestringToNumber,
   fetchSwimrankingSwimmer,
   getProgression,
   getSpecialityData,
@@ -246,7 +248,10 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState(Tabs.Pbs);
   const [emailSet, setEmailSet] = useState("");
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([] as number[]);
+  const [data, setData] = useState({ times: [], points: [] } as {
+    times: number[];
+    points: number[];
+  });
   const [labels, setLabels] = useState([] as string[]);
   const [shouldShow25, setShouldShow25] = useState(false);
   const [nameError, setNameError] = useState("");
@@ -260,6 +265,8 @@ export default function Profile() {
   });
   const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
+  // Graph option to use points instead of times.
+  const [usePointGraph, setUsePointGraph] = useState(false);
 
   function prepareData(
     aData: AthleteData,
@@ -274,7 +281,12 @@ export default function Profile() {
     }[],
   ) {
     setAthleteData(aData);
-    setData(history25mFreestyle.map(({ points }) => parseInt(points.points)));
+    setData({
+      points: history25mFreestyle.map(({ points }) => parseInt(points.points)),
+      times: history25mFreestyle.map(({ points }) =>
+        convertTimestringToNumber(points.time),
+      ),
+    });
     setLabels(history25mFreestyle.map(({ year }) => year));
   }
 
@@ -530,7 +542,11 @@ export default function Profile() {
               )}
 
               <LineChart
-                data={data}
+                data={
+                  usePointGraph
+                    ? data.points
+                    : data.times.map((time) => data.times[0] - time)
+                }
                 labels={labels}
                 size={{ width: Dimensions.get("window").width, height: 300 }}
                 lineColor={
@@ -541,10 +557,16 @@ export default function Profile() {
                     : undefined
                 }
                 pointColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+                displayDataLabels={(labelBefore) =>
+                  !usePointGraph
+                    ? convertTimeNumberToString(
+                        data.times[0] - convertTimestringToNumber(labelBefore),
+                      )
+                    : labelBefore
+                }
               />
               <Dropdown
                 data={athleteData.pbs
-                  // .filter(({ points }) => points !== "-")
                   .map(
                     (pb) =>
                       pb.event + " " + (pb.poolSize === "25m" ? "SC" : "LC"),
@@ -566,9 +588,14 @@ export default function Profile() {
                     athleteData.id,
                     poolSize,
                   );
-                  setData(
-                    progression.map(({ points }) => parseInt(points.points)),
-                  );
+                  setData({
+                    points: progression.map(({ points }) =>
+                      parseInt(points.points),
+                    ),
+                    times: progression.map(({ points }) =>
+                      convertTimestringToNumber(points.time),
+                    ),
+                  });
                   setLabels(progression.map(({ year }) => year));
                   setLoading(false);
                 }}
@@ -591,6 +618,23 @@ export default function Profile() {
                 }}
                 shouldLoad={loading}
               />
+              <View
+                style={{
+                  paddingTop: 10,
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={[textColor(colorScheme)]}>
+                  Gebruik World Aquatics punten
+                </Text>
+                <CheckBox
+                  onPress={() => setUsePointGraph(!usePointGraph)}
+                  checked={usePointGraph}
+                />
+              </View>
               <View style={{ height: 50 }} />
             </ScrollView>
           )}

@@ -1143,6 +1143,14 @@ export function convertTimestringToNumber(time: string) {
   }
 }
 
+export function convertTimeNumberToString(time: string | number) {
+  if (typeof time === "string") time = parseInt(time);
+
+  const minutes = Math.floor(time / 60);
+  const seconds = (time - minutes * 60).toFixed(2);
+  return `${minutes}:${seconds.length === 5 ? seconds : `0${seconds}`}`;
+}
+
 export function isImprovement(time: string, pb: string) {
   const timeNumber = convertTimestringToNumber(time);
   const pbNumber = convertTimestringToNumber(pb);
