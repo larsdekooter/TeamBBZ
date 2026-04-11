@@ -1158,7 +1158,6 @@ export function percentageColor(
   percentage: string,
   colorScheme: ColorSchemeName,
 ) {
-  console.log(parseFloat(percentage));
   if (parseFloat(percentage) >= 100) {
     if (colorScheme === "light") return Colors.LightModeGreen;
     return Colors.DarkmodeGreen;

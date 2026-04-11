@@ -295,7 +295,6 @@ export default function ProfilePage() {
     const savedProfile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
       "SELECT * FROM profile",
     );
-    console.log("2");
     if (!username && !savedProfile) {
       setUsername("");
       return false;

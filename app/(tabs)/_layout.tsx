@@ -2,6 +2,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Image, StyleSheet, useColorScheme, View } from "react-native";
 import { Colors } from "@/constants/enums";
+import { transform } from "@babel/core";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -44,6 +45,22 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profiel",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5
+              size={iconSize}
+              name="swimmer"
+              color={color}
+              style={[styles.icon, { transform: [{ rotateY: "180deg" }] }]}
+            />
+          ),
+          headerShown: false,
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="times"
+        options={{
+          title: "Tijden",
           tabBarIcon: ({ color }) => (
             <FontAwesome5
               size={iconSize}
