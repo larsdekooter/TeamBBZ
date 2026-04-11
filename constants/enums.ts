@@ -65,3 +65,8 @@ export interface Profile {
   username: string;
   email: string;
 }
+
+export interface Settings {
+  id: number;
+  darkMode: 0 | 1;
+}

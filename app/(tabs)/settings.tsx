@@ -21,6 +21,7 @@ import SwipeModal from "@/components/SwipeModal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Colors, Profile } from "@/constants/enums";
 import * as SQLite from "expo-sqlite";
+import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -34,16 +35,10 @@ export default function Settings() {
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {
-        const db = await SQLite.openDatabaseAsync("TeamBBZ");
-        const sql = db.sql;
-        await sql`CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL)`;
-        await sql`CREATE TABLE IF NOT EXISTS swimmers (id INTEGER PRIMARY KEY NOT NULL, name TEXT NULL)`;
-        await sql`CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY NOT NULL, darkMode INTEGER NOT NULL)`;
-        await sql`INSERT INTO settings (darkMode INTEGER) VALUES (${colorScheme === "dark" ? 1 : 0})`;
-        const profile = await db.getFirstAsync<Profile>(
+        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
           "SELECT * FROM profile",
         );
-        const secondSwimmer = await db.getFirstAsync<{
+        const secondSwimmer = await TeamBBZSQLite.db.getFirstAsync<{
           id: Number;
           name: string;
         }>("SELECT * FROM swimmers");
@@ -98,8 +93,7 @@ export default function Settings() {
           <View style={{ paddingHorizontal: 15 }}>
             <ButtonComponent
               onPress={async () => {
-                const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
-                await sql`DELETE FROM profile WHERE id = 0`;
+                await TeamBBZSQLite.sql`DELETE FROM profile WHERE id = 0`;
                 setUsername("");
                 setEmail("");
               }}
@@ -223,8 +217,7 @@ export default function Settings() {
               alignItems: "center",
             }}
             onPress={async () => {
-              const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
-              await sql`UPDATE settings SET darkMode = ${colorScheme === "dark" ? 0 : 1} WHERE darkMode = ${colorScheme === "dark" ? 1 : 0}`;
+              await TeamBBZSQLite.sql`UPDATE settings SET darkMode = ${colorScheme === "dark" ? 0 : 1} WHERE darkMode = ${colorScheme === "dark" ? 1 : 0}`;
               Appearance.setColorScheme(
                 colorScheme === "light" ? "dark" : "light",
               );
@@ -292,8 +285,7 @@ export default function Settings() {
                   zIndex: 1000,
                 }}
                 onPress={async (e) => {
-                  const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
-                  await sql`UPDATE swimmers SET name = ${inputText} WHERE name = ${swimmer}`;
+                  await TeamBBZSQLite.sql`UPDATE swimmers SET name = ${inputText} WHERE name = ${swimmer}`;
                   setAddSwimmerModalShown(false);
                   setSwimmer(inputText);
                 }}
@@ -331,8 +323,7 @@ export default function Settings() {
           <ButtonComponent
             onPress={async () => {
               setSwimmer("");
-              const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
-              await sql`DELETE FROM swimmers WHERE name = ${swimmer}`;
+              await TeamBBZSQLite.sql`DELETE FROM swimmers WHERE name = ${swimmer}`;
               setInfoModalShown(false);
             }}
             style={{

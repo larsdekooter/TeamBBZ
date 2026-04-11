@@ -45,6 +45,7 @@ import SkeletonLoader from "@/components/SkeletonLoader";
 import { Colors, Profile } from "@/constants/enums";
 import { useFocusEffect } from "expo-router";
 import * as SQLite from "expo-sqlite";
+import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -83,7 +84,6 @@ export default function Club() {
 
   useEffect(() => {
     const getS = async () => {
-      const db = await SQLite.openDatabaseAsync("TeamBBZ");
       const [schem, wden, crs, compStanden, res, username, secondSwimmer] =
         await Promise.all([
           getSchemaData(),
@@ -91,8 +91,8 @@ export default function Club() {
           getClubRecords(),
           getCompetitieStand(),
           getResultMeets(),
-          db.getFirstAsync<Profile>("SELECT * FROM profile"),
-          db.getFirstAsync<{
+          TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile"),
+          TeamBBZSQLite.db.getFirstAsync<{
             id: Number;
             name: string;
           }>("SELECT * FROM swimmers"),
@@ -1031,9 +1031,8 @@ function ClubrecordsComponent({
   useFocusEffect(
     useCallback(() => {
       const getSwimmer = async () => {
-        const db = await SQLite.openDatabaseAsync("TeamBBZ");
         let username = (
-          await db.getFirstAsync<Profile>("SELECT * FROM profile")
+          await TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile")
         )?.username;
         const { aData, history25mFreestyle } = username
           ? await fetchSwimrankingSwimmer(username)

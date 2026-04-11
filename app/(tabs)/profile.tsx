@@ -36,6 +36,7 @@ import { Entypo, Octicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import * as SQLite from "expo-sqlite";
+import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 const POINTS_FOR_25M = false;
 
@@ -97,8 +98,7 @@ function ProfileHeader({
           }}
           onPress={async () => {
             setUserSwitchLoading(true);
-            const db = await SQLite.openDatabaseAsync("TeamBBZ");
-            const swimmer = await db.getFirstAsync<
+            const swimmer = await TeamBBZSQLite.db.getFirstAsync<
               Profile | { id: number; name: string }
             >(`SELECT * FROM ${mainSwimmerSelected ? "profile" : "swimmers"}`);
             if (swimmer) {
@@ -239,7 +239,7 @@ function ProfileHeader({
   );
 }
 
-export default function Profile() {
+export default function ProfilePage() {
   const colorScheme = useColorScheme();
 
   const [username, setUsername] = useState("");
@@ -292,10 +292,10 @@ export default function Profile() {
   }
 
   async function fetchUser(username?: string) {
-    const db = await SQLite.openDatabaseAsync("TeamBBZ");
-    const savedProfile = await db.getFirstAsync<Profile>(
+    const savedProfile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
       "SELECT * FROM profile",
     );
+    console.log("2");
     if (!username && !savedProfile) {
       setUsername("");
       return false;
@@ -416,9 +416,8 @@ export default function Profile() {
                       return setEmailError("Voer een email addres in!");
                     } else {
                       setLoading(true);
-                      const sql = (await SQLite.openDatabaseAsync("TeamBBZ"))
-                        .sql;
-                      await sql`INSERT INTO profile (username, email) VALUES (${usernameSet}, ${emailSet})`;
+
+                      await TeamBBZSQLite.sql`INSERT INTO profile (username, email) VALUES (${usernameSet}, ${emailSet})`;
                       const userFound = await fetchUser(usernameSet);
                       // setUsername(usernameSet);
                       setEmailSet(emailSet);
