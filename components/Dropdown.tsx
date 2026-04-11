@@ -9,6 +9,7 @@ import {
   Pressable,
   StyleProp,
   Text,
+  TextStyle,
   useColorScheme,
   View,
   ViewStyle,
@@ -32,6 +33,7 @@ interface DropdownProps<T extends ReactNode> {
     | undefined;
   style?: StyleProp<ViewStyle>;
   closeWhenSelected?: boolean;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 export default function Dropdown<T extends ReactNode>({
@@ -41,6 +43,7 @@ export default function Dropdown<T extends ReactNode>({
   onPress,
   style,
   closeWhenSelected = false,
+  textStyle,
 }: DropdownProps<T>) {
   const [isOpened, setOpened] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -101,10 +104,13 @@ export default function Dropdown<T extends ReactNode>({
         }}
       >
         <Text
-          style={{
-            width: "92%",
-            ...textColor(colorScheme),
-          }}
+          style={[
+            {
+              width: "92%",
+              ...textColor(colorScheme),
+            },
+            textStyle,
+          ]}
         >
           {selected}
         </Text>
@@ -140,6 +146,20 @@ export default function Dropdown<T extends ReactNode>({
             inputRange: [0, 1],
             outputRange: [0, 10],
           }),
+          position: "absolute",
+          top: "150%",
+          left: 0,
+          right: 0,
+          backgroundColor:
+            colorScheme === "dark"
+              ? Colors.ModalDarkBackground
+              : Colors.ModalLightBackground,
+          zIndex: 999,
+          elevation: 5,
+          borderRadius: 10,
+          borderColor: "grey",
+          borderWidth: 1,
+          paddingHorizontal: 5,
         }}
         nestedScrollEnabled
       >
