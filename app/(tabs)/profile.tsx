@@ -22,11 +22,10 @@ import {
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
 import { Fragment, useCallback, useState } from "react";
-import { getItem, setItem } from "@/utils/AsyncStorage";
 import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
 import MeetsTable from "@/components/MeetTable";
-import { SwimrakingEventId } from "@/constants/enums";
+import { Profile, SwimrakingEventId } from "@/constants/enums";
 import RadarChart from "@/components/RadarChart";
 import LineChart from "@/components/LineChart";
 import Dropdown from "@/components/Dropdown";
@@ -36,6 +35,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Entypo, Octicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
 import SkeletonLoader from "@/components/SkeletonLoader";
+import * as SQLite from "expo-sqlite";
 
 const POINTS_FOR_25M = false;
 
@@ -97,13 +97,14 @@ function ProfileHeader({
           }}
           onPress={async () => {
             setUserSwitchLoading(true);
-            const swimmer = await getItem(
-              mainSwimmerSelected ? "swimmers" : "username",
-            );
+            const db = await SQLite.openDatabaseAsync("TeamBBZ");
+            const swimmer = await db.getFirstAsync<
+              Profile | { id: number; name: string }
+            >(`SELECT * FROM ${mainSwimmerSelected ? "profile" : "swimmers"}`);
             if (swimmer) {
               const { aData, history25mFreestyle } =
                 await fetchSwimrankingSwimmer(
-                  swimmer.swimmer ?? swimmer.username,
+                  "name" in swimmer ? swimmer.name : swimmer.username,
                 );
               if (aData) {
                 prepareData(aData, history25mFreestyle);
@@ -291,15 +292,16 @@ export default function Profile() {
   }
 
   async function fetchUser(username?: string) {
-    const response = username ?? (await getItem("username"));
-    if (response === null) {
+    const db = await SQLite.openDatabaseAsync("TeamBBZ");
+    const savedProfile = await db.getFirstAsync<Profile>(
+      "SELECT * FROM profile",
+    );
+    if (!username && !savedProfile) {
       setUsername("");
       return false;
-    } else if (response.username === username) {
-      return true;
     } else {
       const { aData, history25mFreestyle } = await fetchSwimrankingSwimmer(
-        username ?? response.username,
+        username ?? savedProfile?.username ?? "",
       );
       if (aData) {
         prepareData(aData, history25mFreestyle);
@@ -310,10 +312,12 @@ export default function Profile() {
             ],
           poolSize: aData.pbs[0].poolSize,
         });
-        setUsername(username ?? response.username);
+        setUsername(username ?? savedProfile?.username ?? "");
         return true;
       } else {
-        Alert.alert(`'${response.username}' is niet gevonden in SwimRankings!`);
+        Alert.alert(
+          `'${savedProfile?.username}' is niet gevonden in SwimRankings!`,
+        );
         setUsername("");
         return false;
       }
@@ -412,8 +416,9 @@ export default function Profile() {
                       return setEmailError("Voer een email addres in!");
                     } else {
                       setLoading(true);
-                      await setItem("username", { username: usernameSet });
-                      await setItem("email", { email: emailSet });
+                      const sql = (await SQLite.openDatabaseAsync("TeamBBZ"))
+                        .sql;
+                      await sql`INSERT INTO profile (username, email) VALUES (${usernameSet}, ${emailSet})`;
                       const userFound = await fetchUser(usernameSet);
                       // setUsername(usernameSet);
                       setEmailSet(emailSet);

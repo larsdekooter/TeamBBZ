@@ -12,7 +12,6 @@ import {
 import Page from "../../components/Page";
 import { textColor } from "@/constants/functions";
 import { useState, useCallback } from "react";
-import { getItem, removeItem, setItem } from "@/utils/AsyncStorage";
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "@react-navigation/native";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
@@ -20,7 +19,8 @@ import Socials from "@/components/Socials";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import SwipeModal from "@/components/SwipeModal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Colors } from "@/constants/enums";
+import { Colors, Profile } from "@/constants/enums";
+import * as SQLite from "expo-sqlite";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -34,23 +34,31 @@ export default function Settings() {
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {
-        const [us, em, sw] = await Promise.all([
-          await getItem("username"),
-          await getItem("email"),
-          await getItem("swimmers"),
-        ]);
-        if (us && us.username !== username) {
-          setUsername(us.username);
+        const db = await SQLite.openDatabaseAsync("TeamBBZ");
+        const sql = db.sql;
+        await sql`CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL)`;
+        await sql`CREATE TABLE IF NOT EXISTS swimmers (id INTEGER PRIMARY KEY NOT NULL, name TEXT NULL)`;
+        await sql`CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY NOT NULL, darkMode INTEGER NOT NULL)`;
+        await sql`INSERT INTO settings (darkMode INTEGER) VALUES (${colorScheme === "dark" ? 1 : 0})`;
+        const profile = await db.getFirstAsync<Profile>(
+          "SELECT * FROM profile",
+        );
+        const secondSwimmer = await db.getFirstAsync<{
+          id: Number;
+          name: string;
+        }>("SELECT * FROM swimmers");
+        if (profile?.username && profile.username !== username) {
+          setUsername(profile.username);
         }
-        if (em && em.email !== email) {
-          setEmail(em.email);
+        if (profile?.email && profile.email !== email) {
+          setEmail(profile.email);
         }
-        if (sw && sw.swimmer !== swimmer) {
-          setSwimmer(sw.swimmer);
+        if (secondSwimmer?.name && secondSwimmer.name !== swimmer) {
+          setSwimmer(secondSwimmer.name);
         }
       };
       getUsername();
-    }, [])
+    }, []),
   );
 
   if (username.length > 0) {
@@ -90,8 +98,8 @@ export default function Settings() {
           <View style={{ paddingHorizontal: 15 }}>
             <ButtonComponent
               onPress={async () => {
-                await removeItem("username");
-                await removeItem("email");
+                const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
+                await sql`DELETE FROM profile WHERE id = 0`;
                 setUsername("");
                 setEmail("");
               }}
@@ -215,11 +223,10 @@ export default function Settings() {
               alignItems: "center",
             }}
             onPress={async () => {
-              await setItem("colorScheme", {
-                colorScheme: colorScheme === "light" ? "dark" : "light",
-              });
+              const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
+              await sql`UPDATE settings SET darkMode = ${colorScheme === "dark" ? 0 : 1} WHERE darkMode = ${colorScheme === "dark" ? 1 : 0}`;
               Appearance.setColorScheme(
-                colorScheme === "light" ? "dark" : "light"
+                colorScheme === "light" ? "dark" : "light",
               );
             }}
           >
@@ -285,9 +292,8 @@ export default function Settings() {
                   zIndex: 1000,
                 }}
                 onPress={async (e) => {
-                  await setItem("swimmers", {
-                    swimmer: inputText,
-                  });
+                  const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
+                  await sql`UPDATE swimmers SET name = ${inputText} WHERE name = ${swimmer}`;
                   setAddSwimmerModalShown(false);
                   setSwimmer(inputText);
                 }}
@@ -325,7 +331,8 @@ export default function Settings() {
           <ButtonComponent
             onPress={async () => {
               setSwimmer("");
-              await removeItem("swimmers");
+              const sql = (await SQLite.openDatabaseAsync("TeamBBZ")).sql;
+              await sql`DELETE FROM swimmers WHERE name = ${swimmer}`;
               setInfoModalShown(false);
             }}
             style={{

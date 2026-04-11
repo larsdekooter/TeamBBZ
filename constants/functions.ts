@@ -23,9 +23,9 @@ import {
   Result,
   Wedstrijd,
 } from "./types";
-import { getItem } from "@/utils/AsyncStorage";
-import { Colors, SwimrakingEventId } from "./enums";
+import { Colors, Profile, SwimrakingEventId } from "./enums";
 import { SwimrankingsRequestOptions } from "./options";
+import { openDatabaseAsync } from "expo-sqlite";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -571,6 +571,7 @@ export async function getSchemaData(group?: string) {
 }
 
 export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
+  const db = await openDatabaseAsync("TeamBBZ");
   const soort = wedstrijd.name;
   let datum = `${wedstrijd.startDate.getFullYear()}`;
   datum +=
@@ -583,12 +584,8 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
       : `-0${wedstrijd.startDate.getDate()}`;
   const plaats = wedstrijd.location;
   const baanlengte = "25";
-  const naam = await getItem("username");
-  if (!naam) {
-    return Alert.alert("Login voordat je jezelf inschrijft!");
-  }
-  const email = await getItem("email");
-  if (!email) {
+  const profile = await db.getFirstAsync<Profile>("SELECT * FROM profile");
+  if (!profile) {
     return Alert.alert("Login voordat je jezelf inschrijft!");
   }
 
@@ -597,8 +594,8 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
     datum,
     plaats,
     baanlengte,
-    naam: naam.username,
-    email: email.email,
+    naam: profile.username,
+    email: profile.email,
   }).toString();
 
   if (program.length == 0) {

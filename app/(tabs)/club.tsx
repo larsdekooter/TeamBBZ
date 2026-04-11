@@ -42,9 +42,9 @@ import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
 import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
-import { Colors } from "@/constants/enums";
-import { getItem } from "@/utils/AsyncStorage";
+import { Colors, Profile } from "@/constants/enums";
 import { useFocusEffect } from "expo-router";
+import * as SQLite from "expo-sqlite";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -83,15 +83,19 @@ export default function Club() {
 
   useEffect(() => {
     const getS = async () => {
-      const [schem, wden, crs, compStanden, res, username, secondUsername] =
+      const db = await SQLite.openDatabaseAsync("TeamBBZ");
+      const [schem, wden, crs, compStanden, res, username, secondSwimmer] =
         await Promise.all([
           getSchemaData(),
           getMeetCalendar(),
           getClubRecords(),
           getCompetitieStand(),
           getResultMeets(),
-          getItem("username"),
-          getItem("swimmers"),
+          db.getFirstAsync<Profile>("SELECT * FROM profile"),
+          db.getFirstAsync<{
+            id: Number;
+            name: string;
+          }>("SELECT * FROM swimmers"),
         ]);
 
       setSchema(schem);
@@ -102,7 +106,7 @@ export default function Club() {
       setLoading(false);
       const swimmerArray = [];
       if (username) swimmerArray.push(username.username);
-      if (secondUsername) swimmerArray.push(secondUsername.swimmer);
+      if (secondSwimmer) swimmerArray.push(secondSwimmer.name);
       setUsernames(swimmerArray);
     };
     if (loading) {
@@ -1027,10 +1031,12 @@ function ClubrecordsComponent({
   useFocusEffect(
     useCallback(() => {
       const getSwimmer = async () => {
-        let username = await getItem("username");
-        if (!username) username = { username: null };
-        const { aData, history25mFreestyle } = username.username
-          ? await fetchSwimrankingSwimmer(username.username)
+        const db = await SQLite.openDatabaseAsync("TeamBBZ");
+        let username = (
+          await db.getFirstAsync<Profile>("SELECT * FROM profile")
+        )?.username;
+        const { aData, history25mFreestyle } = username
+          ? await fetchSwimrankingSwimmer(username)
           : { aData: {} as AthleteData, history25mFreestyle: [] };
         aData ? setAthleteData(aData) : null;
       };

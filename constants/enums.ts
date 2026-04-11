@@ -59,3 +59,9 @@ export enum Colors {
   LightModeGreen = "#3fb911",
   Blue = "#00b9e4",
 }
+
+export interface Profile {
+  id: number;
+  username: string;
+  email: string;
+}
