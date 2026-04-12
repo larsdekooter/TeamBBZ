@@ -23,7 +23,7 @@ import {
   Result,
   Wedstrijd,
 } from "./types";
-import { Colors, Profile, SwimrakingEventId } from "./enums";
+import { Colors, Profile, SwimrakingEventId, Time } from "./enums";
 import { SwimrankingsRequestOptions } from "./options";
 import { openDatabaseAsync } from "expo-sqlite";
 
@@ -1164,4 +1164,22 @@ export function percentageColor(
   }
   if (colorScheme === "light") return Colors.LightmodeRed;
   return Colors.DarkmodeRed;
+}
+
+export function filterFastestFromArray(
+  time: Time,
+  index: number,
+  times: Time[],
+) {
+  const currentTime = time.time;
+  const sameEventTimes = times
+    .filter((t) => t.event === time.event)
+    .sort(
+      (a, b) =>
+        convertTimestringToNumber(a.time) - convertTimestringToNumber(b.time),
+    );
+  return !(
+    convertTimestringToNumber(sameEventTimes[0].time) <
+    convertTimestringToNumber(currentTime)
+  );
 }

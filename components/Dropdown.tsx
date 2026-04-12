@@ -91,6 +91,7 @@ export default function Dropdown<T extends ReactNode>({
           padding: 10,
           borderRadius: 8,
           maxHeight: 300,
+          zIndex: 9999,
         },
         style,
       ]}
@@ -154,7 +155,7 @@ export default function Dropdown<T extends ReactNode>({
             colorScheme === "dark"
               ? Colors.ModalDarkBackground
               : Colors.ModalLightBackground,
-          zIndex: 999,
+          zIndex: 9999,
           elevation: 5,
           borderRadius: 10,
           borderColor: "grey",
