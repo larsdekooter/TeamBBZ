@@ -1,6 +1,5 @@
 const pbTable = document.getElementsByClassName("athleteBest")[0];
 const rows = [...pbTable.children[0].children].splice(1);
-console.log(rows[1]);
 
 const swimmerFormat = document.getElementById("name").innerText.split("\n")[0];
 const swimmer =
@@ -36,7 +35,7 @@ function formatDate(dateString) {
     Mei: 5,
   };
 
-  const [day, month, year] = dateString.split(" ");
+  const [day, month, year] = dateString.split(/\s/g);
   const monthNo = dates[month.trim()];
   return `${String(day.trim()).padStart(2, "0")}-${String(monthNo).padStart(0, "2")}-${String(year.trim()).padStart(2, "0")}`;
 }
@@ -67,7 +66,7 @@ for (const row of rows) {
     poolSize: row.children[1].innerText,
     points: parseInt(row.children[3].innerText),
     swimmer,
-    date: formatDate(row.children[4].innerText.replace(/&nbsp;/g, "")),
+    date: formatDate(row.children[4].innerText.replace(/&nbsp;/g, " ")),
     meet: row.children[6].innerText,
     location: row.children[5].innerText,
   };
