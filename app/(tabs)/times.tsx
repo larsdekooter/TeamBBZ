@@ -10,6 +10,7 @@ import { Colors, Profile, SwimrakingEventId, Time } from "@/constants/enums";
 import {
   convertTimestringToNumber,
   filterFastestFromArray,
+  formatDate,
   textColor,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
@@ -103,8 +104,7 @@ export default function Times() {
         )}
         {activeTab === Tabs.Pbs && (
           <TimeTable
-            times={times}
-            profile={profile}
+            times={times.filter((time) => time.swimmer === profile.username)}
             mainSwimmerSelected={mainSwimmerSelected}
           />
         )}
@@ -115,33 +115,208 @@ export default function Times() {
 
 function TimeTable({
   times,
-  profile,
   mainSwimmerSelected,
 }: {
   times: Time[];
-  profile: Profile;
   mainSwimmerSelected: boolean;
 }) {
   const strokes = {
-    vlinderslag: times
-      .filter(({ event }) => event.toLocaleLowerCase().includes("vlinderslag"))
-      .filter(filterFastestFromArray),
-    rugslag: times
-      .filter(({ event }) => event.toLowerCase().includes("rugslag"))
-      .filter(filterFastestFromArray),
-    schoolslag: times
-      .filter(({ event }) => event.toLowerCase().includes("schoolslag"))
-      .filter(filterFastestFromArray),
-    "vrije slag": times
-      .filter(({ event }) => event.toLowerCase().includes("vrije slag"))
-      .filter(filterFastestFromArray),
-    wisselslag: times
-      .filter(({ event }) => event.toLowerCase().includes("wisselslag"))
-      .filter(filterFastestFromArray),
+    vlinderslag: times.filter(({ event }) =>
+      event.toLocaleLowerCase().includes("vlinderslag"),
+    ),
+    rugslag: times.filter(({ event }) =>
+      event.toLowerCase().includes("rugslag"),
+    ),
+    schoolslag: times.filter(({ event }) =>
+      event.toLowerCase().includes("schoolslag"),
+    ),
+    "vrije slag": times.filter(({ event }) =>
+      event.toLowerCase().includes("vrije slag"),
+    ),
+    wisselslag: times.filter(({ event }) =>
+      event.toLowerCase().includes("wisselslag"),
+    ),
   };
+
   const colorScheme = useColorScheme();
+  const [overviewShown, setOverviewShown] = useState<Time | null>(null);
+  const [historyShown, setHistoryShown] = useState<Time | null>(null);
+
   return (
     <Fragment>
+      <SwipeModal
+        visible={overviewShown !== null}
+        onClose={() => setOverviewShown(null)}
+        height={300}
+        containerStyle={{
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+        }}
+        buttonStyle={{
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+        }}
+      >
+        <View
+          style={{
+            width: "100%",
+            flex: 1,
+            padding: 10,
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text
+              style={[
+                textColor(colorScheme),
+                { textAlign: "left", fontWeight: "bold" },
+              ]}
+            >
+              {overviewShown?.event}{" "}
+              {overviewShown?.poolSize === "25m" ? "SC" : "LC"}
+            </Text>
+            <Text
+              style={[
+                textColor(colorScheme),
+                { textAlign: "right", fontWeight: "bold" },
+              ]}
+            >
+              {overviewShown?.time}
+            </Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+              {overviewShown?.date}
+            </Text>
+            <Text style={[textColor(colorScheme), { textAlign: "right" }]}>
+              {overviewShown?.points} Fina Punten
+            </Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+              {overviewShown?.meet}
+            </Text>
+            <Text style={[textColor(colorScheme), { textAlign: "right" }]}>
+              {overviewShown?.location}
+            </Text>
+          </View>
+          <ButtonComponent
+            onPress={() => {
+              setHistoryShown(overviewShown);
+              setOverviewShown(null);
+            }}
+            style={{
+              backgroundColor:
+                colorScheme === "dark"
+                  ? Colors.ModalDarkBackground
+                  : Colors.ModalLightBackground,
+              paddingVertical: 10,
+              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+            }}
+          >
+            <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+              Bekijk Geschiedenis
+            </Text>
+          </ButtonComponent>
+        </View>
+      </SwipeModal>
+      <SwipeModal
+        visible={historyShown !== null}
+        onClose={() => setHistoryShown(null)}
+        height={Dimensions.get("window").height * 0.9}
+        containerStyle={{
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+        }}
+        buttonStyle={{
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+        }}
+      >
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <Text
+            style={[
+              textColor(colorScheme),
+              {
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 20,
+                zIndex: 1,
+                width: Dimensions.get("window").width,
+              },
+            ]}
+          >
+            {historyShown?.event} - {historyShown?.time} -{" "}
+            {historyShown?.poolSize === "25m" ? "SC" : "LC"}
+          </Text>
+          <FlatList
+            data={times.filter(({ event }) => event === historyShown?.event)}
+            style={{ marginBottom: 50 }}
+            contentContainerStyle={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            renderItem={({ item, index }) => (
+              <View
+                key={index}
+                style={{
+                  borderWidth: 1,
+                  borderColor: "grey",
+                  paddingVertical: 15,
+                  flexDirection: "row",
+                  alignContent: "space-between",
+                  paddingHorizontal: 10,
+                  borderRadius: 6,
+                  marginVertical: 10,
+                  width: "95%",
+                }}
+              >
+                <Text style={[textColor(colorScheme), { flex: 0.75 }]}>
+                  {historyShown?.time}
+                </Text>
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    { flex: 1, textAlign: "center" },
+                  ]}
+                >
+                  {historyShown?.points} punten
+                </Text>
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    { flex: 1, textAlign: "center" },
+                  ]}
+                >
+                  {historyShown?.date}
+                </Text>
+                <Text
+                  style={[
+                    textColor(colorScheme),
+                    { flex: 1, textAlign: "right" },
+                  ]}
+                >
+                  {historyShown?.location}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
+      </SwipeModal>
       <View
         style={{
           minHeight: "83%",
@@ -160,7 +335,9 @@ function TimeTable({
             key={stroke}
           >
             <FlatList
-              data={strokes[stroke as keyof typeof strokes]}
+              data={strokes[stroke as keyof typeof strokes].filter(
+                filterFastestFromArray,
+              )}
               style={{ height: 350 }}
               renderItem={({ item, index }) => (
                 <Pressable
@@ -174,6 +351,7 @@ function TimeTable({
                     marginVertical: 5,
                     flexDirection: "row",
                   }}
+                  onPress={() => setOverviewShown(item)}
                 >
                   <Text
                     style={[

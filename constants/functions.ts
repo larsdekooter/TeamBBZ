@@ -334,7 +334,7 @@ export function translateEvent(event: string) {
     .replace("Lap", "split");
 }
 
-function formatDate(date: string, i: number, arr: string[]) {
+export function formatDate(date: string, i: number, arr: string[]) {
   if (date.length === 2 || date.length === 1) {
     const dateCopy = arr[1];
     const month = dateCopy.match(DateRegexes.MonthRegex)!;
