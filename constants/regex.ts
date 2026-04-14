@@ -97,3 +97,7 @@ export class CompetietieRegex {
   static CellRegex = /(?<=<td[^>]*>)[\s\S]*?(?=<\/td>)/gm;
   static LinkRegex = /(?<=>)([\s\S]*?)(?=<)/gm;
 }
+
+export class FileRegex {
+  static NameRegex = /Persoonlijke_Records([\s\S]*?).json/gm;
+}

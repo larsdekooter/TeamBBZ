@@ -1173,7 +1173,7 @@ export function filterFastestFromArray(
 ) {
   const currentTime = time.time;
   const sameEventTimes = times
-    .filter((t) => t.event === time.event)
+    .filter((t) => t.event === time.event && t.poolSize === time.poolSize)
     .sort(
       (a, b) =>
         convertTimestringToNumber(a.time) - convertTimestringToNumber(b.time),

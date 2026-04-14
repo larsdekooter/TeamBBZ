@@ -427,7 +427,7 @@ function CompetitieStandComponent({
                 const points = selected[roundName];
                 const competitieStandenIndexRound = competitieStanden
                   .map((stand) => stand[roundName]) // Map the competitie standen to the round we are working on based on the index
-                  .sort((a, b) => a - b);
+                  .sort((a, b) => b - a);
                 const position =
                   points === 0
                     ? ""
