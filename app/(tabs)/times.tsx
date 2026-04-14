@@ -44,6 +44,7 @@ export default function Times() {
   const [times, setTimes] = useState<Time[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [profileInput, setProfileInput] = useState<Profile>({} as Profile);
 
   useEffect(() => {
     const asyncer = async () => {
@@ -182,7 +183,63 @@ export default function Times() {
         )}
       </Page>
     );
-  } else return <Page></Page>;
+  } else
+    return (
+      <Page>
+        <TextInputComponent
+          onChangeText={(input) =>
+            setProfileInput({ ...profileInput, username: input })
+          }
+          placeholder="Naam"
+          style={{ marginBottom: 10 }}
+        />
+        <TextInputComponent
+          onChangeText={(input) =>
+            setProfileInput({ ...profileInput, email: input })
+          }
+          placeholder="Email"
+          style={{ marginBottom: 10 }}
+          autoComplete="email"
+        />
+        <TextInputComponent
+          onChangeText={(input) =>
+            setProfileInput({ ...profileInput, birthdate: input })
+          }
+          placeholder="Geboortedatum"
+          keyboardType="numeric"
+          style={{ marginBottom: 10 }}
+        />
+        <TextInputComponent
+          onChangeText={(input) =>
+            setProfileInput({ ...profileInput, club: input })
+          }
+          placeholder="Zwemclub"
+          style={{ marginBottom: 10 }}
+        />
+        <TextInputComponent
+          onChangeText={(input) =>
+            setProfileInput({ ...profileInput, country: input })
+          }
+          placeholder="Land van herkomst"
+          style={{ marginBottom: 10 }}
+        />
+        <ButtonComponent
+          onPress={async () => {
+            await TeamBBZSQLite.sql`INSERT INTO profile (username, email, birthdate, club, country) VALUES (${profileInput.username}, ${profileInput.email}, ${profileInput.birthdate}, ${profileInput.club}, ${profileInput.country})`;
+            setProfile(
+              await TeamBBZSQLite.db.getFirstAsync<Profile>(
+                "SELECT * FROM profile",
+              ),
+            );
+          }}
+          style={{ paddingVertical: 10, width: "95%" }}
+        >
+          <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+            Verstuur
+          </Text>
+        </ButtonComponent>
+      </Page>
+    );
 }
 
 function TimeTable({
