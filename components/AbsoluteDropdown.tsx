@@ -15,7 +15,7 @@ import {
   ViewStyle,
 } from "react-native";
 
-interface DropdownProps<T extends ReactNode> {
+interface AbsoluteDropdownProps<T extends ReactNode> {
   data: Array<T>;
   renderItem: ({
     item,
@@ -33,22 +33,22 @@ interface DropdownProps<T extends ReactNode> {
     | undefined;
   style?: StyleProp<ViewStyle>;
   closeWhenSelected?: boolean;
+  textStyle?: StyleProp<TextStyle>;
   dropdownStyle?: StyleProp<ViewStyle>;
   maxHeight?: number;
-  textStyle?: StyleProp<TextStyle>;
 }
 
-export default function Dropdown<T extends ReactNode>({
+export default function AbsoluteDropdown<T extends ReactNode>({
   data,
   renderItem,
   shouldLoad,
   onPress,
   style,
   closeWhenSelected = false,
+  textStyle,
   dropdownStyle,
   maxHeight = 1000,
-  textStyle,
-}: DropdownProps<T>) {
+}: AbsoluteDropdownProps<T>) {
   const [isOpened, setOpened] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
   const heightAnim = useState(new Animated.Value(0))[0];
@@ -95,6 +95,7 @@ export default function Dropdown<T extends ReactNode>({
           padding: 10,
           borderRadius: 8,
           maxHeight: 300,
+          zIndex: 9999,
         },
         style,
       ]}
@@ -107,7 +108,15 @@ export default function Dropdown<T extends ReactNode>({
           alignItems: "center",
         }}
       >
-        <Text style={[textColor(colorScheme), { width: "92%" }, textStyle]}>
+        <Text
+          style={[
+            {
+              width: "92%",
+              ...textColor(colorScheme),
+            },
+            textStyle,
+          ]}
+        >
           {selected}
         </Text>
         {shouldLoad && (
@@ -143,6 +152,20 @@ export default function Dropdown<T extends ReactNode>({
               inputRange: [0, 1],
               outputRange: [0, 10],
             }),
+            position: "absolute",
+            top: "150%",
+            left: 0,
+            right: 0,
+            backgroundColor:
+              colorScheme === "dark"
+                ? Colors.ModalDarkBackground
+                : Colors.ModalLightBackground,
+            zIndex: 9999,
+            elevation: 5,
+            borderRadius: 10,
+            borderColor: "grey",
+            borderWidth: 1,
+            paddingHorizontal: 5,
           },
           dropdownStyle,
         ]}

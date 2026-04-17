@@ -680,6 +680,47 @@ function log<T>(val: T, index: number, array: T[]) {
   return val;
 }
 
+export function getSpecialityDataFromTimes(times: Time[]) {
+  const points = times
+    .map(({ points, event, poolSize }) => ({ event, points, poolSize }))
+    .filter(({ points, event }) => points > 0 && !event.includes("Lap"))
+    .sort((a, b) => b.points - a.points);
+
+  const pointsPerStroke = {
+    butterfly: { count: 0, amount: 0 },
+    backstroke: { count: 0, amount: 0 },
+    breaststroke: { count: 0, amount: 0 },
+    freestyle: { count: 0, amount: 0 },
+    medley: { count: 0, amount: 0 },
+  };
+
+  points.forEach(({ points, event }) => {
+    if (event.toLowerCase().includes("vlinderslag")) {
+      pointsPerStroke.butterfly.count += points;
+      pointsPerStroke.butterfly.amount++;
+    } else if (event.toLowerCase().includes("rugslag")) {
+      pointsPerStroke.backstroke.count += points;
+      pointsPerStroke.backstroke.amount++;
+    } else if (event.toLowerCase().includes("schoolslag")) {
+      pointsPerStroke.breaststroke.count += points;
+      pointsPerStroke.breaststroke.amount++;
+    } else if (event.toLowerCase().includes("vrije slag")) {
+      pointsPerStroke.freestyle.count += points;
+      pointsPerStroke.freestyle.amount++;
+    } else if (event.toLowerCase().includes("wisselslag")) {
+      pointsPerStroke.medley.count += points;
+      pointsPerStroke.medley.amount++;
+    }
+  });
+
+  Object.entries(pointsPerStroke).forEach((p) => {
+    pointsPerStroke[p[0] as keyof typeof pointsPerStroke].count =
+      p[1].count / (p[1].amount || 1) / (points[0].points || 1);
+  });
+
+  return Object.values(pointsPerStroke).map(({ count }) => count);
+}
+
 export function getSpecialityData(
   athleteData: AthleteData,
   shouldShow25?: boolean,
@@ -1182,4 +1223,25 @@ export function filterFastestFromArray(
     convertTimestringToNumber(sameEventTimes[0].time) <
     convertTimestringToNumber(currentTime)
   );
+}
+
+export function getFastestFromArray(times: Time[]) {
+  return times
+    .map((time) => ({ ...time, time: convertTimestringToNumber(time.time) }))
+    .sort((a, b) => a.time - b.time)[0];
+}
+
+export function isFastestFromYear(time: Time, index: number, times: Time[]) {
+  const yearTimes = times
+    .filter(
+      (t) =>
+        t.date?.match(DateRegexes.Number4Regex)?.[0] ===
+        time.date?.match(DateRegexes.Number4Regex)?.[0],
+    )
+    .sort(
+      (a, b) =>
+        convertTimestringToNumber(a.time) - convertTimestringToNumber(b.time),
+    );
+
+  return yearTimes[0].time === time.time;
 }

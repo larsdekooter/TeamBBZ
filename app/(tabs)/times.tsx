@@ -8,9 +8,14 @@ import SwipeModal from "@/components/SwipeModal";
 import TextInputComponent from "@/components/TextInputComponent";
 import { Colors, Profile, SwimrakingEventId, Time } from "@/constants/enums";
 import {
+  calculateAveragePoints,
+  convertTimeNumberToString,
   convertTimestringToNumber,
   filterFastestFromArray,
   formatDate,
+  getFastestFromArray,
+  getSpecialityDataFromTimes,
+  isFastestFromYear,
   textColor,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
@@ -29,6 +34,10 @@ import {
 } from "react-native";
 import { getDocumentAsync } from "expo-document-picker";
 import { File } from "expo-file-system";
+import RadarChart from "@/components/RadarChart";
+import LineChart from "@/components/LineChart";
+import { DateRegexes } from "@/constants/regex";
+import AbsoluteDropdown from "@/components/AbsoluteDropdown";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
@@ -36,15 +45,20 @@ export default function Times() {
   const [timesInputted, setTimesInputted] = useState(false);
   const colorScheme = useColorScheme();
   const [inputTimeModalVisible, setInputTimeModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(
     !timesInputted ? Tabs.Input : Tabs.Pbs,
   );
   const [insertTimeStatement, setInsertTimeStatement] =
     useState<SQLiteStatement | null>(null);
   const [times, setTimes] = useState<Time[]>([]);
-  const [loading, setLoading] = useState(true);
   const [uploadLoading, setUploadLoading] = useState(false);
   const [profileInput, setProfileInput] = useState<Profile>({} as Profile);
+  const [usePointGraph, setUsePointGraph] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState({
+    event: "25m Vrije Slag",
+    poolSize: "25m",
+  });
 
   useEffect(() => {
     const asyncer = async () => {
@@ -181,6 +195,189 @@ export default function Times() {
             mainSwimmerSelected={mainSwimmerSelected}
           />
         )}
+        {activeTab === Tabs.Speciality && (
+          <ScrollView
+            contentContainerStyle={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              marginTop: 150,
+            }}
+            nestedScrollEnabled
+          >
+            <RadarChart
+              size={300}
+              axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
+              rings={4}
+              fillColor={
+                mainSwimmerSelected
+                  ? colorScheme === "light"
+                    ? Colors.TransparantLightOrange
+                    : Colors.TransparantDarkOrange
+                  : undefined
+              }
+              strokeColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+              data={getSpecialityDataFromTimes(
+                times.filter((time) => time.swimmer === profile.username),
+              )}
+            />
+            <Text style={[textColor(colorScheme), { fontStyle: "italic" }]}>
+              Gemiddeld aantal punten:{" "}
+              {(
+                times
+                  .filter(
+                    (time) =>
+                      time.swimmer === profile.username && time.points > 0,
+                  )
+                  .reduce((acc, current) => acc + current.points, 0) /
+                times.filter(
+                  (time) =>
+                    time.swimmer === profile.username && time.points > 0,
+                ).length
+              ).toFixed(2)}
+            </Text>
+            <View
+              style={{
+                width: "90%",
+                height: 5,
+                backgroundColor: "grey",
+                borderRadius: 10,
+                marginTop: 5,
+                marginBottom: -10,
+              }}
+            />
+            <LineChart
+              data={times
+                .filter(
+                  (time) =>
+                    time.swimmer === profile.username &&
+                    time.event.trim() === selectedEvent.event &&
+                    time.poolSize === selectedEvent.poolSize,
+                )
+                .filter(isFastestFromYear)
+                .sort(
+                  (a, b) =>
+                    parseInt(
+                      a.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                    ) -
+                    parseInt(
+                      b.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                    ),
+                )
+                .map((time, _, arr) =>
+                  usePointGraph
+                    ? time.points
+                    : getFastestFromArray(arr).time -
+                      convertTimestringToNumber(time.time),
+                )}
+              labels={times
+                .filter(
+                  (time) =>
+                    time.swimmer === profile.username &&
+                    time.event.trim() === selectedEvent.event &&
+                    time.poolSize === selectedEvent.poolSize,
+                )
+                .filter(isFastestFromYear)
+                .sort(
+                  (a, b) =>
+                    parseInt(
+                      a.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                    ) -
+                    parseInt(
+                      b.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                    ),
+                )
+                .map(
+                  ({ date }) =>
+                    date?.match(DateRegexes.Number4Regex)![0] ?? "0000",
+                )}
+              size={{ width: Dimensions.get("window").width, height: 300 }}
+              lineColor={
+                mainSwimmerSelected
+                  ? colorScheme === "light"
+                    ? "rgba(162,94,23,0.5)"
+                    : "rgba(162, 94, 23, 0.8)"
+                  : undefined
+              }
+              pointColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+              displayDataLabels={(labelBefore) =>
+                usePointGraph
+                  ? labelBefore
+                  : convertTimeNumberToString(
+                      getFastestFromArray(
+                        times.filter(
+                          (time) =>
+                            time.swimmer === profile.username &&
+                            time.event.trim() === selectedEvent.event &&
+                            time.poolSize === selectedEvent.poolSize,
+                        ),
+                      ).time - convertTimestringToNumber(labelBefore),
+                    )
+              }
+            />
+            <View style={{}} collapsable={false}>
+              <Dropdown
+                data={times
+                  .map(
+                    ({ event, poolSize }) =>
+                      `${event}${poolSize === "25m" ? "SC" : "LC"}`,
+                  )
+                  .filter((e) => !e.includes("Lap"))}
+                onPress={(item) => {
+                  const poolSize = item.includes("LC") ? "50m" : "25m";
+                  setSelectedEvent({
+                    event: item.replace(/LC|SC/g, "").trim(),
+                    poolSize,
+                  });
+                }}
+                renderItem={({ item, index }) => {
+                  return (
+                    <View
+                      key={index}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "grey",
+                        paddingVertical: 5,
+                        paddingHorizontal: 10,
+                        margin: 5,
+                        borderRadius: 6,
+                        backgroundColor:
+                          colorScheme === "dark"
+                            ? Colors.DarkBackground
+                            : "#fff",
+                      }}
+                    >
+                      <Text style={[textColor(colorScheme)]}>{item}</Text>
+                    </View>
+                  );
+                }}
+                dropdownStyle={{
+                  backgroundColor:
+                    colorScheme === "dark" ? Colors.DarkBackground : "#fff",
+                }}
+                maxHeight={200}
+              />
+            </View>
+            <View
+              style={{
+                paddingTop: 10,
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+            >
+              <Text style={[textColor(colorScheme)]}>
+                Gebruik World Aquatics punten
+              </Text>
+              <CheckBox
+                onPress={() => setUsePointGraph(!usePointGraph)}
+                checked={usePointGraph}
+              />
+            </View>
+            <View style={{ height: 500 }} />
+          </ScrollView>
+        )}
       </Page>
     );
   } else
@@ -192,6 +389,7 @@ export default function Times() {
           }
           placeholder="Naam"
           style={{ marginBottom: 10 }}
+          placeholderTextColor={"grey"}
         />
         <TextInputComponent
           onChangeText={(input) =>
@@ -200,6 +398,7 @@ export default function Times() {
           placeholder="Email"
           style={{ marginBottom: 10 }}
           autoComplete="email"
+          placeholderTextColor={"grey"}
         />
         <TextInputComponent
           onChangeText={(input) =>
@@ -208,6 +407,7 @@ export default function Times() {
           placeholder="Geboortedatum"
           keyboardType="numeric"
           style={{ marginBottom: 10 }}
+          placeholderTextColor={"grey"}
         />
         <TextInputComponent
           onChangeText={(input) =>
@@ -215,6 +415,7 @@ export default function Times() {
           }
           placeholder="Zwemclub"
           style={{ marginBottom: 10 }}
+          placeholderTextColor={"grey"}
         />
         <TextInputComponent
           onChangeText={(input) =>
@@ -222,6 +423,7 @@ export default function Times() {
           }
           placeholder="Land van herkomst"
           style={{ marginBottom: 10 }}
+          placeholderTextColor={"grey"}
         />
         <ButtonComponent
           onPress={async () => {
@@ -575,7 +777,7 @@ function InputTimesModal({
             alignItems: "flex-end",
           }}
         >
-          <Dropdown
+          <AbsoluteDropdown
             data={
               selectedStroke === "Vrije Slag"
                 ? [
