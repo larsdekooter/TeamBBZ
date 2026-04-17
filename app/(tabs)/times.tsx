@@ -548,8 +548,8 @@ function TimeTable({
           </View>
           <ButtonComponent
             onPress={() => {
-              setHistoryShown(overviewShown);
               setOverviewShown(null);
+              setHistoryShown(overviewShown);
             }}
             style={{
               backgroundColor:
@@ -594,13 +594,18 @@ function TimeTable({
             {historyShown?.poolSize === "25m" ? "SC" : "LC"}
           </Text>
           <FlatList
-            data={times.filter(({ event }) => event === historyShown?.event)}
+            data={times.filter(
+              ({ event, poolSize }) =>
+                event.trim() === historyShown?.event.trim() &&
+                poolSize === historyShown.poolSize,
+            )}
             style={{ marginBottom: 50 }}
             contentContainerStyle={{
-              flex: 1,
+              // flex: 1,
               justifyContent: "center",
               alignItems: "center",
             }}
+            nestedScrollEnabled
             renderItem={({ item, index }) => (
               <View
                 key={index}
@@ -617,7 +622,7 @@ function TimeTable({
                 }}
               >
                 <Text style={[textColor(colorScheme), { flex: 0.75 }]}>
-                  {historyShown?.time}
+                  {item?.time}
                 </Text>
                 <Text
                   style={[
@@ -625,7 +630,7 @@ function TimeTable({
                     { flex: 1, textAlign: "center" },
                   ]}
                 >
-                  {historyShown?.points} punten
+                  {item?.points} punten
                 </Text>
                 <Text
                   style={[
@@ -633,7 +638,7 @@ function TimeTable({
                     { flex: 1, textAlign: "center" },
                   ]}
                 >
-                  {historyShown?.date}
+                  {item?.date}
                 </Text>
                 <Text
                   style={[
@@ -641,7 +646,7 @@ function TimeTable({
                     { flex: 1, textAlign: "right" },
                   ]}
                 >
-                  {historyShown?.location}
+                  {item?.location}
                 </Text>
               </View>
             )}
