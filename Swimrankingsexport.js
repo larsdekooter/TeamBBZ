@@ -37,7 +37,7 @@ function formatDate(dateString) {
 
   const [day, month, year] = dateString.split(/\s/g);
   const monthNo = dates[month.trim()];
-  return `${String(day.trim()).padStart(2, "0")}-${String(monthNo).padStart(0, "2")}-${String(year.trim()).padStart(2, "0")}`;
+  return `${String(day.trim()).padStart(2, "0")}-${String(monthNo).padStart(2, "0")}-${String(year.trim()).padStart(2, "0")}`;
 }
 
 function formatEvent(event) {
