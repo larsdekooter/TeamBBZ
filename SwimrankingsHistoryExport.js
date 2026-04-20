@@ -1,6 +1,3 @@
-const pbTable = document.getElementsByClassName("athleteBest")[0];
-const rows = [...pbTable.children[0].children].splice(1);
-
 const swimmerFormat = document.getElementById("name").innerText.split("\n")[0];
 const swimmer =
   swimmerFormat.split(", ")[1] +
@@ -12,7 +9,8 @@ const swimmer =
     .map((str, i, ar) =>
       i === ar.length - 1 ? str.slice(0, 1).toUpperCase() + str.slice(1) : str,
     )
-    .join(" ");
+    .join(" ")
+    .trim();
 
 const timeObjects = [];
 
@@ -35,8 +33,7 @@ function formatDate(dateString) {
     Mei: 5,
     Okt: 10,
   };
-
-  const [day, month, year] = dateString.split(/\s/g);
+  const [day, month, year] = dateString.split(/\s/g).map((s) => s.trim());
   const monthNo = dates[month.trim()];
   return `${String(day.trim()).padStart(2, "0")}-${String(monthNo).padStart(2, "0")}-${String(year.trim()).padStart(2, "0")}`;
 }
@@ -60,25 +57,45 @@ function formatEvent(event) {
   return `${distance} ${stroke}${lap ?? ""}`;
 }
 
-for (const row of rows) {
-  const timeObject = {
-    event: formatEvent(row.children[0].children[0].innerText),
-    time: row.children[2].children[0].innerText,
-    poolSize: row.children[1].innerText,
-    points: parseInt(row.children[3].innerText),
-    swimmer,
-    date: formatDate(row.children[4].innerText.replace(/&nbsp;/g, " ")),
-    meet: row.children[6].innerText,
-    location: row.children[5].innerText,
-  };
+const event = formatEvent(
+  document
+    .getElementsByClassName("twoColumns")[0]
+    .children[0].children[0].children[0].children[0].innerText.split(" ")
+    .slice(-2)
+    .join(" "),
+);
 
-  timeObjects.push(timeObject);
+const tables = document.getElementsByClassName("athleteRanking");
+
+function mapTable(table, poolSize) {
+  const rows = [...table.children[0].children].splice(1);
+  const returnObjects = [];
+  for (const row of rows) {
+    const timeObject = {
+      time: row.children[0].children[0].innerText,
+      points: parseInt(row.children[1].innerText),
+      date: formatDate(
+        row.children[2].innerText.replace(/&nbsp;/g, "").replace(/\s\s/g, " "),
+      ),
+      location: row.children[3].children[0].innerText,
+      poolSize,
+      event,
+      swimmer,
+    };
+    returnObjects.push(timeObject);
+  }
+  return returnObjects;
 }
+
+const lcObjects = mapTable(tables[0], "50m");
+timeObjects.push(...lcObjects);
+const scObjects = mapTable(tables[1], "25m");
+timeObjects.push(...scObjects);
 
 const a = document.createElement("a");
 const file = new Blob([JSON.stringify(timeObjects)], {
   type: "application/json",
 });
 a.href = URL.createObjectURL(file);
-a.download = `Persoonlijke_Records_${swimmer.replace(/\s/g, "_")}`;
+a.download = `Geschiedenis_${event.replace(/\s/g, "_")}_${swimmer.replace(/\s/g, "_")}`;
 a.click();
