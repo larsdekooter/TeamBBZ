@@ -21,7 +21,7 @@ import {
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import { Entypo, MaterialIcons, Octicons } from "@expo/vector-icons";
 import { SQLiteStatement } from "expo-sqlite";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -60,22 +60,25 @@ export default function Times() {
     poolSize: "25m",
   });
 
-  useEffect(() => {
-    const asyncer = async () => {
-      const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
-        "SELECT * FROM profile",
-      );
-      const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
-      setTimes(tms);
+  useEffect(
+    useCallback(() => {
+      const asyncer = async () => {
+        if (!loading) return;
+        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+          "SELECT * FROM profile",
+        );
+        const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
+        setTimes(tms);
 
-      setProfile(profile);
-      setTimesInputted(
-        !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
-      );
-      setLoading(false);
-    };
-    if (loading) asyncer();
-  }, []);
+        setProfile(profile);
+        setTimesInputted(
+          !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
+        );
+        setLoading(false);
+      };
+      if (loading) asyncer();
+    }, []),
+  );
 
   if (profile) {
     return (
@@ -124,15 +127,19 @@ export default function Times() {
                   if (
                     !result.assets[0].name.match(
                       /Persoonlijke_Records([\s\S]*?).json/gm,
-                    )?.[0]
+                    )?.[0] &&
+                    !result.assets[0].name.match(
+                      /Geschiedenis_([\s\S]*?).json/gm,
+                    )
                   )
-                    return; //TODO: Show error to user
+                    return console.log("KANKER"); // TODO: Show error to user
                   const fileText = file.textSync();
                   const recievedTimes = JSON.parse(fileText) as Time[];
                   const statement = await TeamBBZSQLite.db.prepareAsync(
                     "INSERT INTO times (event, time, poolSize, points, date, meet, location, swimmer) VALUES ($event, $time, $poolSize, $points, $date, $meet, $location, $swimmer)",
                   );
                   try {
+                    // TODO: Update time if new information about it
                     for (const time of recievedTimes) {
                       if (
                         times.find(
@@ -144,7 +151,7 @@ export default function Times() {
                             t.swimmer === time.swimmer,
                         )
                       )
-                        return;
+                        continue;
                       await statement.executeAsync({
                         $event: time.event,
                         $time: time.time,
@@ -160,11 +167,11 @@ export default function Times() {
                     console.error(e);
                   } finally {
                     await statement.finalizeAsync();
-                    setTimes(
-                      await TeamBBZSQLite.sql<Time>`SELECT * FROM times`,
-                    );
+                    const ts =
+                      await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
+                    setTimes(ts);
                     setUploadLoading(false);
-                    setTimesInputted(times.length > 0);
+                    setTimesInputted(ts.length > 0);
                   }
                 } catch (e) {
                   console.error(e);
@@ -229,11 +236,14 @@ export default function Times() {
                     (time) =>
                       time.swimmer === profile.username && time.points > 0,
                   )
+                  .filter(filterFastestFromArray)
                   .reduce((acc, current) => acc + current.points, 0) /
-                times.filter(
-                  (time) =>
-                    time.swimmer === profile.username && time.points > 0,
-                ).length
+                times
+                  .filter(
+                    (time) =>
+                      time.swimmer === profile.username && time.points > 0,
+                  )
+                  .filter(filterFastestFromArray).length
               ).toFixed(2)}
             </Text>
             <View

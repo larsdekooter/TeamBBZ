@@ -682,6 +682,7 @@ function log<T>(val: T, index: number, array: T[]) {
 
 export function getSpecialityDataFromTimes(times: Time[]) {
   const points = times
+    .filter(filterFastestFromArray)
     .map(({ points, event, poolSize }) => ({ event, points, poolSize }))
     .filter(({ points, event }) => points > 0 && !event.includes("Lap"))
     .sort((a, b) => b.points - a.points);
@@ -1214,7 +1215,10 @@ export function filterFastestFromArray(
 ) {
   const currentTime = time.time;
   const sameEventTimes = times
-    .filter((t) => t.event === time.event && t.poolSize === time.poolSize)
+    .filter(
+      (t) =>
+        t.event.trim() === time.event.trim() && t.poolSize === time.poolSize,
+    )
     .sort(
       (a, b) =>
         convertTimestringToNumber(a.time) - convertTimestringToNumber(b.time),
