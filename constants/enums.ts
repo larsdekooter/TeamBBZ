@@ -59,3 +59,28 @@ export enum Colors {
   LightModeGreen = "#3fb911",
   Blue = "#00b9e4",
 }
+
+export interface Profile {
+  id: number;
+  username: string;
+  email: string;
+  birthdate: string;
+  club: string;
+  country: string;
+}
+
+export interface Settings {
+  id: number;
+  darkMode: 0 | 1;
+}
+
+export interface Time {
+  event: string;
+  time: string;
+  poolSize: string;
+  points: number;
+  swimmer: string;
+  date?: string;
+  meet?: string;
+  location?: string;
+}

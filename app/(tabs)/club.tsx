@@ -42,9 +42,10 @@ import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
 import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
-import { Colors } from "@/constants/enums";
-import { getItem } from "@/utils/AsyncStorage";
+import { Colors, Profile } from "@/constants/enums";
 import { useFocusEffect } from "expo-router";
+import * as SQLite from "expo-sqlite";
+import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -83,15 +84,18 @@ export default function Club() {
 
   useEffect(() => {
     const getS = async () => {
-      const [schem, wden, crs, compStanden, res, username, secondUsername] =
+      const [schem, wden, crs, compStanden, res, username, secondSwimmer] =
         await Promise.all([
           getSchemaData(),
           getMeetCalendar(),
           getClubRecords(),
           getCompetitieStand(),
           getResultMeets(),
-          getItem("username"),
-          getItem("swimmers"),
+          TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile"),
+          TeamBBZSQLite.db.getFirstAsync<{
+            id: Number;
+            name: string;
+          }>("SELECT * FROM swimmers"),
         ]);
 
       setSchema(schem);
@@ -102,7 +106,7 @@ export default function Club() {
       setLoading(false);
       const swimmerArray = [];
       if (username) swimmerArray.push(username.username);
-      if (secondUsername) swimmerArray.push(secondUsername.swimmer);
+      if (secondSwimmer) swimmerArray.push(secondSwimmer.name);
       setUsernames(swimmerArray);
     };
     if (loading) {
@@ -423,7 +427,7 @@ function CompetitieStandComponent({
                 const points = selected[roundName];
                 const competitieStandenIndexRound = competitieStanden
                   .map((stand) => stand[roundName]) // Map the competitie standen to the round we are working on based on the index
-                  .sort((a, b) => a - b);
+                  .sort((a, b) => b - a);
                 const position =
                   points === 0
                     ? ""
@@ -1027,10 +1031,11 @@ function ClubrecordsComponent({
   useFocusEffect(
     useCallback(() => {
       const getSwimmer = async () => {
-        let username = await getItem("username");
-        if (!username) username = { username: null };
-        const { aData, history25mFreestyle } = username.username
-          ? await fetchSwimrankingSwimmer(username.username)
+        let username = (
+          await TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile")
+        )?.username;
+        const { aData, history25mFreestyle } = username
+          ? await fetchSwimrankingSwimmer(username)
           : { aData: {} as AthleteData, history25mFreestyle: [] };
         aData ? setAthleteData(aData) : null;
       };

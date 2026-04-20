@@ -31,7 +31,12 @@ type SwipeModalProps = {
   children?: ReactNode;
   onRequestClose?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
   visible: boolean;
-  onClose: () => void | undefined | null;
+  onClose: () =>
+    | void
+    | (() => Promise<void>)
+    | undefined
+    | null
+    | Promise<void>;
   height?: number;
   closeValue?: number;
   style?: StyleProp<ViewStyle>;
@@ -102,7 +107,7 @@ export default function SwipeModal({
     backgroundColor: interpolateColor(
       opened.value,
       [0, 1],
-      ["rgba(0,0,0,0)", "rgba(0,0,0,0.3)"]
+      ["rgba(0,0,0,0)", "rgba(0,0,0,0.3)"],
     ),
   }));
 

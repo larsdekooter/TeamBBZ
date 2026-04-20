@@ -23,9 +23,9 @@ import {
   Result,
   Wedstrijd,
 } from "./types";
-import { getItem } from "@/utils/AsyncStorage";
-import { Colors, SwimrakingEventId } from "./enums";
+import { Colors, Profile, SwimrakingEventId, Time } from "./enums";
 import { SwimrankingsRequestOptions } from "./options";
+import { openDatabaseAsync } from "expo-sqlite";
 
 export function textColor(colorScheme: ColorSchemeName | boolean) {
   if (typeof colorScheme === "boolean") {
@@ -334,7 +334,7 @@ export function translateEvent(event: string) {
     .replace("Lap", "split");
 }
 
-function formatDate(date: string, i: number, arr: string[]) {
+export function formatDate(date: string, i: number, arr: string[]) {
   if (date.length === 2 || date.length === 1) {
     const dateCopy = arr[1];
     const month = dateCopy.match(DateRegexes.MonthRegex)!;
@@ -571,6 +571,7 @@ export async function getSchemaData(group?: string) {
 }
 
 export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
+  const db = await openDatabaseAsync("TeamBBZ");
   const soort = wedstrijd.name;
   let datum = `${wedstrijd.startDate.getFullYear()}`;
   datum +=
@@ -583,12 +584,8 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
       : `-0${wedstrijd.startDate.getDate()}`;
   const plaats = wedstrijd.location;
   const baanlengte = "25";
-  const naam = await getItem("username");
-  if (!naam) {
-    return Alert.alert("Login voordat je jezelf inschrijft!");
-  }
-  const email = await getItem("email");
-  if (!email) {
+  const profile = await db.getFirstAsync<Profile>("SELECT * FROM profile");
+  if (!profile) {
     return Alert.alert("Login voordat je jezelf inschrijft!");
   }
 
@@ -597,8 +594,8 @@ export async function enterMeet(wedstrijd: Wedstrijd, program: number[]) {
     datum,
     plaats,
     baanlengte,
-    naam: naam.username,
-    email: email.email,
+    naam: profile.username,
+    email: profile.email,
   }).toString();
 
   if (program.length == 0) {
@@ -681,6 +678,48 @@ export async function getHistory(
 function log<T>(val: T, index: number, array: T[]) {
   console.log({ val, index });
   return val;
+}
+
+export function getSpecialityDataFromTimes(times: Time[]) {
+  const points = times
+    .filter(filterFastestFromArray)
+    .map(({ points, event, poolSize }) => ({ event, points, poolSize }))
+    .filter(({ points, event }) => points > 0 && !event.includes("Lap"))
+    .sort((a, b) => b.points - a.points);
+
+  const pointsPerStroke = {
+    butterfly: { count: 0, amount: 0 },
+    backstroke: { count: 0, amount: 0 },
+    breaststroke: { count: 0, amount: 0 },
+    freestyle: { count: 0, amount: 0 },
+    medley: { count: 0, amount: 0 },
+  };
+
+  points.forEach(({ points, event }) => {
+    if (event.toLowerCase().includes("vlinderslag")) {
+      pointsPerStroke.butterfly.count += points;
+      pointsPerStroke.butterfly.amount++;
+    } else if (event.toLowerCase().includes("rugslag")) {
+      pointsPerStroke.backstroke.count += points;
+      pointsPerStroke.backstroke.amount++;
+    } else if (event.toLowerCase().includes("schoolslag")) {
+      pointsPerStroke.breaststroke.count += points;
+      pointsPerStroke.breaststroke.amount++;
+    } else if (event.toLowerCase().includes("vrije slag")) {
+      pointsPerStroke.freestyle.count += points;
+      pointsPerStroke.freestyle.amount++;
+    } else if (event.toLowerCase().includes("wisselslag")) {
+      pointsPerStroke.medley.count += points;
+      pointsPerStroke.medley.amount++;
+    }
+  });
+
+  Object.entries(pointsPerStroke).forEach((p) => {
+    pointsPerStroke[p[0] as keyof typeof pointsPerStroke].count =
+      p[1].count / (p[1].amount || 1) / (points[0].points || 1);
+  });
+
+  return Object.values(pointsPerStroke).map(({ count }) => count);
 }
 
 export function getSpecialityData(
@@ -1161,11 +1200,52 @@ export function percentageColor(
   percentage: string,
   colorScheme: ColorSchemeName,
 ) {
-  console.log(parseFloat(percentage));
   if (parseFloat(percentage) >= 100) {
     if (colorScheme === "light") return Colors.LightModeGreen;
     return Colors.DarkmodeGreen;
   }
   if (colorScheme === "light") return Colors.LightmodeRed;
   return Colors.DarkmodeRed;
+}
+
+export function filterFastestFromArray(
+  time: Time,
+  index: number,
+  times: Time[],
+) {
+  const currentTime = time.time;
+  const sameEventTimes = times
+    .filter(
+      (t) =>
+        t.event.trim() === time.event.trim() && t.poolSize === time.poolSize,
+    )
+    .sort(
+      (a, b) =>
+        convertTimestringToNumber(a.time) - convertTimestringToNumber(b.time),
+    );
+  return !(
+    convertTimestringToNumber(sameEventTimes[0].time) <
+    convertTimestringToNumber(currentTime)
+  );
+}
+
+export function getFastestFromArray(times: Time[]) {
+  return times
+    .map((time) => ({ ...time, time: convertTimestringToNumber(time.time) }))
+    .sort((a, b) => a.time - b.time)[0];
+}
+
+export function isFastestFromYear(time: Time, index: number, times: Time[]) {
+  const yearTimes = times
+    .filter(
+      (t) =>
+        t.date?.match(DateRegexes.Number4Regex)?.[0] ===
+        time.date?.match(DateRegexes.Number4Regex)?.[0],
+    )
+    .sort(
+      (a, b) =>
+        convertTimestringToNumber(a.time) - convertTimestringToNumber(b.time),
+    );
+
+  return yearTimes[0].time === time.time;
 }

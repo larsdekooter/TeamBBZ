@@ -6,6 +6,7 @@ import { Post } from "@/constants/types";
 import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
 import SkeletonLoader from "@/components/SkeletonLoader";
+import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -14,6 +15,14 @@ export default function Home() {
 
   useEffect(() => {
     const s = async () => {
+      await TeamBBZSQLite.prepare();
+      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, birthdate TEXT NOT NULL, club TEXT NOT NULL, country TEXT NOT NULL) `;
+      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS swimmers (id INTEGER PRIMARY KEY NOT NULL, name TEXT NULL)`;
+      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY NOT NULL, darkMode INTEGER NOT NULL)`;
+      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS times (id INTEGER PRIMARY KEY NOT NULL, event TEXT NOT NULL, time TEXT NOT NULL, poolSize TEXT NOT NULL, points NUMBER NOT NULL, swimmer NOT NULL, date TEXT NULL, meet TEXT NULL, location TEXT NULL)`;
+      if (!(await TeamBBZSQLite.db.getFirstAsync("SELECT * FROM settings")))
+        await TeamBBZSQLite.sql`INSERT INTO settings (darkMode) VALUES (${colorScheme === "dark" ? 1 : 0})`;
+
       setPosts(await getPosts());
     };
     if (posts.length < 1) {
