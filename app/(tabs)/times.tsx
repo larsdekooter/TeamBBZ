@@ -829,7 +829,7 @@ function InputTimesModal({
               )
             }
           />
-          <Dropdown
+          <AbsoluteDropdown
             data={[
               "Vlinderslag",
               "Rugslag",
@@ -880,6 +880,7 @@ function InputTimesModal({
               keyboardType="numeric"
               style={{ width: 50, textAlign: "center" }}
               onChangeText={(input) => setTime({ ...time, m: parseInt(input) })}
+              placeholderTextColor="#808080"
             />
             <Text
               style={[
@@ -894,6 +895,7 @@ function InputTimesModal({
               keyboardType="numeric"
               style={{ width: 50, textAlign: "center" }}
               onChangeText={(input) => setTime({ ...time, s: parseInt(input) })}
+              placeholderTextColor="#808080"
             />
             <Text
               style={[
@@ -908,6 +910,7 @@ function InputTimesModal({
               keyboardType="numeric"
               style={{ width: 50, textAlign: "center" }}
               onChangeText={(input) => setTime({ ...time, h: parseInt(input) })}
+              placeholderTextColor="#808080"
             />
           </View>
         </View>
@@ -947,6 +950,7 @@ function InputTimesModal({
             onChangeText={(input) =>
               setTimeObject({ ...timeObject, points: parseInt(input) })
             }
+            placeholderTextColor="#808080"
           />
         </View>
         <View
@@ -966,6 +970,7 @@ function InputTimesModal({
             onChangeText={(input) =>
               setTimeObject({ ...timeObject, swimmer: input })
             }
+            placeholderTextColor="#808080"
           />
         </View>
         <View
@@ -982,6 +987,7 @@ function InputTimesModal({
             onChangeText={(input) =>
               setTimeObject({ ...timeObject, date: input })
             }
+            placeholderTextColor="#808080"
           />
         </View>
         <View
@@ -997,6 +1003,7 @@ function InputTimesModal({
             onChangeText={(input) =>
               setTimeObject({ ...timeObject, meet: input })
             }
+            placeholderTextColor="#808080"
           />
         </View>
         <View
@@ -1012,6 +1019,7 @@ function InputTimesModal({
             onChangeText={(input) =>
               setTimeObject({ ...timeObject, location: input })
             }
+            placeholderTextColor="#808080"
           />
         </View>
         <ButtonComponent
