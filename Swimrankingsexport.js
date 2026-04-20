@@ -33,6 +33,7 @@ function formatDate(dateString) {
     Mrt: 3,
     Maa: 3,
     Mei: 5,
+    Okt: 10,
   };
 
   const [day, month, year] = dateString.split(/\s/g);
