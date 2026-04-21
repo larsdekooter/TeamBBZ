@@ -38,6 +38,7 @@ import RadarChart from "@/components/RadarChart";
 import LineChart from "@/components/LineChart";
 import { DateRegexes } from "@/constants/regex";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
+import { useFocusEffect } from "expo-router";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
@@ -45,7 +46,6 @@ export default function Times() {
   const [timesInputted, setTimesInputted] = useState(false);
   const colorScheme = useColorScheme();
   const [inputTimeModalVisible, setInputTimeModalVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(
     !timesInputted ? Tabs.Input : Tabs.Pbs,
   );
@@ -60,23 +60,23 @@ export default function Times() {
     poolSize: "25m",
   });
 
-  useEffect(() => {
-    const asyncer = async () => {
-      if (!loading) return;
-      const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
-        "SELECT * FROM profile",
-      );
-      const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
-      setTimes(tms);
+  useFocusEffect(
+    useCallback(() => {
+      const asyncer = async () => {
+        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+          "SELECT * FROM profile",
+        );
+        const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
+        setTimes(tms);
 
-      setProfile(profile);
-      setTimesInputted(
-        !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
-      );
-      setLoading(false);
-    };
-    if (loading) asyncer();
-  }, []);
+        setProfile(profile);
+        setTimesInputted(
+          !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
+        );
+      };
+      asyncer();
+    }, []),
+  );
 
   if (profile) {
     return (
@@ -119,7 +119,7 @@ export default function Times() {
                   const result = await getDocumentAsync({
                     copyToCacheDirectory: true,
                   });
-                  if (result.canceled) return;
+                  if (result.canceled) return setUploadLoading(false);
                   const uri = result.assets[0].uri;
                   const file = new File(uri);
                   if (

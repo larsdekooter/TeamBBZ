@@ -230,6 +230,26 @@ export default function Settings() {
               size={20}
             />
           </Pressable>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              borderTopColor: "grey",
+              borderTopWidth: 1,
+              marginTop: 10,
+            }}
+          >
+            <ButtonComponent
+              onPress={async () => {
+                await TeamBBZSQLite.sql`DELETE FROM times WHERE id > 0`;
+              }}
+              style={{ width: "90%", paddingVertical: 10, marginTop: 10 }}
+            >
+              <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
+                Verwijder alle tijden
+              </Text>
+            </ButtonComponent>
+          </View>
         </View>
 
         <Socials />
