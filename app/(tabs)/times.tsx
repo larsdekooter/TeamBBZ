@@ -259,7 +259,7 @@ export default function Times() {
                 .filter(
                   (time) =>
                     time.swimmer === profile.username &&
-                    time.event.trim() === selectedEvent.event &&
+                    time.event === selectedEvent.event &&
                     time.poolSize === selectedEvent.poolSize,
                 )
                 .filter(isFastestFromYear)
@@ -282,7 +282,7 @@ export default function Times() {
                 .filter(
                   (time) =>
                     time.swimmer === profile.username &&
-                    time.event.trim() === selectedEvent.event &&
+                    time.event === selectedEvent.event &&
                     time.poolSize === selectedEvent.poolSize,
                 )
                 .filter(isFastestFromYear)
@@ -316,7 +316,7 @@ export default function Times() {
                         times.filter(
                           (time) =>
                             time.swimmer === profile.username &&
-                            time.event.trim() === selectedEvent.event &&
+                            time.event === selectedEvent.event &&
                             time.poolSize === selectedEvent.poolSize,
                         ),
                       ).time - convertTimestringToNumber(labelBefore),
@@ -328,13 +328,16 @@ export default function Times() {
                 data={times
                   .map(
                     ({ event, poolSize }) =>
-                      `${event}${poolSize === "25m" ? "SC" : "LC"}`,
+                      `${event} ${poolSize === "25m" ? "SC" : "LC"}`,
                   )
-                  .filter((e) => !e.includes("Lap"))}
+                  .filter((e) => !e.includes("Lap"))
+                  .filter(
+                    (event, index, array) => array.indexOf(event) === index,
+                  )}
                 onPress={(item) => {
                   const poolSize = item.includes("LC") ? "50m" : "25m";
                   setSelectedEvent({
-                    event: item.replace(/LC|SC/g, "").trim(),
+                    event: item.replace(/\sLC|\sSC/gm, ""),
                     poolSize,
                   });
                 }}
@@ -604,7 +607,7 @@ function TimeTable({
           <FlatList
             data={times.filter(
               ({ event, poolSize }) =>
-                event.trim() === historyShown?.event.trim() &&
+                event === historyShown?.event &&
                 poolSize === historyShown.poolSize,
             )}
             style={{ marginBottom: 50 }}
