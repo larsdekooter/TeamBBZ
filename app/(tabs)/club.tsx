@@ -177,10 +177,18 @@ function ResultsComponent({
       >
         <FlatList
           data={results}
+          nestedScrollEnabled
           renderItem={({ item }) => (
             <SectionComponent
               title={item.name}
               width={Dimensions.get("window").width * 0.85}
+              height={
+                item.events.filter((event) => event.length > 0).length * 45 -
+                item.events.filter(
+                  (event) => event.length > 0 && event.includes("rugslag"),
+                ).length *
+                  20
+              }
             >
               <FlatList
                 data={item.events.filter((event) => event.length > 0)}
@@ -296,6 +304,11 @@ function ResultsComponent({
                     })()}
                   </View>
                 )}
+                style={{ height: Dimensions.get("window").height }}
+                contentContainerStyle={{
+                  height: Dimensions.get("window").height,
+                }}
+                nestedScrollEnabled
               />
             </SectionComponent>
           )}

@@ -27,6 +27,7 @@ export default function SectionComponent({
   containerStyle,
   titleStyle,
   numberOfTitleLines,
+  height = 350,
 }: {
   children: React.ReactNode;
   title: string | ReactNode;
@@ -38,6 +39,7 @@ export default function SectionComponent({
   containerStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;
   numberOfTitleLines?: number;
+  height?: number;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -120,7 +122,7 @@ export default function SectionComponent({
           {
             maxHeight: heightAnim.interpolate({
               inputRange: [0, 1],
-              outputRange: [0, 350],
+              outputRange: [0, height],
             }),
             opacity: heightAnim,
             marginTop: heightAnim.interpolate({
