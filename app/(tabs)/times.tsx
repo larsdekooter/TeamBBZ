@@ -60,25 +60,23 @@ export default function Times() {
     poolSize: "25m",
   });
 
-  useEffect(
-    useCallback(() => {
-      const asyncer = async () => {
-        if (!loading) return;
-        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
-          "SELECT * FROM profile",
-        );
-        const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
-        setTimes(tms);
+  useEffect(() => {
+    const asyncer = async () => {
+      if (!loading) return;
+      const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+        "SELECT * FROM profile",
+      );
+      const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
+      setTimes(tms);
 
-        setProfile(profile);
-        setTimesInputted(
-          !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
-        );
-        setLoading(false);
-      };
-      if (loading) asyncer();
-    }, []),
-  );
+      setProfile(profile);
+      setTimesInputted(
+        !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
+      );
+      setLoading(false);
+    };
+    if (loading) asyncer();
+  }, []);
 
   if (profile) {
     return (
