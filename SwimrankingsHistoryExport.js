@@ -54,7 +54,7 @@ function formatEvent(event) {
 
   const [distance, strokeEnglish, lap] = event.split(" ");
   const stroke = events[strokeEnglish.toLowerCase()];
-  return `${distance} ${stroke}${lap ?? ""}`;
+  return `${distance} ${stroke}${lap ? ` ${lap}` : ""}`;
 }
 
 const event = formatEvent(
