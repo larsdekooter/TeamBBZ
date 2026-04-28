@@ -42,7 +42,8 @@ import { useFocusEffect } from "expo-router";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
-  const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
+  // const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
+  const [swimmerSelected, setSwimmerSelected] = useState("");
   const [timesInputted, setTimesInputted] = useState(false);
   const colorScheme = useColorScheme();
   const [inputTimeModalVisible, setInputTimeModalVisible] = useState(false);
@@ -70,6 +71,7 @@ export default function Times() {
         setTimes(tms);
 
         setProfile(profile);
+        setSwimmerSelected(profile?.username ?? "");
         setTimesInputted(
           !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
         );
@@ -89,10 +91,11 @@ export default function Times() {
         />
         <TimesHeader
           profile={profile}
-          mainSwimmerSelected={mainSwimmerSelected}
           timesInputted={timesInputted}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          swimmerSelected={swimmerSelected}
+          setSwimmerSelected={setSwimmerSelected}
         />
         {activeTab === Tabs.Input && (
           <Fragment>
@@ -196,8 +199,9 @@ export default function Times() {
         )}
         {activeTab === Tabs.Pbs && (
           <TimeTable
-            times={times.filter((time) => time.swimmer === profile.username)}
-            mainSwimmerSelected={mainSwimmerSelected}
+            times={times.filter((time) => time.swimmer === swimmerSelected)}
+            swimmerSelected={swimmerSelected}
+            profile={profile}
           />
         )}
         {activeTab === Tabs.Speciality && (
@@ -215,15 +219,19 @@ export default function Times() {
               axes={["Vlinder", "Rug", "School", "Vrij", "Wissel"]}
               rings={4}
               fillColor={
-                mainSwimmerSelected
+                swimmerSelected === profile.username
                   ? colorScheme === "light"
                     ? Colors.TransparantLightOrange
                     : Colors.TransparantDarkOrange
                   : undefined
               }
-              strokeColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+              strokeColor={
+                swimmerSelected === profile.username
+                  ? Colors.Orange
+                  : Colors.Blue
+              }
               data={getSpecialityDataFromTimes(
-                times.filter((time) => time.swimmer === profile.username),
+                times.filter((time) => time.swimmer === swimmerSelected),
               )}
             />
             <Text style={[textColor(colorScheme), { fontStyle: "italic" }]}>
@@ -232,14 +240,14 @@ export default function Times() {
                 times
                   .filter(
                     (time) =>
-                      time.swimmer === profile.username && time.points > 0,
+                      time.swimmer === swimmerSelected && time.points > 0,
                   )
                   .filter(filterFastestFromArray)
                   .reduce((acc, current) => acc + current.points, 0) /
                 times
                   .filter(
                     (time) =>
-                      time.swimmer === profile.username && time.points > 0,
+                      time.swimmer === swimmerSelected && time.points > 0,
                   )
                   .filter(filterFastestFromArray).length
               ).toFixed(2)}
@@ -258,7 +266,7 @@ export default function Times() {
               data={times
                 .filter(
                   (time) =>
-                    time.swimmer === profile.username &&
+                    time.swimmer === swimmerSelected &&
                     time.event === selectedEvent.event &&
                     time.poolSize === selectedEvent.poolSize,
                 )
@@ -281,7 +289,7 @@ export default function Times() {
               labels={times
                 .filter(
                   (time) =>
-                    time.swimmer === profile.username &&
+                    time.swimmer === swimmerSelected &&
                     time.event === selectedEvent.event &&
                     time.poolSize === selectedEvent.poolSize,
                 )
@@ -301,13 +309,17 @@ export default function Times() {
                 )}
               size={{ width: Dimensions.get("window").width, height: 300 }}
               lineColor={
-                mainSwimmerSelected
+                swimmerSelected === profile.username
                   ? colorScheme === "light"
                     ? "rgba(162,94,23,0.5)"
                     : "rgba(162, 94, 23, 0.8)"
                   : undefined
               }
-              pointColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
+              pointColor={
+                swimmerSelected === profile.username
+                  ? Colors.Orange
+                  : Colors.Blue
+              }
               displayDataLabels={(labelBefore) =>
                 usePointGraph
                   ? labelBefore
@@ -315,7 +327,7 @@ export default function Times() {
                       getFastestFromArray(
                         times.filter(
                           (time) =>
-                            time.swimmer === profile.username &&
+                            time.swimmer === swimmerSelected &&
                             time.event === selectedEvent.event &&
                             time.poolSize === selectedEvent.poolSize,
                         ),
@@ -326,6 +338,7 @@ export default function Times() {
             <View style={{}} collapsable={false}>
               <Dropdown
                 data={times
+                  .filter(({ swimmer }) => swimmer === swimmerSelected)
                   .map(
                     ({ event, poolSize }) =>
                       `${event} ${poolSize === "25m" ? "SC" : "LC"}`,
@@ -457,10 +470,12 @@ export default function Times() {
 
 function TimeTable({
   times,
-  mainSwimmerSelected,
+  swimmerSelected,
+  profile,
 }: {
   times: Time[];
-  mainSwimmerSelected: boolean;
+  swimmerSelected: string;
+  profile: Profile;
 }) {
   const strokes = {
     vlinderslag: times.filter(({ event }) =>
@@ -491,10 +506,12 @@ function TimeTable({
         onClose={() => setOverviewShown(null)}
         height={300}
         containerStyle={{
-          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+          borderColor:
+            swimmerSelected === profile.username ? Colors.Orange : Colors.Blue,
         }}
         buttonStyle={{
-          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+          borderColor:
+            swimmerSelected === profile.username ? Colors.Orange : Colors.Blue,
         }}
       >
         <View
@@ -568,7 +585,10 @@ function TimeTable({
                   ? Colors.ModalDarkBackground
                   : Colors.ModalLightBackground,
               paddingVertical: 10,
-              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+              borderColor:
+                swimmerSelected === profile.username
+                  ? Colors.Orange
+                  : Colors.Blue,
             }}
           >
             <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
@@ -582,10 +602,12 @@ function TimeTable({
         onClose={() => setHistoryShown(null)}
         height={Dimensions.get("window").height * 0.9}
         containerStyle={{
-          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+          borderColor:
+            swimmerSelected === profile.username ? Colors.Orange : Colors.Blue,
         }}
         buttonStyle={{
-          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+          borderColor:
+            swimmerSelected === profile.username ? Colors.Orange : Colors.Blue,
         }}
       >
         <View style={{ flex: 1, justifyContent: "center" }}>
@@ -678,7 +700,10 @@ function TimeTable({
             title={stroke.charAt(0).toUpperCase() + stroke.slice(1)}
             bold
             containerStyle={{
-              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+              borderColor:
+                swimmerSelected === profile.username
+                  ? Colors.Orange
+                  : Colors.Blue,
             }}
             key={stroke}
           >
@@ -863,7 +888,16 @@ function InputTimesModal({
             )}
             style={{ width: "45%" }}
             textStyle={{ width: "82%" }}
-            onPress={(item) => setSelectedStroke(item)}
+            onPress={(item) =>
+              setSelectedStroke(
+                item as
+                  | "Vlinderslag"
+                  | "Rugslag"
+                  | "Schoolslag"
+                  | "Vrije Slag"
+                  | "Wisselslag",
+              )
+            }
             closeWhenSelected
           />
         </View>
@@ -1096,19 +1130,22 @@ enum Tabs {
 }
 
 function TimesHeader({
-  mainSwimmerSelected,
   profile,
   timesInputted,
   activeTab,
   setActiveTab,
+  setSwimmerSelected,
+  swimmerSelected,
 }: {
-  mainSwimmerSelected: boolean;
   profile: Profile;
   timesInputted: boolean;
   activeTab: Tabs;
   setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
+  swimmerSelected: string;
+  setSwimmerSelected: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const colorScheme = useColorScheme();
+  const mainSwimmerSelected = profile.username === swimmerSelected;
 
   useEffect(() => {
     setActiveTab(!timesInputted ? Tabs.Input : Tabs.Pbs);
@@ -1130,6 +1167,15 @@ function TimesHeader({
           paddingVertical: 5,
           flexDirection: "row",
           justifyContent: "center",
+        }}
+        onPress={async () => {
+          const secondSwimmer = (
+            await TeamBBZSQLite.db.getFirstAsync<Profile>(
+              "SELECT * FROM profile",
+            )
+          )?.secondSwimmer;
+          if (!secondSwimmer) return;
+          setSwimmerSelected(secondSwimmer);
         }}
       >
         <View

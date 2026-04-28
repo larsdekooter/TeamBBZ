@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/enums";
 import { textColor } from "@/constants/functions";
 import { FontAwesome } from "@expo/vector-icons";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -15,21 +15,21 @@ import {
   ViewStyle,
 } from "react-native";
 
-interface AbsoluteDropdownProps<T extends ReactNode> {
-  data: Array<T>;
+interface AbsoluteDropdownProps {
+  data: Array<string>;
   renderItem: ({
     item,
     index,
     array,
   }: {
-    item: T;
+    item: string;
     index: number;
-    array: T[];
+    array: string[];
   }) => ReactNode;
   shouldLoad?: boolean;
   onPress?:
     | null
-    | ((item: T, event: GestureResponderEvent) => void)
+    | ((item: string, event: GestureResponderEvent) => void)
     | undefined;
   style?: StyleProp<ViewStyle>;
   closeWhenSelected?: boolean;
@@ -38,7 +38,7 @@ interface AbsoluteDropdownProps<T extends ReactNode> {
   maxHeight?: number;
 }
 
-export default function AbsoluteDropdown<T extends ReactNode>({
+export default function AbsoluteDropdown({
   data,
   renderItem,
   shouldLoad,
@@ -48,17 +48,17 @@ export default function AbsoluteDropdown<T extends ReactNode>({
   textStyle,
   dropdownStyle,
   maxHeight = 1000,
-}: AbsoluteDropdownProps<T>) {
+}: AbsoluteDropdownProps) {
   const [isOpened, setOpened] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
   const heightAnim = useState(new Animated.Value(0))[0];
-  const [selected, setSelected] = useState(data[0]);
+  const [selected, setSelected] = useState<string | undefined>(data[0]);
 
-  // useEffect(() => {
-  //   if (data && data.length > 0) {
-  //     setSelected(data[0]);
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setSelected(data[0]);
+    }
+  }, [data]);
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],

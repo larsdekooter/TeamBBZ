@@ -67,6 +67,7 @@ export interface Profile {
   birthdate: string;
   club: string;
   country: string;
+  secondSwimmer?: string;
 }
 
 export interface Settings {

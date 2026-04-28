@@ -1246,3 +1246,7 @@ export function isFastestFromYear(time: Time, index: number, times: Time[]) {
 
   return yearTimes[0].time === time.time;
 }
+
+export function filterDuplicates<T>(value: T, index: number, array: T[]) {
+  return array.indexOf(value) === index;
+}
