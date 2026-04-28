@@ -63,7 +63,7 @@ function formatEvent(event) {
 for (const row of rows) {
   const timeObject = {
     event: formatEvent(row.children[0].children[0].innerText),
-    time: row.children[2].children[0].innerText,
+    time: row.children[2].children[0].innerText.replace(/m/g, ""),
     poolSize: row.children[1].innerText,
     points: parseInt(row.children[3].innerText),
     swimmer,
