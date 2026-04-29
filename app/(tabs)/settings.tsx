@@ -86,7 +86,7 @@ export default function Settings() {
           <View style={{ paddingHorizontal: 15 }}>
             <ButtonComponent
               onPress={async () => {
-                await TeamBBZSQLite.sql`DELETE FROM profile WHERE id = 0`;
+                await TeamBBZSQLite.sql`DELETE FROM profile WHERE id = 1`;
                 setProfile({ username: "", email: "", secondSwimmer: "" });
               }}
               style={{
@@ -117,7 +117,10 @@ export default function Settings() {
               2e zwemmer
             </Text>
             <AbsoluteDropdown
-              data={[profile.secondSwimmer, ...swimmers]
+              data={[
+                profile.secondSwimmer ? profile.secondSwimmer : undefined,
+                ...swimmers,
+              ]
                 .filter(filterDuplicates)
                 .filter((v) => v !== undefined)}
               renderItem={({ item }) => (
@@ -141,8 +144,11 @@ export default function Settings() {
               textStyle={{ width: "80%" }}
               closeWhenSelected
               onPress={async (item) => {
+                if (item.length === 0) return;
                 await TeamBBZSQLite.sql`UPDATE profile SET secondSwimmer = ${item} WHERE id = 1`;
+                setProfile({ ...profile, secondSwimmer: item } as Profile);
               }}
+              emptySelected={!profile.secondSwimmer}
             />
           </View>
           <View

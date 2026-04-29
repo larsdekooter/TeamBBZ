@@ -42,7 +42,6 @@ import { useFocusEffect } from "expo-router";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
-  // const [mainSwimmerSelected, setMainSwimmerSelected] = useState(true);
   const [swimmerSelected, setSwimmerSelected] = useState("");
   const [timesInputted, setTimesInputted] = useState(false);
   const colorScheme = useColorScheme();
@@ -64,14 +63,14 @@ export default function Times() {
   useFocusEffect(
     useCallback(() => {
       const asyncer = async () => {
-        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+        const pr = await TeamBBZSQLite.db.getFirstAsync<Profile>(
           "SELECT * FROM profile",
         );
         const tms = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
         setTimes(tms);
 
-        setProfile(profile);
-        setSwimmerSelected(profile?.username ?? "");
+        setProfile(pr);
+        setSwimmerSelected(pr?.username ?? "");
         setTimesInputted(
           !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
         );
@@ -451,12 +450,12 @@ export default function Times() {
         />
         <ButtonComponent
           onPress={async () => {
-            await TeamBBZSQLite.sql`INSERT INTO profile (username, email, birthdate, club, country) VALUES (${profileInput.username}, ${profileInput.email}, ${profileInput.birthdate}, ${profileInput.club}, ${profileInput.country})`;
-            setProfile(
-              await TeamBBZSQLite.db.getFirstAsync<Profile>(
-                "SELECT * FROM profile",
-              ),
+            await TeamBBZSQLite.sql`INSERT INTO profile (username, email, birthdate, club, country) VALUES (${profileInput.username.trim()}, ${profileInput.email.trim()}, ${profileInput.birthdate.trim()}, ${profileInput.club.trim()}, ${profileInput.country.trim()})`;
+            const pr = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+              "SELECT * FROM profile",
             );
+            setProfile(pr);
+            setSwimmerSelected(pr?.username ?? "");
           }}
           style={{ paddingVertical: 10, width: "95%" }}
         >

@@ -36,6 +36,7 @@ interface AbsoluteDropdownProps {
   textStyle?: StyleProp<TextStyle>;
   dropdownStyle?: StyleProp<ViewStyle>;
   maxHeight?: number;
+  emptySelected?: boolean;
 }
 
 export default function AbsoluteDropdown({
@@ -48,6 +49,7 @@ export default function AbsoluteDropdown({
   textStyle,
   dropdownStyle,
   maxHeight = 1000,
+  emptySelected,
 }: AbsoluteDropdownProps) {
   const [isOpened, setOpened] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -117,7 +119,7 @@ export default function AbsoluteDropdown({
             textStyle,
           ]}
         >
-          {selected}
+          {emptySelected ? "" : selected}
         </Text>
         {shouldLoad && (
           <ActivityIndicator color={Colors.Orange} size={"small"} />
