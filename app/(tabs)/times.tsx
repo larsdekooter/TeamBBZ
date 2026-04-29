@@ -1175,45 +1175,70 @@ function TimesHeader({
             )
           )?.secondSwimmer;
           if (!secondSwimmer) return;
-          setSwimmerSelected(secondSwimmer);
+          setSwimmerSelected(
+            mainSwimmerSelected ? secondSwimmer : profile.username,
+          );
         }}
       >
-        <View
-          style={{
-            flexDirection: "column",
-            flex: 1,
-            width: "90%",
-            marginVertical: 10,
-            borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
-            borderWidth: 1,
-            borderRadius: 6,
-            paddingHorizontal: 20,
-            paddingVertical: 5,
-          }}
-        >
+        {mainSwimmerSelected ? (
           <View
             style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
+              flexDirection: "column",
+              flex: 1,
+              width: "90%",
+              marginVertical: 10,
+              borderColor: Colors.Orange,
+              borderWidth: 1,
+              borderRadius: 6,
+              paddingHorizontal: 20,
+              paddingVertical: 5,
             }}
           >
-            <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
-              {profile.username}
-            </Text>
-            <Text style={[textColor(colorScheme)]}>{profile.birthdate}</Text>
+            <View
+              style={{
+                justifyContent: "space-between",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+                {profile.username}
+              </Text>
+              <Text style={[textColor(colorScheme)]}>{profile.birthdate}</Text>
+            </View>
+            <View
+              style={{
+                justifyContent: "space-between",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
+                {profile.country}
+              </Text>
+              <Text style={[textColor(colorScheme)]}>{profile.club}</Text>
+            </View>
           </View>
-          <View
-            style={{
-              justifyContent: "space-between",
-              flexDirection: "row",
-            }}
+        ) : (
+          <Text
+            style={[
+              {
+                flexDirection: "column",
+                flex: 1,
+                width: "90%",
+                marginVertical: 10,
+                borderColor: Colors.Blue,
+                borderWidth: 1,
+                borderRadius: 6,
+                paddingHorizontal: 20,
+                paddingVertical: 16,
+                textAlign: "center",
+                fontWeight: "bold",
+              },
+              textColor(colorScheme),
+            ]}
           >
-            <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
-              {profile.country}
-            </Text>
-            <Text style={[textColor(colorScheme)]}>{profile.club}</Text>
-          </View>
-        </View>
+            {swimmerSelected}
+          </Text>
+        )}
       </Pressable>
 
       <View
