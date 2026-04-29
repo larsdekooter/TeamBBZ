@@ -29,31 +29,27 @@ import Dropdown from "@/components/Dropdown";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [swimmers, setSwimmers] = useState<string[]>([]);
+  const [profile, setProfile] = useState<
+    Profile | { username: ""; email: ""; secondSwimmer: "" }
+  >({ username: "", email: "", secondSwimmer: "" });
 
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {
-        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+        const profileR = await TeamBBZSQLite.db.getFirstAsync<Profile>(
           "SELECT * FROM profile",
         );
-        if (profile?.username && profile.username !== username) {
-          setUsername(profile.username);
-        }
-        if (profile?.email && profile.email !== email) {
-          setEmail(profile.email);
-        }
+        if (profileR) setProfile(profileR);
         const times = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
         const sws = times.map((time) => time.swimmer).filter(filterDuplicates);
-        setSwimmers(sws.filter((s) => s !== profile?.username));
+        setSwimmers(sws.filter((s) => s !== profileR?.username));
       };
       getUsername();
     }, []),
   );
 
-  if (username.length > 0) {
+  if (profile.username.length > 0) {
     return (
       <Page>
         <View
@@ -74,7 +70,7 @@ export default function Settings() {
             }}
           >
             <Text style={textColor(colorScheme)}>Naam</Text>
-            <Text style={textColor(colorScheme)}>{username}</Text>
+            <Text style={textColor(colorScheme)}>{profile.username}</Text>
           </View>
           <View
             style={{
@@ -85,14 +81,13 @@ export default function Settings() {
             }}
           >
             <Text style={textColor(colorScheme)}>E-mail</Text>
-            <Text style={textColor(colorScheme)}>{email}</Text>
+            <Text style={textColor(colorScheme)}>{profile.email}</Text>
           </View>
           <View style={{ paddingHorizontal: 15 }}>
             <ButtonComponent
               onPress={async () => {
                 await TeamBBZSQLite.sql`DELETE FROM profile WHERE id = 0`;
-                setUsername("");
-                setEmail("");
+                setProfile({ username: "", email: "", secondSwimmer: "" });
               }}
               style={{
                 paddingHorizontal: 15,
@@ -122,7 +117,9 @@ export default function Settings() {
               2e zwemmer
             </Text>
             <AbsoluteDropdown
-              data={swimmers}
+              data={[profile.secondSwimmer, ...swimmers]
+                .filter(filterDuplicates)
+                .filter((v) => v !== undefined)}
               renderItem={({ item }) => (
                 <View
                   style={{
