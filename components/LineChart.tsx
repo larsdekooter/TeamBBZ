@@ -23,7 +23,7 @@ const LineChart: React.FC<LineChartProps> = ({
 }) => {
   const colorScheme = useColorScheme();
   const { width, height } = size;
-  const padding = { top: 40, right: 40, bottom: 40, left: 40 };
+  const padding = { top: 40, right: 20, bottom: 40, left: 45 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
