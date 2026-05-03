@@ -7,6 +7,7 @@ import PostComponent from "@/components/Post";
 import CheckBox from "@/components/Checkbox";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
+import Chip from "@/components/Chip";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -42,7 +43,7 @@ export default function Home() {
       >
         Berichten
       </Text>
-      <View
+      {/* <View
         style={{
           flexDirection: "row",
           top: 40,
@@ -54,7 +55,13 @@ export default function Home() {
       >
         <Text style={[textColor(colorScheme)]}>Compact</Text>
         <CheckBox checked={compact} onPress={() => setCompact(!compact)} />
-      </View>
+      </View> */}
+      <Chip
+        label="Compact"
+        style={{ top: 40 }}
+        state={compact}
+        onPress={() => setCompact(!compact)}
+      />
 
       <FlatList
         data={posts.length > 1 ? posts : new Array(10)}

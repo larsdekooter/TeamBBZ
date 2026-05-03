@@ -45,7 +45,7 @@ export enum Colors {
   ModalLightBackground = "#f3f5f6",
   CheckboxGreen = "#b7f1b9",
   TransparantDarkOrange = "rgba(162, 94, 23, 0.5)",
-  TransparantLightOrange = "rgba(162, 94, 23, 0.6)",
+  TransparantLightOrange = "rgba(162, 94, 23, 0.35)",
   DarkmodeRed = "#d76e72",
   LightmodeRed = "#dd4345",
   SelectedBackground = "#133914",

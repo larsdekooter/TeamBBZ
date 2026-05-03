@@ -39,6 +39,7 @@ import LineChart from "@/components/LineChart";
 import { DateRegexes } from "@/constants/regex";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
 import { useFocusEffect } from "expo-router";
+import Chip from "@/components/Chip";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
@@ -381,23 +382,12 @@ export default function Times() {
                 maxHeight={200}
               />
             </View>
-            <View
-              style={{
-                paddingTop: 10,
-                flexDirection: "row",
-                width: "100%",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-              }}
-            >
-              <Text style={[textColor(colorScheme)]}>
-                Gebruik World Aquatics punten
-              </Text>
-              <CheckBox
-                onPress={() => setUsePointGraph(!usePointGraph)}
-                checked={usePointGraph}
-              />
-            </View>
+            <Chip
+              label="Gebruik World Aquatics punten"
+              state={usePointGraph}
+              onPress={() => setUsePointGraph(!usePointGraph)}
+              style={{ marginTop: 20 }}
+            />
             <View style={{ height: 500 }} />
           </ScrollView>
         )}
