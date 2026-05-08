@@ -368,7 +368,7 @@ export default function Times() {
                         backgroundColor:
                           colorScheme === "dark"
                             ? Colors.DarkBackground
-                            : "#fff",
+                            : Colors.LightBackground,
                       }}
                     >
                       <Text style={[textColor(colorScheme)]}>{item}</Text>
@@ -377,7 +377,9 @@ export default function Times() {
                 }}
                 dropdownStyle={{
                   backgroundColor:
-                    colorScheme === "dark" ? Colors.DarkBackground : "#fff",
+                    colorScheme === "dark"
+                      ? Colors.DarkBackground
+                      : Colors.LightBackground,
                 }}
                 maxHeight={200}
               />
@@ -1143,7 +1145,9 @@ function TimesHeader({
     <View
       style={{
         backgroundColor:
-          colorScheme === "light" ? "#fff" : Colors.DarkBackground,
+          colorScheme === "light"
+            ? Colors.LightBackground
+            : Colors.DarkBackground,
         zIndex: 2,
         height: 130,
         position: "absolute",

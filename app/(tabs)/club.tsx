@@ -678,7 +678,7 @@ function SchemaComponent({
             <FontAwesome
               name="chevron-down"
               size={15}
-              color={colorScheme === "dark" ? "#fff" : "#000"}
+              color={textColor(colorScheme).color}
             />
           </Animated.View>
         </View>
@@ -832,7 +832,7 @@ function WedstrijdenComponent({
                         )
                           ? colorScheme === "dark"
                             ? Colors.ModalDarkBackground
-                            : "#fff"
+                            : Colors.ModalLightBackground
                           : Colors.CheckboxGreen,
                         borderColor: "#fff",
                         borderWidth: 1,

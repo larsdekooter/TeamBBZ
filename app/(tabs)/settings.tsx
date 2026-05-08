@@ -139,7 +139,9 @@ export default function Settings() {
               style={{ width: "60%" }}
               dropdownStyle={{
                 backgroundColor:
-                  colorScheme === "light" ? "#fff" : Colors.DarkBackground,
+                  colorScheme === "light"
+                    ? Colors.LightBackground
+                    : Colors.DarkBackground,
               }}
               textStyle={{ width: "80%" }}
               closeWhenSelected

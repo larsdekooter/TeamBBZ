@@ -289,7 +289,9 @@ export default function MeetsTable({
           <Pressable
             style={{
               backgroundColor:
-                colorScheme === "light" ? "#FFF" : Colors.DarkBackground,
+                colorScheme === "light"
+                  ? Colors.LightBackground
+                  : Colors.DarkBackground,
               borderWidth: 1,
               borderColor: "grey",
               display: "flex",

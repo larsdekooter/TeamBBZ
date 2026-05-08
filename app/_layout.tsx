@@ -9,7 +9,9 @@ export default function Layout() {
       screenOptions={{
         contentStyle: {
           backgroundColor:
-            colorScheme === "dark" ? Colors.DarkBackground : "#FFF",
+            colorScheme === "dark"
+              ? Colors.DarkBackground
+              : Colors.LightBackground,
         },
       }}
     >

@@ -113,7 +113,7 @@ export default function SectionComponent({
           <FontAwesome
             name="chevron-down"
             size={15}
-            color={colorScheme === "dark" ? "#fff" : "#000"}
+            color={textColor(colorScheme).color}
           />
         </Animated.View>
       </View>

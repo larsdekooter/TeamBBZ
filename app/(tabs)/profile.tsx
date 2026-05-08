@@ -84,7 +84,9 @@ function ProfileHeader({
     <View
       style={{
         backgroundColor:
-          colorScheme === "light" ? "#fff" : Colors.DarkBackground,
+          colorScheme === "light"
+            ? Colors.ModalLightBackground
+            : Colors.DarkBackground,
         zIndex: 2,
       }}
     >

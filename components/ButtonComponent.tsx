@@ -23,7 +23,9 @@ export default function ButtonComponent({
       style={[
         {
           backgroundColor:
-            colorScheme === "light" ? "#fff" : Colors.DarkBackground,
+            colorScheme === "light"
+              ? Colors.LightBackground
+              : Colors.DarkBackground,
           borderRadius: 8,
           display: "flex",
           alignItems: "center",

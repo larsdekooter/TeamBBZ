@@ -40,6 +40,7 @@ export enum Strokes {
 export enum Colors {
   Orange = "#ef8b22",
   DarkBackground = "#181c20",
+  LightBackground = "#f3f3f3",
   ModalDarkBackground = "#2a3137",
   SelectedGreen = "#133914",
   ModalLightBackground = "#f3f5f6",

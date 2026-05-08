@@ -1,3 +1,4 @@
+import { textColor } from "@/constants/functions";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import {
   Pressable,
@@ -35,7 +36,7 @@ export default function SocialLink({
         <FontAwesome6
           name={icon as any}
           size={size}
-          color={colorScheme === "light" ? "#000" : "#fff"}
+          color={textColor(colorScheme).color}
         />
       </Pressable>
     );
@@ -50,7 +51,7 @@ export default function SocialLink({
       <FontAwesome
         name={icon as any}
         size={size}
-        color={colorScheme === "light" ? "#000" : "#fff"}
+        color={textColor(colorScheme).color}
       />
     </Pressable>
   );

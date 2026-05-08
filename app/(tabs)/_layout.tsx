@@ -17,12 +17,16 @@ export default function TabLayout() {
         tabBarLabelStyle: { height: 0 },
         tabBarStyle: {
           backgroundColor:
-            colorScheme == "dark" ? Colors.DarkBackground : "#FFF",
+            colorScheme == "dark"
+              ? Colors.DarkBackground
+              : Colors.LightBackground,
           height: 60,
         },
         sceneStyle: {
           backgroundColor:
-            colorScheme === "dark" ? Colors.DarkBackground : "#FFF",
+            colorScheme === "dark"
+              ? Colors.DarkBackground
+              : Colors.LightBackground,
         },
       }}
     >
