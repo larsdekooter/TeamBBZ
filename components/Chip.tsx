@@ -14,6 +14,7 @@ import Animated, {
   AnimatedStyle,
   CurvedTransition,
   StretchInX,
+  StretchOutX,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
@@ -83,7 +84,7 @@ export default function Chip({ label, onPress, state, style }: ChipProps) {
             backgroundColor: state
               ? colorScheme === "dark"
                 ? Colors.TransparantDarkOrange
-                : Colors.TransparantLightOrange
+                : Colors.Orange
               : undefined,
           },
           style,
@@ -100,6 +101,7 @@ export default function Chip({ label, onPress, state, style }: ChipProps) {
             name="check"
             size={iconWidth}
             entering={StretchInX.duration(100)}
+            exiting={StretchOutX.duration(100)}
             style={{ paddingLeft: iconPadding }}
             color={textColor(colorScheme).color}
           />
