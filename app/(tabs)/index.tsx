@@ -4,7 +4,6 @@ import { getPosts, textColor } from "../../constants/functions";
 import { useEffect, useState } from "react";
 import { Post } from "@/constants/types";
 import PostComponent from "@/components/Post";
-import CheckBox from "@/components/Checkbox";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import Chip from "@/components/Chip";

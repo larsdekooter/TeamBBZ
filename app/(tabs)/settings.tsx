@@ -1,15 +1,11 @@
 import {
   Dimensions,
-  Modal,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   useColorScheme,
   View,
   Appearance,
-  Touchable,
-  TouchableWithoutFeedback,
 } from "react-native";
 import Page from "../../components/Page";
 import { filterDuplicates, textColor } from "@/constants/functions";
@@ -19,13 +15,9 @@ import { useFocusEffect } from "@react-navigation/native";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
-import SwipeModal from "@/components/SwipeModal";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Colors, Profile, Time } from "@/constants/enums";
-import * as SQLite from "expo-sqlite";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
-import Dropdown from "@/components/Dropdown";
 
 export default function Settings() {
   const colorScheme = useColorScheme();

@@ -5,7 +5,6 @@ import {
   fetchSwimrankingSwimmer,
   filterSwimmers,
   getAgeGroupsForClubrecord,
-  getAthleteData,
   getClubRecords,
   getCompetitieStand,
   getMeetCalendar,
@@ -44,7 +43,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import { Colors, Profile } from "@/constants/enums";
 import { useFocusEffect } from "expo-router";
-import * as SQLite from "expo-sqlite";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 export default function Club() {

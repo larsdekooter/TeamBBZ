@@ -2,24 +2,21 @@ import ButtonComponent from "@/components/ButtonComponent";
 import CheckBox from "@/components/Checkbox";
 import Dropdown from "@/components/Dropdown";
 import Page from "@/components/Page";
-import PbTable from "@/components/PbTable";
 import SectionComponent from "@/components/SectionComponent";
 import SwipeModal from "@/components/SwipeModal";
 import TextInputComponent from "@/components/TextInputComponent";
 import { Colors, Profile, SwimrakingEventId, Time } from "@/constants/enums";
 import {
-  calculateAveragePoints,
   convertTimeNumberToString,
   convertTimestringToNumber,
   filterFastestFromArray,
-  formatDate,
   getFastestFromArray,
   getSpecialityDataFromTimes,
   isFastestFromYear,
   textColor,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
-import { Entypo, MaterialIcons, Octicons } from "@expo/vector-icons";
+import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import { SQLiteStatement } from "expo-sqlite";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {

@@ -35,7 +35,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Entypo, Octicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
 import SkeletonLoader from "@/components/SkeletonLoader";
-import * as SQLite from "expo-sqlite";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 
 const POINTS_FOR_25M = false;
