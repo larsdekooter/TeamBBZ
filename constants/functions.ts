@@ -1297,6 +1297,5 @@ export function yearProgress(times: Time[]) {
     if (!isNaN(averageTime)) yearTimes[year] = averageTime;
   }
 
-  console.log(yearPoints);
   return { yearPoints, yearTimes };
 }
