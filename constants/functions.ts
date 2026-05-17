@@ -1251,3 +1251,52 @@ export function isFastestFromYear(time: Time, index: number, times: Time[]) {
 export function filterDuplicates<T>(value: T, index: number, array: T[]) {
   return array.indexOf(value) === index;
 }
+
+export function mapTimesPerYear(times: Time[]) {
+  return times.reduce(
+    (acc, time) => {
+      const year = parseInt(
+        time.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+      );
+      if (!(year > 0)) return acc;
+
+      if (!acc[year]) acc[year] = [];
+      acc[year].push(time);
+      return acc;
+    },
+    {} as Record<number, Time[]>,
+  );
+}
+
+export function yearProgress(times: Time[]) {
+  const years = mapTimesPerYear(times);
+  const yearPoints = {} as Record<string, number>;
+  const yearTimes = {} as Record<string, number>;
+
+  for (const year of Object.keys(years)) {
+    const timesOfYear = years[parseInt(year)];
+    const rankedTimes = timesOfYear.filter((time) => time.points > 0);
+
+    const cumulativePoints = rankedTimes.reduce(
+      (acc, time) => acc + time.points,
+      0,
+    );
+    const averagePoints = cumulativePoints / rankedTimes.length;
+
+    const cumulativeTimes = rankedTimes.reduce(
+      (acc, time) =>
+        acc +
+        convertTimestringToNumber(time.time) /
+          (parseInt(time.event.match(/\d+/g)?.[0] ?? "1") / 100),
+      0,
+    );
+    const averageTime = cumulativeTimes / rankedTimes.length;
+
+    if (!isNaN(averagePoints)) yearPoints[year] = averagePoints;
+
+    if (!isNaN(averageTime)) yearTimes[year] = averageTime;
+  }
+
+  console.log(yearPoints);
+  return { yearPoints, yearTimes };
+}

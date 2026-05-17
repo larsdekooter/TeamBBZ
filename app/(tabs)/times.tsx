@@ -14,6 +14,7 @@ import {
   getSpecialityDataFromTimes,
   isFastestFromYear,
   textColor,
+  yearProgress,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
@@ -57,6 +58,7 @@ export default function Times() {
     event: "25m Vrije Slag",
     poolSize: "25m",
   });
+  const [useAverageTimeGraph, setUseAverageTimeGraph] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -331,6 +333,7 @@ export default function Times() {
                       ).time - convertTimestringToNumber(labelBefore),
                     )
               }
+              yAxisLabel={usePointGraph ? "Punten" : "Tijd"}
             />
             <View style={{}} collapsable={false}>
               <Dropdown
@@ -386,6 +389,76 @@ export default function Times() {
               state={usePointGraph}
               onPress={() => setUsePointGraph(!usePointGraph)}
               style={{ marginTop: 20 }}
+            />
+            <View
+              style={{
+                width: "90%",
+                height: 5,
+                backgroundColor: "grey",
+                borderRadius: 10,
+                marginTop: 10,
+                marginBottom: -10,
+              }}
+            />
+            <LineChart
+              data={
+                useAverageTimeGraph
+                  ? Object.values(
+                      yearProgress(
+                        times.filter(
+                          (time) => time.swimmer === swimmerSelected,
+                        ),
+                      ).yearTimes,
+                    )
+                  : Object.values(
+                      yearProgress(
+                        times.filter(
+                          (time) => time.swimmer === swimmerSelected,
+                        ),
+                      ).yearPoints,
+                    )
+              }
+              labels={
+                useAverageTimeGraph
+                  ? Object.keys(
+                      yearProgress(
+                        times.filter(
+                          (time) => time.swimmer === swimmerSelected,
+                        ),
+                      ).yearTimes,
+                    )
+                  : Object.keys(
+                      yearProgress(
+                        times.filter(
+                          (time) => time.swimmer === swimmerSelected,
+                        ),
+                      ).yearPoints,
+                    )
+              }
+              size={{ width: Dimensions.get("window").width, height: 300 }}
+              lineColor={
+                swimmerSelected === profile.username
+                  ? colorScheme === "light"
+                    ? "rgba(162,94,23,0.5)"
+                    : "rgba(162, 94, 23, 0.8)"
+                  : undefined
+              }
+              pointColor={
+                swimmerSelected === profile.username
+                  ? Colors.Orange
+                  : Colors.Blue
+              }
+              displayDataLabels={(labelBefore) =>
+                useAverageTimeGraph
+                  ? convertTimeNumberToString(labelBefore)
+                  : labelBefore
+              }
+              yAxisLabel={useAverageTimeGraph ? "Tijd" : "Punten"}
+            />
+            <Chip
+              label="Gebruik gemiddelde tijd / 100m"
+              onPress={() => setUseAverageTimeGraph(!useAverageTimeGraph)}
+              state={useAverageTimeGraph}
             />
             <View style={{ height: 500 }} />
           </ScrollView>
