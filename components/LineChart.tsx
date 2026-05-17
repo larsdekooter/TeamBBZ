@@ -10,6 +10,7 @@ interface LineChartProps {
   pointColor?: string;
   lineColor?: string;
   displayDataLabels?: (labelBefore: string) => string;
+  yAxisLabel: string;
 }
 
 const LineChart: React.FC<LineChartProps> = ({
@@ -20,10 +21,11 @@ const LineChart: React.FC<LineChartProps> = ({
   pointColor = "rgb(0, 150, 200)",
   lineColor = "rgb(0, 150, 200)",
   displayDataLabels = (labelBefore) => labelBefore,
+  yAxisLabel,
 }) => {
   const colorScheme = useColorScheme();
   const { width, height } = size;
-  const padding = { top: 40, right: 20, bottom: 40, left: 45 };
+  const padding = { top: 50, right: 20, bottom: 40, left: 45 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
@@ -140,6 +142,19 @@ const LineChart: React.FC<LineChartProps> = ({
   return (
     <View>
       <Svg width={width} height={height}>
+        {yAxisLabel && (
+          <Text
+            x={yAxisLabel.length * 5} // Horizontal position near the left edge
+            y={40} // Vertical center
+            fill={colorScheme === "light" ? "black" : "white"}
+            fontSize="15"
+            // fontWeight="bold"
+            textAnchor="middle"
+            // transform={`rotate(-90, 15, ${height / 2})`}
+          >
+            {yAxisLabel}
+          </Text>
+        )}
         {renderYAxisTicks()}
         <Line
           x1={padding.left}
