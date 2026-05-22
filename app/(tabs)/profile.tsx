@@ -20,7 +20,6 @@ import {
   textColor,
 } from "../../constants/functions";
 import ButtonComponent from "@/components/ButtonComponent";
-import { useFocusEffect } from "@react-navigation/native";
 import { Fragment, useCallback, useState } from "react";
 import { AthleteData } from "@/constants/types";
 import PbTable from "@/components/PbTable";
@@ -36,6 +35,7 @@ import { Entypo, Octicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/enums";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
+import { useFocusEffect } from "expo-router";
 
 const POINTS_FOR_25M = false;
 
@@ -567,6 +567,11 @@ export default function ProfilePage() {
                         data.times[0] - convertTimestringToNumber(labelBefore),
                       )
                     : labelBefore
+                }
+                yAxisLabel={
+                  usePointGraph
+                    ? "Punten"
+                    : "Verbetering t.o.v. eerste tijd (s)"
                 }
               />
               <Dropdown

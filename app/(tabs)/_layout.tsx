@@ -11,6 +11,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.Orange,
+        tabBarInactiveTintColor: "grey",
         animation: "shift",
         tabBarShowLabel: false,
         tabBarLabelStyle: { height: 0 },

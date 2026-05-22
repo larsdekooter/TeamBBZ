@@ -11,7 +11,7 @@ import Page from "../../components/Page";
 import { filterDuplicates, textColor } from "@/constants/functions";
 import { useState, useCallback } from "react";
 import ButtonComponent from "@/components/ButtonComponent";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
@@ -29,13 +29,13 @@ export default function Settings() {
   useFocusEffect(
     useCallback(() => {
       const getUsername = async () => {
-        const profileR = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+        const profileDB = await TeamBBZSQLite.db.getFirstAsync<Profile>(
           "SELECT * FROM profile",
         );
-        if (profileR) setProfile(profileR);
+        if (profileDB) setProfile(profileDB);
         const times = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
         const sws = times.map((time) => time.swimmer).filter(filterDuplicates);
-        setSwimmers(sws.filter((s) => s !== profileR?.username));
+        setSwimmers(sws.filter((s) => s !== profileDB?.username));
       };
       getUsername();
     }, []),
