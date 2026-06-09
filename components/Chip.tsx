@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/enums";
 import { textColor } from "@/constants/functions";
-import { Feather } from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
 import { Fragment } from "react";
 import {
   Pressable,

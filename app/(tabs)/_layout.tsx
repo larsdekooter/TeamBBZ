@@ -1,4 +1,5 @@
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import { Tabs } from "expo-router";
 import { Image, StyleSheet, useColorScheme, View } from "react-native";
 import { Colors } from "@/constants/enums";
@@ -55,6 +56,7 @@ export default function TabLayout() {
               name="swimmer"
               color={color}
               style={[styles.icon, { transform: [{ rotateY: "180deg" }] }]}
+              iconStyle="solid"
             />
           ),
           headerShown: false,
@@ -71,6 +73,7 @@ export default function TabLayout() {
               name="swimmer"
               color={color}
               style={[styles.icon, { transform: [{ rotateY: "180deg" }] }]}
+              iconStyle="solid"
             />
           ),
           headerShown: false,

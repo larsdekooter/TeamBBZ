@@ -1,5 +1,6 @@
 import { textColor } from "@/constants/functions";
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import {
   Pressable,
   Linking,

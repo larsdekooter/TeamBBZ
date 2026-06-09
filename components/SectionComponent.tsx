@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { ReactNode, useState } from "react";
 import { textColor } from "@/constants/functions";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import SkeletonLoader from "./SkeletonLoader";
 import { Colors } from "@/constants/enums";
 

@@ -16,7 +16,13 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.2",
+    "@react-native-vector-icons/entypo": "^13.1.2",
+    "@react-native-vector-icons/feather": "^13.1.2",
+    "@react-native-vector-icons/fontawesome": "^13.1.2",
+    "@react-native-vector-icons/fontawesome5": "^13.1.2",
+    "@react-native-vector-icons/fontawesome6": "^13.1.2",
+    "@react-native-vector-icons/material-icons": "^13.1.2",
+    "@react-native-vector-icons/octicons": "^21.1.2",
     "expo": "~56.0.9",
     "expo-application": "~56.0.3",
     "expo-blur": "~56.0.3",

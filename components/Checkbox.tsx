@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/enums";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import {
   GestureResponderEvent,
   Pressable,

@@ -10,7 +10,8 @@ import {
   useColorScheme,
   View,
 } from "react-native";
-import { FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import SwipeModal from "./SwipeModal";
 import { Colors } from "@/constants/enums";
 
@@ -163,6 +164,7 @@ export default function MeetsTable({
                                   name={name}
                                   color={Colors.Gold}
                                   size={size}
+                                  iconStyle="solid"
                                 />
                               );
                             case "2.":
@@ -171,6 +173,7 @@ export default function MeetsTable({
                                   name={name}
                                   color={Colors.Silver}
                                   size={size}
+                                  iconStyle="solid"
                                 />
                               );
                             case "3.":
@@ -179,6 +182,7 @@ export default function MeetsTable({
                                   name={name}
                                   color={Colors.Bronze}
                                   size={size}
+                                  iconStyle="solid"
                                 />
                               );
                             default:

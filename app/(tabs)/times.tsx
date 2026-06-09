@@ -17,7 +17,8 @@ import {
   yearProgress,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
-import { MaterialIcons, Octicons } from "@expo/vector-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import Octicons from "@react-native-vector-icons/octicons";
 import { SQLiteStatement } from "expo-sqlite";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {

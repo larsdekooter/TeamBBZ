@@ -23,7 +23,9 @@ import {
   Result,
   Wedstrijd,
 } from "@/constants/types";
-import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
@@ -264,6 +266,7 @@ function ResultsComponent({
                                 name={"medal"}
                                 color={Colors.Gold}
                                 size={15}
+                                iconStyle="solid"
                               />
                             </Text>
                           );
@@ -274,6 +277,7 @@ function ResultsComponent({
                                 name={"medal"}
                                 color={Colors.Silver}
                                 size={15}
+                                iconStyle="solid"
                               />
                             </Text>
                           );
@@ -284,6 +288,7 @@ function ResultsComponent({
                                 name={"medal"}
                                 color={Colors.Bronze}
                                 size={15}
+                                iconStyle="solid"
                               />
                             </Text>
                           );

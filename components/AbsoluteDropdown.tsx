@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/enums";
 import { textColor } from "@/constants/functions";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { ReactNode, useEffect, useState } from "react";
 import {
   ActivityIndicator,
