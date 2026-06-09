@@ -28,6 +28,7 @@ export default function SectionComponent({
   titleStyle,
   numberOfTitleLines,
   height = 350,
+  disabled,
 }: {
   children: React.ReactNode;
   title: string | ReactNode;
@@ -40,6 +41,7 @@ export default function SectionComponent({
   titleStyle?: StyleProp<TextStyle>;
   numberOfTitleLines?: number;
   height?: number;
+  disabled?: boolean;
 }) {
   const [isExpanded, setExpanded] = useState(false);
   const rotateAnim = useState(new Animated.Value(0))[0];
@@ -52,6 +54,7 @@ export default function SectionComponent({
   });
 
   const toggleExpand = () => {
+    if (disabled) return;
     setExpanded(!isExpanded);
 
     Animated.parallel([
@@ -109,13 +112,15 @@ export default function SectionComponent({
         >
           {title}
         </Text>
-        <Animated.View style={{ transform: [{ rotate }] }}>
-          <FontAwesome
-            name="chevron-down"
-            size={15}
-            color={textColor(colorScheme).color}
-          />
-        </Animated.View>
+        {!disabled && (
+          <Animated.View style={{ transform: [{ rotate }] }}>
+            <FontAwesome
+              name="chevron-down"
+              size={15}
+              color={textColor(colorScheme).color}
+            />
+          </Animated.View>
+        )}
       </View>
       <Animated.View
         style={[

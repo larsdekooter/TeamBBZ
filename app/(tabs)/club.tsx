@@ -910,6 +910,9 @@ function WedstrijdenComponent({
                         ? "underline"
                         : undefined,
                     }}
+                    disabled={
+                      filterSwimmers(selectedWedstrijd, item.no).length === 0
+                    }
                   >
                     <FlatList
                       style={{ width: "100%" }}
