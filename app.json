@@ -20,7 +20,7 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": false,
+          "autoVerify": true,
           "data": [
             {
               "scheme": "content",
