@@ -16,7 +16,23 @@
         "foregroundImage": "./assets/images/icon-light.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ldekooter.TeamBBZ"
+      "package": "com.ldekooter.TeamBBZ",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [
+            {
+              "scheme": "content",
+              "mimeType": "application/json"
+            },
+            {
+              "scheme": "file",
+              "mimeType": "application/json"
+            }
+          ]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

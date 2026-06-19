@@ -1,12 +1,26 @@
-import { Dimensions, FlatList, Text, useColorScheme, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  Linking,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
 import Page from "../../components/Page";
-import { getPosts, textColor } from "../../constants/functions";
+import {
+  getPosts,
+  handleFileUpload,
+  handleTimeUpload,
+  textColor,
+} from "../../constants/functions";
 import { useEffect, useState } from "react";
 import { Post } from "@/constants/types";
 import PostComponent from "@/components/Post";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import Chip from "@/components/Chip";
+import { File } from "expo-file-system";
+import { Time } from "@/constants/enums";
 
 export default function Home() {
   const colorScheme = useColorScheme();
@@ -28,6 +42,15 @@ export default function Home() {
     if (posts.length < 1) {
       s();
     }
+    Linking.getInitialURL().then(async (url) => {
+      if (url) {
+        const decodedUrl = decodeURIComponent(url);
+        const fileText = handleFileUpload(decodedUrl);
+        if (!fileText) return; //TODO: Show error.
+        const ts = await handleTimeUpload(fileText);
+        //TODO: Show confirmation to user.
+      }
+    });
   }, []);
 
   return (
