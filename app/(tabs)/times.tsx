@@ -127,7 +127,7 @@ export default function Times() {
                   if (result.canceled) return setUploadLoading(false);
                   const uri = result.assets[0].uri;
 
-                  const fileText = handleFileUpload(uri);
+                  const fileText = handleFileUpload(uri, result.assets[0].name);
                   if (!fileText) return; //TODO: Show error.
                   const ts = await handleTimeUpload(fileText);
                   setTimes(ts);

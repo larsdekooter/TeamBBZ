@@ -1341,11 +1341,13 @@ export async function handleTimeUpload(fileText: string) {
   }
 }
 
-export function handleFileUpload(url: string) {
+export function handleFileUpload(url: string, fileName?: string) {
   const file = new File(url);
+  console.log(file);
   if (
-    !file.name.match(/Persoonlijke_Records([\s\S]*?).json/gm)?.[0] &&
-    !file.name.match(/Geschiedenis_([\s\S]*?).json/gm)?.[0]
+    fileName &&
+    !fileName.match(/Persoonlijke_Records([\s\S]*?).json/gm)?.[0] &&
+    !fileName.match(/Geschiedenis_([\s\S]*?).json/gm)?.[0]
   )
     return console.log("SOME TING WONG"); //TODO: Show the error to the user
   const fileText = file.textSync();

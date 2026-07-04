@@ -8,7 +8,7 @@ export default function Socials() {
     <View style={{ flexDirection: "row" }}>
       <SocialLink
         icon="link"
-        size={28}
+        size={26}
         url="https://www.b-b-z.nl/"
         style={{
           backgroundColor:
@@ -23,6 +23,8 @@ export default function Socials() {
           justifyContent: "center",
           alignItems: "center",
         }}
+        version={6}
+        brand={false}
       />
       <SocialLink
         icon="instagram"
@@ -58,6 +60,7 @@ export default function Socials() {
           alignItems: "center",
         }}
         version={6}
+        brand
       />
       <SocialLink
         icon="facebook"
@@ -76,6 +79,7 @@ export default function Socials() {
           alignItems: "center",
         }}
         version={6}
+        brand
       />
       <SocialLink
         icon="flickr"
@@ -94,6 +98,7 @@ export default function Socials() {
           alignItems: "center",
         }}
         version={6}
+        brand
       />
     </View>
   );
