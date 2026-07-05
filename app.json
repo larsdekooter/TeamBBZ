@@ -5,7 +5,7 @@
     "version": "2.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon-light.png",
-    "scheme": "myapp",
+    "scheme": "teambbz",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
@@ -20,11 +20,19 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": true,
+          "category": ["DEFAULT", "BROWSABLE"],
           "data": [
             {
               "scheme": "content",
               "mimeType": "application/json"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "text/plain"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "application/octet-stream"
             },
             {
               "scheme": "file",

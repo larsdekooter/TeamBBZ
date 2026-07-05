@@ -1,11 +1,4 @@
-import {
-  Dimensions,
-  FlatList,
-  Linking,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
+import { Dimensions, FlatList, Text, useColorScheme, View } from "react-native";
 import Page from "../../components/Page";
 import {
   getPosts,
@@ -29,28 +22,11 @@ export default function Home() {
 
   useEffect(() => {
     const s = async () => {
-      await TeamBBZSQLite.prepare();
-      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, birthdate TEXT NOT NULL, club TEXT NOT NULL, country TEXT NOT NULL, secondSwimmer TEXT NULL) `;
-      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS swimmers (id INTEGER PRIMARY KEY NOT NULL, name TEXT NULL)`;
-      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY NOT NULL, darkMode INTEGER NOT NULL)`;
-      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS times (id INTEGER PRIMARY KEY NOT NULL, event TEXT NOT NULL, time TEXT NOT NULL, poolSize TEXT NOT NULL, points NUMBER NOT NULL, swimmer NOT NULL, date TEXT NULL, meet TEXT NULL, location TEXT NULL)`;
-      if (!(await TeamBBZSQLite.db.getFirstAsync("SELECT * FROM settings")))
-        await TeamBBZSQLite.sql`INSERT INTO settings (darkMode) VALUES (${colorScheme === "dark" ? 1 : 0})`;
-
       setPosts(await getPosts());
     };
     if (posts.length < 1) {
       s();
     }
-    Linking.getInitialURL().then(async (url) => {
-      if (url) {
-        const decodedUrl = decodeURIComponent(url);
-        const fileText = handleFileUpload(decodedUrl);
-        if (!fileText) return; //TODO: Show error.
-        const ts = await handleTimeUpload(fileText);
-        //TODO: Show confirmation to user.
-      }
-    });
   }, []);
 
   return (
@@ -65,19 +41,6 @@ export default function Home() {
       >
         Berichten
       </Text>
-      {/* <View
-        style={{
-          flexDirection: "row",
-          top: 40,
-          justifyContent: "space-between",
-          display: "flex",
-          width: Dimensions.get("window").width,
-          paddingHorizontal: 100,
-        }}
-      >
-        <Text style={[textColor(colorScheme)]}>Compact</Text>
-        <CheckBox checked={compact} onPress={() => setCompact(!compact)} />
-      </View> */}
       <Chip
         label="Compact"
         style={{ top: 40 }}

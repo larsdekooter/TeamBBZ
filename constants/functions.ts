@@ -1341,15 +1341,21 @@ export async function handleTimeUpload(fileText: string) {
   }
 }
 
-export function handleFileUpload(url: string, fileName?: string) {
+export async function handleFileUpload(
+  url: string,
+  fileName?: string,
+  shouldWait?: boolean,
+) {
+  console.log(url);
   const file = new File(url);
-  console.log(file);
+  console.log(file.uri);
   if (
     fileName &&
     !fileName.match(/Persoonlijke_Records([\s\S]*?).json/gm)?.[0] &&
     !fileName.match(/Geschiedenis_([\s\S]*?).json/gm)?.[0]
   )
     return console.log("SOME TING WONG"); //TODO: Show the error to the user
-  const fileText = file.textSync();
+  if (shouldWait) await wait(500);
+  const fileText = await file.text();
   return fileText;
 }
