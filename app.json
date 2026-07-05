@@ -5,7 +5,7 @@
     "version": "2.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon-light.png",
-    "scheme": "myapp",
+    "scheme": "teambbz",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
@@ -16,7 +16,31 @@
         "foregroundImage": "./assets/images/icon-light.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ldekooter.TeamBBZ"
+      "package": "com.ldekooter.TeamBBZ",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": ["DEFAULT", "BROWSABLE"],
+          "data": [
+            {
+              "scheme": "content",
+              "mimeType": "application/json"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "text/plain"
+            },
+            {
+              "scheme": "content",
+              "mimeType": "application/octet-stream"
+            },
+            {
+              "scheme": "file",
+              "mimeType": "application/json"
+            }
+          ]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -43,7 +67,8 @@
       "expo-status-bar",
       "@react-native-vector-icons/fontawesome",
       "@react-native-vector-icons/fontawesome5",
-      "@react-native-vector-icons/fontawesome6"
+      "@react-native-vector-icons/fontawesome6",
+      "@react-native-vector-icons/fontawesome-free-brands"
     ],
     "experiments": {
       "typedRoutes": true

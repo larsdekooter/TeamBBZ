@@ -1,6 +1,7 @@
 import { textColor } from "@/constants/functions";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
+import FontAwesomeBrands from "@react-native-vector-icons/fontawesome-free-brands";
 import {
   Pressable,
   Linking,
@@ -16,6 +17,7 @@ export default function SocialLink({
   url,
   style,
   version,
+  brand,
 }: {
   icon: string;
   size: number;
@@ -24,6 +26,7 @@ export default function SocialLink({
     | StyleProp<ViewStyle>
     | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
   version?: number;
+  brand?: boolean;
 }) {
   const colorScheme = useColorScheme();
   if (version === 6) {
@@ -34,11 +37,20 @@ export default function SocialLink({
         }}
         style={style}
       >
-        <FontAwesome6
-          name={icon as any}
-          size={size}
-          color={textColor(colorScheme).color}
-        />
+        {brand ? (
+          <FontAwesomeBrands
+            name={icon as any}
+            size={size}
+            color={textColor(colorScheme).color}
+          />
+        ) : (
+          <FontAwesome6
+            name={icon as any}
+            size={size}
+            color={textColor(colorScheme).color}
+            iconStyle="solid"
+          />
+        )}
       </Pressable>
     );
   }
@@ -49,11 +61,19 @@ export default function SocialLink({
       }}
       style={style}
     >
-      <FontAwesome
-        name={icon as any}
-        size={size}
-        color={textColor(colorScheme).color}
-      />
+      {brand ? (
+        <FontAwesomeBrands
+          name={icon as any}
+          size={size}
+          color={textColor(colorScheme).color}
+        />
+      ) : (
+        <FontAwesome
+          name={icon as any}
+          size={size}
+          color={textColor(colorScheme).color}
+        />
+      )}
     </Pressable>
   );
 }
