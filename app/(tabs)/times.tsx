@@ -12,6 +12,8 @@ import {
   filterFastestFromArray,
   getFastestFromArray,
   getSpecialityDataFromTimes,
+  handleFileUpload,
+  handleTimeUpload,
   isFastestFromYear,
   textColor,
   yearProgress,
@@ -124,56 +126,16 @@ export default function Times() {
                   });
                   if (result.canceled) return setUploadLoading(false);
                   const uri = result.assets[0].uri;
-                  const file = new File(uri);
-                  if (
-                    !result.assets[0].name.match(
-                      /Persoonlijke_Records([\s\S]*?).json/gm,
-                    )?.[0] &&
-                    !result.assets[0].name.match(
-                      /Geschiedenis_([\s\S]*?).json/gm,
-                    )
-                  )
-                    return console.log("KANKER"); // TODO: Show error to user
-                  const fileText = file.textSync();
-                  const recievedTimes = JSON.parse(fileText) as Time[];
-                  const statement = await TeamBBZSQLite.db.prepareAsync(
-                    "INSERT INTO times (event, time, poolSize, points, date, meet, location, swimmer) VALUES ($event, $time, $poolSize, $points, $date, $meet, $location, $swimmer)",
+
+                  const fileText = await handleFileUpload(
+                    uri,
+                    result.assets[0].name,
                   );
-                  try {
-                    // TODO: Update time if new information about it
-                    for (const time of recievedTimes) {
-                      if (
-                        times.find(
-                          (t) =>
-                            t.event === time.event &&
-                            t.poolSize === time.poolSize &&
-                            t.time === time.time &&
-                            t.date === time.date &&
-                            t.swimmer === time.swimmer,
-                        )
-                      )
-                        continue;
-                      await statement.executeAsync({
-                        $event: time.event,
-                        $time: time.time,
-                        $poolSize: time.poolSize,
-                        $points: time.points ?? 0,
-                        $date: time.date,
-                        $meet: time.meet,
-                        $location: time.location,
-                        $swimmer: time.swimmer,
-                      } as any);
-                    }
-                  } catch (e) {
-                    console.error(e);
-                  } finally {
-                    await statement.finalizeAsync();
-                    const ts =
-                      await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
-                    setTimes(ts);
-                    setUploadLoading(false);
-                    setTimesInputted(ts.length > 0);
-                  }
+                  if (!fileText) return; //TODO: Show error.
+                  const ts = await handleTimeUpload(fileText);
+                  setTimes(ts);
+                  setUploadLoading(false);
+                  setTimesInputted(ts.length > 0);
                 } catch (e) {
                   console.error(e);
                 }
@@ -486,34 +448,9 @@ export default function Times() {
           autoComplete="email"
           placeholderTextColor={"grey"}
         />
-        <TextInputComponent
-          onChangeText={(input) =>
-            setProfileInput({ ...profileInput, birthdate: input })
-          }
-          placeholder="Geboortedatum"
-          keyboardType="numeric"
-          style={{ marginBottom: 10 }}
-          placeholderTextColor={"grey"}
-        />
-        <TextInputComponent
-          onChangeText={(input) =>
-            setProfileInput({ ...profileInput, club: input })
-          }
-          placeholder="Zwemclub"
-          style={{ marginBottom: 10 }}
-          placeholderTextColor={"grey"}
-        />
-        <TextInputComponent
-          onChangeText={(input) =>
-            setProfileInput({ ...profileInput, country: input })
-          }
-          placeholder="Land van herkomst"
-          style={{ marginBottom: 10 }}
-          placeholderTextColor={"grey"}
-        />
         <ButtonComponent
           onPress={async () => {
-            await TeamBBZSQLite.sql`INSERT INTO profile (username, email, birthdate, club, country) VALUES (${profileInput.username.trim()}, ${profileInput.email.trim()}, ${profileInput.birthdate.trim()}, ${profileInput.club.trim()}, ${profileInput.country.trim()})`;
+            await TeamBBZSQLite.sql`INSERT INTO profile (username, email, birthdate, club, country) VALUES (${profileInput.username.trim()}, ${profileInput.email.trim()}, 'NONE', 'NONE', 'NONE')`;
             const pr = await TeamBBZSQLite.db.getFirstAsync<Profile>(
               "SELECT * FROM profile",
             );
@@ -1244,65 +1181,26 @@ function TimesHeader({
           );
         }}
       >
-        {mainSwimmerSelected ? (
-          <View
-            style={{
+        <Text
+          style={[
+            {
               flexDirection: "column",
               flex: 1,
               width: "90%",
               marginVertical: 10,
-              borderColor: Colors.Orange,
+              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
               borderWidth: 1,
               borderRadius: 6,
               paddingHorizontal: 20,
-              paddingVertical: 5,
-            }}
-          >
-            <View
-              style={{
-                justifyContent: "space-between",
-                flexDirection: "row",
-              }}
-            >
-              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
-                {profile.username}
-              </Text>
-              <Text style={[textColor(colorScheme)]}>{profile.birthdate}</Text>
-            </View>
-            <View
-              style={{
-                justifyContent: "space-between",
-                flexDirection: "row",
-              }}
-            >
-              <Text style={[textColor(colorScheme), { textAlign: "left" }]}>
-                {profile.country}
-              </Text>
-              <Text style={[textColor(colorScheme)]}>{profile.club}</Text>
-            </View>
-          </View>
-        ) : (
-          <Text
-            style={[
-              {
-                flexDirection: "column",
-                flex: 1,
-                width: "90%",
-                marginVertical: 10,
-                borderColor: Colors.Blue,
-                borderWidth: 1,
-                borderRadius: 6,
-                paddingHorizontal: 20,
-                paddingVertical: 16,
-                textAlign: "center",
-                fontWeight: "bold",
-              },
-              textColor(colorScheme),
-            ]}
-          >
-            {swimmerSelected}
-          </Text>
-        )}
+              paddingVertical: 16,
+              textAlign: "center",
+              fontWeight: "bold",
+            },
+            textColor(colorScheme),
+          ]}
+        >
+          {swimmerSelected}
+        </Text>
       </Pressable>
 
       <View

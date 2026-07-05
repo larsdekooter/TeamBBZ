@@ -4,7 +4,8 @@
       "android": {
         "buildType": "apk"
       },
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": { "APP_VARIANT": "production" }
     },
     "preview2": {
       "android": {

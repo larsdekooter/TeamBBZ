@@ -16,6 +16,7 @@ import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
+
 import { Colors, Profile, Time } from "@/constants/enums";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
