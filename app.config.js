@@ -1,7 +1,7 @@
 const IS_DEV = process.env.APP_VARIANT === "development";
 
 const getUniqueIdentifier = () => {
-  if (IS_DEV) return "com.ldkooter.TeamBBZ.dev";
+  if (IS_DEV) return "com.ldekooter.TeamBBZ.dev";
   return "com.ldekooter.TeamBBZ";
 };
 
