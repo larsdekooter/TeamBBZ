@@ -14,6 +14,7 @@ import {
   getWedstrijdData,
   isImprovement,
   textColor,
+  time,
 } from "@/constants/functions";
 import {
   AthleteData,
@@ -46,6 +47,7 @@ import SkeletonLoader from "@/components/SkeletonLoader";
 import { Colors, Profile } from "@/constants/enums";
 import { useFocusEffect } from "expo-router";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
+import Timer from "@/components/Timer";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -81,21 +83,52 @@ export default function Club() {
   const [usernames, setUsernames] = useState<Array<string>>([]);
 
   const [loading, setLoading] = useState(true);
+  const [loadingTime, setLoadingTime] = useState(0);
+  const [componentsLoaded, setComponentsLoaded] = useState(0);
+  const [devMode, setDevMode] = useState(false);
+
+  async function load<T>(func: () => Promise<T>): Promise<T> {
+    const result = await time(func);
+    setComponentsLoaded((p) => p + 1);
+    return result;
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      const getDevMode = async () => {
+        const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
+          "SELECT * FROM profile",
+        );
+        setDevMode(profile?.devMode === 1);
+      };
+      getDevMode();
+    }, []),
+  );
 
   useEffect(() => {
     const getS = async () => {
-      const [schem, wden, crs, compStanden, res, username, secondSwimmer] =
+      const start = Date.now();
+      const updateTimeInterval = setInterval(() => {
+        const elapsed = Date.now() - start;
+        setLoadingTime(elapsed);
+      }, 100);
+
+      const [schem, wden, crs, compStanden, res, profile, secondSwimmer] =
         await Promise.all([
-          getSchemaData(),
-          getMeetCalendar(),
-          getClubRecords(),
-          getCompetitieStand(),
-          getResultMeets(),
-          TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile"),
-          TeamBBZSQLite.db.getFirstAsync<{
-            id: Number;
-            name: string;
-          }>("SELECT * FROM swimmers"),
+          load(getSchemaData),
+          load(getMeetCalendar),
+          load(getClubRecords),
+          load(getCompetitieStand),
+          load(getResultMeets),
+          time(() =>
+            TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile"),
+          ),
+          time(() =>
+            TeamBBZSQLite.db.getFirstAsync<{
+              id: Number;
+              name: string;
+            }>("SELECT * FROM swimmers"),
+          ),
         ]);
 
       setSchema(schem);
@@ -104,13 +137,14 @@ export default function Club() {
       setCompetitieStanden(compStanden);
       setResultsMeets(res);
       setLoading(false);
+      clearInterval(updateTimeInterval);
       const swimmerArray = [];
-      if (username) swimmerArray.push(username.username);
+      if (profile) swimmerArray.push(profile.username);
       if (secondSwimmer) swimmerArray.push(secondSwimmer.name);
       setUsernames(swimmerArray);
     };
     if (loading) {
-      getS();
+      time(getS);
     }
   }, []);
 
@@ -144,6 +178,12 @@ export default function Club() {
         loading={loading}
         resultMeets={resultsMeets}
       />
+      {devMode && (
+        <Timer
+          time={`${(loadingTime / 1000).toString().slice(0, 4)}s`}
+          progress={componentsLoaded / 5}
+        />
+      )}
     </Page>
   );
 }

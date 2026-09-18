@@ -10,7 +10,7 @@ export default function Layout() {
   useEffect(() => {
     const initDatabase = async () => {
       await TeamBBZSQLite.prepare();
-      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, birthdate TEXT NOT NULL, club TEXT NOT NULL, country TEXT NOT NULL, secondSwimmer TEXT NULL) `;
+      await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY NOT NULL, username TEXT NOT NULL, email TEXT NOT NULL, birthdate TEXT NOT NULL, club TEXT NOT NULL, country TEXT NOT NULL, secondSwimmer TEXT NULL, devMode BOOLEAN NULL) `;
       await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS swimmers (id INTEGER PRIMARY KEY NOT NULL, name TEXT NULL)`;
       await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY NOT NULL, darkMode INTEGER NOT NULL)`;
       await TeamBBZSQLite.sql`CREATE TABLE IF NOT EXISTS times (id INTEGER PRIMARY KEY NOT NULL, event TEXT NOT NULL, time TEXT NOT NULL, poolSize TEXT NOT NULL, points NUMBER NOT NULL, swimmer NOT NULL, date TEXT NULL, meet TEXT NULL, location TEXT NULL)`;

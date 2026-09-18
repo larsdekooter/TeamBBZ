@@ -102,8 +102,12 @@ export async function getResultMeets(): Promise<
 > {
   const resultData: MeetResult[] = [];
 
-  const page = await fetch("https://www.b-b-z.nl/zwemmen/uitslagen/").then(
-    (res) => res.text(),
+  const page = await time(
+    () =>
+      fetch("https://www.b-b-z.nl/zwemmen/uitslagen/").then((res) =>
+        res.text(),
+      ),
+    "Fetch Result Page",
   );
   const resultTable = page.match(GeneralRegexes.GlobalTableRegex)![1];
   if (!resultTable.match(GeneralRegexes.RowRegex)) {
@@ -1159,11 +1163,14 @@ export async function getCompetitieStand(): Promise<CompetitieStand[]> {
   return rows;
 }
 
-export async function time<T>(func: () => Promise<T>): Promise<T> {
+export async function time<T>(
+  func: () => Promise<T>,
+  name?: string,
+): Promise<T> {
   const start = Date.now();
   const value = await func();
   const elapsed = Date.now() - start;
-  console.log(elapsed / 1000 + "s " + func.name);
+  console.log(elapsed / 1000 + "s " + (name ?? func.name));
   return value;
 }
 

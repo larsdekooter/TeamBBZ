@@ -69,6 +69,7 @@ export interface Profile {
   club: string;
   country: string;
   secondSwimmer?: string;
+  devMode?: number;
 }
 
 export interface Settings {

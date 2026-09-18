@@ -9,17 +9,18 @@ import {
 } from "react-native";
 import Page from "../../components/Page";
 import { filterDuplicates, textColor } from "@/constants/functions";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ButtonComponent from "@/components/ButtonComponent";
 import { useFocusEffect } from "expo-router";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
-
+import { Host, Switch } from "@expo/ui/jetpack-compose";
 import { Colors, Profile, Time } from "@/constants/enums";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
+import { size } from "@expo/ui/jetpack-compose/modifiers";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -27,6 +28,7 @@ export default function Settings() {
   const [profile, setProfile] = useState<
     Profile | { username: ""; email: ""; secondSwimmer: "" }
   >({ username: "", email: "", secondSwimmer: "" });
+  const [devModeChecked, setDevModeChecked] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -34,7 +36,10 @@ export default function Settings() {
         const profileDB = await TeamBBZSQLite.db.getFirstAsync<Profile>(
           "SELECT * FROM profile",
         );
-        if (profileDB) setProfile(profileDB);
+        if (profileDB) {
+          setProfile(profileDB);
+          setDevModeChecked(profileDB.devMode === 1);
+        }
         const times = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
         const sws = times.map((time) => time.swimmer).filter(filterDuplicates);
         setSwimmers(sws.filter((s) => s !== profileDB?.username));
@@ -199,6 +204,7 @@ export default function Settings() {
               borderTopColor: "grey",
               borderTopWidth: 1,
               marginTop: 10,
+              paddingBottom: 10,
             }}
           >
             <ButtonComponent
@@ -211,6 +217,35 @@ export default function Settings() {
                 Verwijder alle tijden
               </Text>
             </ButtonComponent>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: 15,
+              borderTopColor: "grey",
+              borderTopWidth: 1,
+              paddingTop: 10,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={[textColor(colorScheme), { textAlign: "left", flex: 1 }]}
+            >
+              Dev Mode
+            </Text>
+            <Host matchContents>
+              <Switch
+                onCheckedChange={async () => {
+                  await TeamBBZSQLite.sql`UPDATE profile SET devMode = ${devModeChecked ? 0 : 1} WHERE id = 1`;
+                  setDevModeChecked((prev) => !prev);
+                }}
+                value={devModeChecked}
+                colors={{
+                  checkedTrackColor: Colors.TransparantDarkOrange,
+                  checkedThumbColor: Colors.Orange,
+                }}
+              />
+            </Host>
           </View>
         </View>
 
