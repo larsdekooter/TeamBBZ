@@ -981,31 +981,43 @@ export function getAgeGroupsForClubrecord(
 }
 
 export async function getClubRecords() {
-  const femalePage = await (
-    await fetch(
-      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Dames&estafette=1",
-    )
-  ).text();
-  const malePage = await (
-    await fetch(
-      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=1",
-    )
-  ).text();
-  const relayMixedPage = await (
-    await fetch(
-      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Gemengd&estafette=4",
-    )
-  ).text();
-  const relayFemalePage = await (
-    await fetch(
-      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Dames&estafette=4",
-    )
-  ).text();
-  const relayMalePage = await (
-    await fetch(
-      "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=4",
-    )
-  ).text();
+  const femalePage = await time(
+    () =>
+      fetch(
+        "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Dames&estafette=1",
+      ).then((res) => res.text()),
+    "Dames Estafettes Clubrecords",
+  );
+
+  const malePage = await time(
+    () =>
+      fetch(
+        "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=1",
+      ).then((res) => res.text()),
+    "Heren Clubrecords",
+  );
+
+  const relayMixedPage = await time(
+    () =>
+      fetch(
+        "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Gemengd&estafette=4",
+      ).then((res) => res.text()),
+    "Gemengde Estafettes Clubrecords",
+  );
+  const relayFemalePage = await time(
+    () =>
+      fetch(
+        "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Dames&estafette=4",
+      ).then((res) => res.text()),
+    "Dames Estafettes",
+  );
+  const relayMalePage = await time(
+    () =>
+      fetch(
+        "https://www.b-b-z.nl/zwemmen/overzicht-clubrecords/?geslacht=Heren&estafette=4",
+      ).then((res) => res.text()),
+    "Heren Estafette",
+  );
 
   const female = mapClubrecords(femalePage);
   const male = mapClubrecords(malePage);
