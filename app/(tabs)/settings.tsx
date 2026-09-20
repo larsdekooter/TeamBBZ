@@ -241,8 +241,12 @@ export default function Settings() {
                 }}
                 value={devModeChecked}
                 colors={{
-                  checkedTrackColor: Colors.TransparantDarkOrange,
-                  checkedThumbColor: Colors.Orange,
+                  checkedTrackColor:
+                    colorScheme === "dark"
+                      ? Colors.TransparantDarkOrange
+                      : Colors.Orange,
+                  checkedThumbColor:
+                    colorScheme === "dark" ? Colors.Orange : Colors.DarkOrange,
                 }}
               />
             </Host>

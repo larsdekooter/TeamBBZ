@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/enums";
-import { Text } from "react-native";
+import { Text, useColorScheme } from "react-native";
 import { View } from "react-native";
 import {
   CircularWavyProgressIndicator,
@@ -12,6 +12,7 @@ import {
   align,
   offset,
 } from "@expo/ui/jetpack-compose/modifiers";
+import { textColor } from "@/constants/functions";
 
 export default function Timer({
   time,
@@ -20,30 +21,36 @@ export default function Timer({
   time: string;
   progress?: number;
 }) {
+  const colorScheme = useColorScheme();
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: Colors.TransparantDarkOrange,
+        backgroundColor:
+          colorScheme === "dark"
+            ? Colors.TransparantDarkOrange
+            : Colors.TransparantLightOrange,
         width: 112,
         height: 56,
-        elevation: 30,
         borderRadius: 16,
         justifyContent: "space-between",
         alignItems: "center",
         position: "absolute",
-        bottom: 16,
-        right: 16,
         paddingVertical: 16,
         paddingHorizontal: 10,
         flexDirection: "row",
+        elevation: 55,
+        bottom: 16,
+        right: 16,
       }}
     >
       <Text
-        style={{
-          color: "white",
-          fontWeight: "bold",
-        }}
+        style={[
+          textColor(colorScheme),
+          {
+            fontWeight: "bold",
+          },
+        ]}
       >
         {time}
       </Text>

@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Dimensions, Text, View, StyleSheet } from "react-native";
+import {
+  Dimensions,
+  Text,
+  View,
+  StyleSheet,
+  useColorScheme,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -21,6 +27,7 @@ export default function SkeletonLoader({
   loaderHeightMultiplier?: number;
   loaderHeightAdder?: number;
 }) {
+  const colorScheme = useColorScheme();
   const translateX = useSharedValue(-screenWidth);
   const [height, setHeight] = useState(0);
 
@@ -28,7 +35,7 @@ export default function SkeletonLoader({
     translateX.value = withRepeat(
       withTiming(screenWidth, { duration: 2400 }),
       -1,
-      false
+      false,
     );
   }, []);
 
@@ -39,7 +46,8 @@ export default function SkeletonLoader({
   return (
     <View
       style={{
-        backgroundColor: "rgb(17, 17, 17)",
+        backgroundColor:
+          colorScheme === "dark" ? "rgb(17, 17, 17)" : "rgb(239, 239, 239)",
         overflow: "hidden",
         height: loaderHeight || height,
         width: loaderWidth || screenWidth * 0.95,
@@ -51,16 +59,29 @@ export default function SkeletonLoader({
         style={[StyleSheet.absoluteFill, animatedStyle, { borderRadius: 6 }]}
       >
         <LinearGradient
-          colors={[
-            "rgb(17, 17, 17)",
-            "rgb(51, 51, 51)",
-            "rgb(51, 51, 51)",
-            "rgb(17, 17, 17)",
-            "rgb(17, 17, 17)",
-            "rgb(17, 17, 17)",
-            "rgb(17, 17, 17)",
-            "rgb(17, 17, 17)",
-          ]}
+          colors={
+            colorScheme === "dark"
+              ? [
+                  "rgb(17, 17, 17)",
+                  "rgb(51, 51, 51)",
+                  "rgb(51, 51, 51)",
+                  "rgb(17, 17, 17)",
+                  "rgb(17, 17, 17)",
+                  "rgb(17, 17, 17)",
+                  "rgb(17, 17, 17)",
+                  "rgb(17, 17, 17)",
+                ]
+              : [
+                  "rgb(239, 239, 239)",
+                  "rgb(205, 205, 205)",
+                  "rgb(205, 205, 205)",
+                  "rgb(239, 239, 239)",
+                  "rgb(239, 239, 239)",
+                  "rgb(239, 239, 239)",
+                  "rgb(239, 239, 239)",
+                  "rgb(239, 239, 239)",
+                ]
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 2, y: 0 }}
           style={StyleSheet.absoluteFill}
@@ -70,7 +91,7 @@ export default function SkeletonLoader({
           onTextLayout={(e) =>
             setHeight(
               e.nativeEvent.lines[0].height * loaderHeightMultiplier +
-                loaderHeightAdder
+                loaderHeightAdder,
             )
           }
         >
