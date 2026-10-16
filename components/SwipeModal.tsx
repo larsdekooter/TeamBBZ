@@ -42,6 +42,7 @@ type SwipeModalProps = {
   style?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<AnimatedStyle<StyleProp<ViewStyle>>>;
   buttonStyle?: StyleProp<ViewStyle>;
+  buttonChildren?: ReactNode;
 };
 
 const { height, width } = Dimensions.get("window");
@@ -56,6 +57,7 @@ export default function SwipeModal({
   style,
   containerStyle,
   buttonStyle,
+  buttonChildren,
 }: SwipeModalProps) {
   const top = useSharedValue(height);
   const opened = useSharedValue(0);
@@ -180,26 +182,34 @@ export default function SwipeModal({
                   ]}
                 >
                   {children}
-                  <ButtonComponent
-                    onPress={handleClose}
-                    style={[
-                      {
-                        width: "95%",
-                        paddingVertical: 10,
-                        backgroundColor:
-                          colorScheme === "light"
-                            ? Colors.ModalLightBackground
-                            : Colors.ModalDarkBackground,
-                      },
-                      buttonStyle,
-                    ]}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
                   >
-                    <Text
-                      style={[textColor(colorScheme), { fontWeight: "bold" }]}
+                    <ButtonComponent
+                      onPress={handleClose}
+                      style={[
+                        {
+                          width: "95%",
+                          paddingVertical: 10,
+                          backgroundColor:
+                            colorScheme === "light"
+                              ? Colors.ModalLightBackground
+                              : Colors.ModalDarkBackground,
+                        },
+                        buttonStyle,
+                      ]}
                     >
-                      Sluit
-                    </Text>
-                  </ButtonComponent>
+                      <Text
+                        style={[textColor(colorScheme), { fontWeight: "bold" }]}
+                      >
+                        Sluit
+                      </Text>
+                    </ButtonComponent>
+                    {buttonChildren}
+                  </View>
                 </View>
               </Animated.View>
             </GestureDetector>

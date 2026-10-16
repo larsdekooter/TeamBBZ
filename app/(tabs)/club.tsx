@@ -27,6 +27,7 @@ import {
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
+import Entypo from "@react-native-vector-icons/entypo";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   Dimensions,
@@ -48,6 +49,7 @@ import { Colors, Profile } from "@/constants/enums";
 import { useFocusEffect } from "expo-router";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import Timer from "@/components/Timer";
+import DateTimePicker from "@expo/ui/community/datetime-picker";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -606,6 +608,10 @@ function SchemaComponent({
   const [height, setHeight] = useState(0);
   const rotateAnim = useState(new Animated.Value(0))[0];
   const [schemaState, setSchemaState] = useState(schema);
+  const [datePickerShown, setDatePickerShown] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [schemaLoading, setSchemaLoading] = useState(false);
+
   useEffect(() => {
     setSchemaState(schema);
   }, [schema]);
@@ -629,45 +635,94 @@ function SchemaComponent({
 
   return (
     <Fragment>
+      {datePickerShown && (
+        <DateTimePicker
+          value={date}
+          onValueChange={async (_, selectedDate) => {
+            setDatePickerShown(false);
+            setDate(selectedDate);
+            setSchemaLoading(true);
+            setSchemaState({ groups: [], schema: "" });
+            setSchemaState(await getSchemaData(undefined, selectedDate));
+            setSchemaLoading(false);
+          }}
+          onDismiss={() => setDatePickerShown(false)}
+          mode="date"
+          presentation="dialog"
+          accentColor={Colors.Orange}
+        />
+      )}
       <SwipeModal
         visible={shown}
         onClose={toggleExpand}
         height={height > 100 ? height + 150 : 200}
         closeValue={200}
         onRequestClose={toggleExpand}
+        buttonStyle={{ width: "auto", flex: 1 }}
+        buttonChildren={
+          <View>
+            <ButtonComponent
+              onPress={() => setDatePickerShown(true)}
+              style={{
+                aspectRatio: 1 / 1,
+                backgroundColor: Colors.ModalDarkBackground,
+                height: 50,
+                padding: 10,
+                marginLeft: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <FontAwesome name="calendar" size={25} color={"white"} />
+            </ButtonComponent>
+          </View>
+        }
       >
         <ScrollView style={{ width: "100%" }}>
-          {![
-            "Geen schema vandaag!",
-            "Schema bekijken niet toegestaan",
-            "Geen trainen vandaag!",
-          ].includes(schemaState.schema) && (
-            <Dropdown
-              data={schema.groups}
-              style={{ width: "100%" }}
-              closeWhenSelected
-              onPress={async (item) => {
-                setSchemaState(await getSchemaData(item));
-              }}
-              renderItem={({ item }) => (
-                <Text
-                  style={[
-                    textColor(colorScheme),
-                    {
-                      borderWidth: 1,
-                      borderColor: "grey",
-                      margin: 5,
-                      paddingVertical: 10,
-                      paddingHorizontal: 5,
-                      borderRadius: 8,
-                      textAlign: "center",
-                    },
-                  ]}
-                >
-                  {item}
-                </Text>
-              )}
-            />
+          <Text
+            style={[
+              textColor(colorScheme),
+              { fontWeight: "bold", textAlign: "center", fontSize: 18 },
+            ]}
+          >
+            Schema van {date.toLocaleDateString()}
+          </Text>
+          {schemaLoading ? (
+            <ActivityIndicator color={Colors.Orange} size={40} />
+          ) : (
+            ![
+              "Geen schema vandaag!",
+              "Schema bekijken niet toegestaan",
+              "Geen trainen vandaag!",
+            ].includes(schemaState.schema) &&
+            schemaState.groups.length > 1 && (
+              <Dropdown
+                data={schemaState.groups}
+                style={{ width: "100%" }}
+                closeWhenSelected
+                onPress={async (item) => {
+                  setSchemaState(await getSchemaData(item));
+                }}
+                renderItem={({ item }) => (
+                  <Text
+                    style={[
+                      textColor(colorScheme),
+                      {
+                        borderWidth: 1,
+                        borderColor: "grey",
+                        margin: 5,
+                        paddingVertical: 10,
+                        paddingHorizontal: 5,
+                        borderRadius: 8,
+                        textAlign: "center",
+                      },
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                )}
+              />
+            )
           )}
           <Text
             style={[textColor(colorScheme), { width: "100%" }]}

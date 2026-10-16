@@ -131,7 +131,7 @@ export async function getResultMeets(): Promise<
           .replace(GeneralRegexes.dMYToMDYDateFormat, "$2/$1/$3"),
       ),
       name: row.match(MeetRegexes.ResultNameRegex)![0],
-      poolSize: row.match(MeetRegexes.PoolSizeRegex)![0] as "25" | "50" | "OW",
+      poolSize: row.match(MeetRegexes.PoolSizeRegex)?.[0] as "25" | "50" | "OW",
       location: row.match(MeetRegexes.LocationRegex)![0],
       category: row.match(MeetRegexes.CategoryRegex)![0] as
         | "competitie"
@@ -520,8 +520,7 @@ function getOpstellingFromPageIfOpstelling(page: string) {
   return swimmers;
 }
 
-export async function getSchemaData(group?: string) {
-  const date = new Date();
+export async function getSchemaData(group?: string, date = new Date()) {
   const weekNo = getWeekNumber(date);
 
   const res = await (
@@ -565,7 +564,7 @@ export async function getSchemaData(group?: string) {
     schema.splice(0, 1);
     schema.splice(schema.length - 1, 1);
     return {
-      schema: ["A\n", ...schema.map((line) => `${line.trim()}\n`)].join(""),
+      schema: [`A \n`, ...schema.map((line) => `${line.trim()}\n`)].join(""),
       groups: tdMatch.map(
         (match) => match.match(SchemaRegexes.SchemaGroupRegex)![1],
       ),
