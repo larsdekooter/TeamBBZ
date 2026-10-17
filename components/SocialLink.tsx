@@ -8,8 +8,8 @@ import {
   StyleProp,
   ViewStyle,
   useColorScheme,
+  PressableStateCallbackType,
 } from "react-native";
-import { PressableStateCallbackType } from "react-native/Libraries/Components/Pressable/Pressable";
 
 export default function SocialLink({
   icon,

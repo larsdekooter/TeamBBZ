@@ -72,8 +72,9 @@ export default function PostComponent({
           style={{
             width: scaleWidth,
             height: scaleHeight,
+            borderRadius: 10,
           }}
-          borderRadius={10}
+          // borderRadius={10}
         />
         <Text
           style={{

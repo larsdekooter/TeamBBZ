@@ -39,29 +39,29 @@ export default function PbTable({
 }) {
   const strokes = {
     vlinderslag: data.filter(({ title }) =>
-      title.distance.includes("vlinderslag")
+      title.distance.includes("vlinderslag"),
     ),
     rugslag: data.filter(({ title }) => title.distance.includes("rugslag")),
     schoolslag: data.filter(({ title }) =>
-      title.distance.includes("schoolslag")
+      title.distance.includes("schoolslag"),
     ),
     "vrije slag": data.filter(({ title }) =>
-      title.distance.includes("vrije slag")
+      title.distance.includes("vrije slag"),
     ),
     wisselslag: data.filter(({ title }) =>
-      title.distance.includes("wisselslag")
+      title.distance.includes("wisselslag"),
     ),
   };
   const colorScheme = useColorScheme();
   const [quickViewModalShown, setQuickViewModalShown] = useState(false);
   const [historyModalShown, setHistoryModalShown] = useState(
-    SwimrakingEventId.None
+    SwimrakingEventId.None,
   );
   const [title, setTitle] = useState(
-    {} as { distance: string; time: string; poolSize: "25m" | "50m" }
+    {} as { distance: string; time: string; poolSize: "25m" | "50m" },
   );
   const [sData, setSData] = useState(
-    [] as { time: string; date: Date; points: string; location: string }[]
+    [] as { time: string; date: Date; points: string; location: string }[],
   );
   const [loading, setLoading] = useState(false);
 
@@ -159,7 +159,7 @@ function StrokeComponent({
           key: string;
           id: number;
         },
-        event: GestureResponderEvent
+        event: GestureResponderEvent,
       ) => void)
     | undefined;
   stroke:
@@ -255,7 +255,7 @@ function QuickViewModal({
   onRequestClose: ((event: NativeSyntheticEvent<any>) => void) | undefined;
   title: { distance: string; time: string; poolSize: "25m" | "50m" };
   athleteData: AthleteData;
-  colorScheme: ColorSchemeName;
+  colorScheme: ColorSchemeName | null;
   onPressChoose: PressableProps["onPress"];
   loading: boolean;
   onPressClose: null | ((event?: GestureResponderEvent) => void) | undefined;
@@ -263,7 +263,8 @@ function QuickViewModal({
 }) {
   const findPb = (event: string, poolSize: string, time: string) => {
     return athleteData.pbs.find(
-      (pb) => pb.event === event && pb.poolSize === poolSize && pb.time === time
+      (pb) =>
+        pb.event === event && pb.poolSize === poolSize && pb.time === time,
     );
   };
   return (
@@ -327,7 +328,7 @@ function QuickViewModal({
             {findPb(
               title.distance,
               title.poolSize,
-              title.time
+              title.time,
             )?.date.toLocaleDateString()}
           </Text>
           <Text style={textColor(colorScheme)}>
@@ -388,7 +389,7 @@ function HistoryModal({
   onRequestClose?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
   onPressClose: null | ((event: GestureResponderEvent) => void) | undefined;
   sData: { time: string; date: Date; points: string; location: string }[];
-  colorScheme: ColorSchemeName;
+  colorScheme: ColorSchemeName | null;
   title: { distance: string; time: string; poolSize: "25m" | "50m" };
   mainSwimmerSelected: boolean;
 }) {

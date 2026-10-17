@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 interface CheckBoxProps {
-  onPress?: null | ((event: GestureResponderEvent) => void) | undefined;
+  onPress?: ((event: GestureResponderEvent) => void) | undefined;
   checked?: boolean;
   style?: StyleProp<ViewStyle>;
 }
