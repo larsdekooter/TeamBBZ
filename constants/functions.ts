@@ -28,7 +28,7 @@ import { SwimrankingsRequestOptions } from "./options";
 import TeamBBZSQLite from "./TeamBBZSQLite";
 import { File } from "expo-file-system";
 
-export function textColor(colorScheme: ColorSchemeName | boolean) {
+export function textColor(colorScheme: ColorSchemeName | boolean | null) {
   if (typeof colorScheme === "boolean") {
     return { color: colorScheme ? "#000" : "#FFF" };
   }
@@ -1218,7 +1218,7 @@ export function isImprovement(time: string, pb: string) {
 
 export function percentageColor(
   percentage: string,
-  colorScheme: ColorSchemeName,
+  colorScheme: ColorSchemeName | null,
 ) {
   if (parseFloat(percentage) >= 100) {
     if (colorScheme === "light") return Colors.LightModeGreen;

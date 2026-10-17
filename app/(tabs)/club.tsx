@@ -28,7 +28,13 @@ import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import Entypo from "@react-native-vector-icons/entypo";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import {
+  Fragment,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   Dimensions,
   Pressable,
@@ -158,6 +164,7 @@ export default function Club() {
         colorScheme={colorScheme}
         schema={schema}
         loading={loading}
+        setSchema={setSchema}
       />
       <WedstrijdenComponent
         colorScheme={colorScheme}
@@ -195,7 +202,7 @@ function ResultsComponent({
   resultMeets,
   loading,
 }: {
-  colorScheme: ColorSchemeName;
+  colorScheme: ColorSchemeName | null;
   resultMeets: {
     date: Date;
     name: string;
@@ -207,7 +214,7 @@ function ResultsComponent({
   loading?: boolean;
 }) {
   const [id, setId] = useState<string>("");
-  const [results, setResults] = useState<Result[] | null>(null);
+  const [results, setResults] = useState<Result[]>([]);
   const [resultsLoading, setResultsLoading] = useState("");
 
   return (
@@ -415,7 +422,7 @@ function CompetitieStandComponent({
   competitieStanden,
   loading,
 }: {
-  colorScheme: ColorSchemeName;
+  colorScheme: ColorSchemeName | null;
   competitieStanden: CompetitieStand[];
   loading?: boolean;
 }) {
@@ -591,6 +598,7 @@ function SchemaComponent({
   schema,
   colorScheme,
   loading,
+  setSchema,
 }: {
   schema: {
     schema:
@@ -600,21 +608,23 @@ function SchemaComponent({
       | string;
     groups: string[];
   };
-  colorScheme: ColorSchemeName;
+  setSchema: (
+    value: SetStateAction<{
+      schema: string;
+      groups: string[];
+    }>,
+  ) => void;
+  colorScheme: ColorSchemeName | null;
   loading?: boolean;
 }) {
   const currentDate = new Date();
   const [shown, setShown] = useState(false);
   const [height, setHeight] = useState(0);
   const rotateAnim = useState(new Animated.Value(0))[0];
-  const [schemaState, setSchemaState] = useState(schema);
   const [datePickerShown, setDatePickerShown] = useState(false);
   const [date, setDate] = useState(new Date());
   const [schemaLoading, setSchemaLoading] = useState(false);
 
-  useEffect(() => {
-    setSchemaState(schema);
-  }, [schema]);
   const toggleExpand = () => {
     setShown(!shown);
     Animated.timing(rotateAnim, {
@@ -642,8 +652,8 @@ function SchemaComponent({
             setDatePickerShown(false);
             setDate(selectedDate);
             setSchemaLoading(true);
-            setSchemaState({ groups: [], schema: "" });
-            setSchemaState(await getSchemaData(undefined, selectedDate));
+            setSchema({ groups: [], schema: "" });
+            setSchema(await getSchemaData(undefined, selectedDate));
             setSchemaLoading(false);
           }}
           onDismiss={() => setDatePickerShown(false)}
@@ -694,14 +704,14 @@ function SchemaComponent({
               "Geen schema vandaag!",
               "Schema bekijken niet toegestaan",
               "Geen trainen vandaag!",
-            ].includes(schemaState.schema) &&
-            schemaState.groups.length > 1 && (
+            ].includes(schema.schema) &&
+            schema.groups.length > 1 && (
               <Dropdown
-                data={schemaState.groups}
+                data={schema.groups}
                 style={{ width: "100%" }}
                 closeWhenSelected
                 onPress={async (item) => {
-                  setSchemaState(await getSchemaData(item));
+                  setSchema(await getSchemaData(item));
                 }}
                 renderItem={({ item }) => (
                   <Text
@@ -735,16 +745,14 @@ function SchemaComponent({
                       "Geen schema vandaag!",
                       "Schema bekijken niet toegestaan",
                       "Geen trainen vandaag!",
-                    ].includes(schemaState.schema)
+                    ].includes(schema.schema)
                       ? 50
                       : 0),
                 );
               }
             }}
           >
-            {!schemaState.schema
-              ? null
-              : schemaState.schema.replace("\r", "\n")}
+            {!schema.schema ? null : schema.schema.replace("\r", "\n")}
           </Text>
         </ScrollView>
       </SwipeModal>
@@ -791,7 +799,7 @@ function WedstrijdenComponent({
   loading,
   usernames,
 }: {
-  colorScheme: ColorSchemeName;
+  colorScheme: ColorSchemeName | null;
   wedstrijden: Wedstrijd[];
   loading?: boolean;
   usernames: Array<string>;
@@ -1135,7 +1143,7 @@ function ClubrecordsComponent({
     relayWomen: RelayClubrecord[];
     relayMen: RelayClubrecord[];
   };
-  colorScheme: ColorSchemeName;
+  colorScheme: ColorSchemeName | null;
   loading?: boolean;
 }) {
   const [atheleteData, setAthleteData] = useState<AthleteData>(
