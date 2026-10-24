@@ -1132,37 +1132,29 @@ export async function getCompetitieStand(): Promise<CompetitieStand[]> {
     )
   ).text();
 
-  const table = response.match(
-    /<table class="stand-table"[^>]*>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/gm,
-  )![0];
+  const table = response.match(CompetietieRegex.TableRegex)![0];
   return (
-    table
-      .match(
-        /<tr\r\n[\s]*?id="[\s\S]*?"[\s]*?data-team-name=".*?"[\s]*?data-team-context="B-klasse 2"[\s]*?>[\s]*?<[\s\S]*?<\/tr>/gm,
-      )
-      ?.map((row) => ({
-        team: row.match(
-          /(?<=<tr[\s\S]*?id="team[\s\S]*?"[\s\S]*?data-team-name=")[\s\S]*?(?=")/gm,
-        )![0],
-        round1: parseInt(
-          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![0].replace(".", ""),
-        ),
-        round2: parseInt(
-          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![1].replace(".", ""),
-        ),
-        round3: parseInt(
-          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![2].replace(".", ""),
-        ),
-        round4: parseInt(
-          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![3].replace(".", ""),
-        ),
-        round5: parseInt(
-          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![4].replace(".", ""),
-        ),
-        total: parseInt(
-          row.match(/(?<=<strong>)\d(\.\d+)?/gm)![0].replace(".", ""),
-        ),
-      })) ?? ([] as CompetitieStand[])
+    table.match(CompetietieRegex.TableRowRegex)?.map((row) => ({
+      team: row.match(CompetietieRegex.TeamNameRegex)![0],
+      round1: parseInt(
+        row.match(CompetietieRegex.RoundPointsRegex)![0].replace(".", ""),
+      ),
+      round2: parseInt(
+        row.match(CompetietieRegex.RoundPointsRegex)![1].replace(".", ""),
+      ),
+      round3: parseInt(
+        row.match(CompetietieRegex.RoundPointsRegex)![2].replace(".", ""),
+      ),
+      round4: parseInt(
+        row.match(CompetietieRegex.RoundPointsRegex)![3].replace(".", ""),
+      ),
+      round5: parseInt(
+        row.match(CompetietieRegex.RoundPointsRegex)![4].replace(".", ""),
+      ),
+      total: parseInt(
+        row.match(CompetietieRegex.TotalPointsRegex)![0].replace(".", ""),
+      ),
+    })) ?? ([] as CompetitieStand[])
   );
 }
 

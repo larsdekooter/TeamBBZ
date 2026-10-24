@@ -93,9 +93,14 @@ export class ClubRecordRegex {
 }
 
 export class CompetietieRegex {
-  static RowRegex = /(?<=<tr>)[\s\S]*?(?=<\/tr>)/gm;
-  static CellRegex = /(?<=<td[^>]*>)[\s\S]*?(?=<\/td>)/gm;
-  static LinkRegex = /(?<=>)([\s\S]*?)(?=<)/gm;
+  static TableRegex =
+    /<table class="stand-table"[^>]*>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/gm;
+  static TableRowRegex =
+    /<tr\r\n[\s]*?id="[\s\S]*?"[\s]*?data-team-name=".*?"[\s]*?data-team-context="B-klasse 2"[\s]*?>[\s]*?<[\s\S]*?<\/tr>/gm;
+  static TeamNameRegex =
+    /(?<=<tr[\s\S]*?id="team[\s\S]*?"[\s\S]*?data-team-name=")[\s\S]*?(?=")/gm;
+  static RoundPointsRegex = /(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm;
+  static TotalPointsRegex = /(?<=<strong>)\d(\.\d+)?/gm;
 }
 
 export class FileRegex {
