@@ -267,27 +267,27 @@ export async function getMeetCalendar() {
     })
     .filter((s) => s != null)
     .map((w) =>
-      w.length > 6
+      w!.length > 6
         ? ({
             startDate: new Date(
-              new Date(w[0]).setHours(parseInt(w[5][0] + w[5][1])),
+              new Date(w![0]).setHours(parseInt(w![5][0] + w![5][1])),
             ),
-            endDate: new Date(w[1]),
-            name: w[2].split("SPLITHERE")[0],
-            location: w[3],
-            country: w[4],
-            category: w[6],
-            id: w[2].split("SPLITHERE")[1],
+            endDate: new Date(w![1]),
+            name: w![2].split("SPLITHERE")[0],
+            location: w![3],
+            country: w![4],
+            category: w![6],
+            id: w![2].split("SPLITHERE")[1],
           } as Wedstrijd)
         : ({
             startDate: new Date(
-              new Date(w[0]).setHours(parseInt(w[4][0] + w[4][1])),
+              new Date(w![0]).setHours(parseInt(w![4][0] + w![4][1])),
             ),
-            name: w[1].split("SPLITHERE")[0],
-            location: w[2],
-            country: w[3],
-            category: w[5],
-            id: w[1].split("SPLITHERE")[1],
+            name: w![1].split("SPLITHERE")[0],
+            location: w![2],
+            country: w![3],
+            category: w![5],
+            id: w![1].split("SPLITHERE")[1],
           } as Wedstrijd),
     );
   return rows;
@@ -1131,47 +1131,39 @@ export async function getCompetitieStand(): Promise<CompetitieStand[]> {
       "https://zwemcompetitie.knzb.nl/competitieservice/index.php?klasse=B&district=2",
     )
   ).text();
-  const rows = response
-    .match(CompetietieRegex.RowRegex)!
-    .toSpliced(0, 4)
-    .map((row) => {
-      const cells = row.match(CompetietieRegex.CellRegex)!;
-      return {
-        team: cells[1],
-        round1: parseFloat(
-          cells[3]
-            .match(CompetietieRegex.LinkRegex)![0]
-            .replace(/\./g, "")
-            .replace(/,/g, "."),
+
+  const table = response.match(
+    /<table class="stand-table"[^>]*>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/gm,
+  )![0];
+  return (
+    table
+      .match(
+        /<tr\r\n[\s]*?id="[\s\S]*?"[\s]*?data-team-name=".*?"[\s]*?data-team-context="B-klasse 2"[\s]*?>[\s]*?<[\s\S]*?<\/tr>/gm,
+      )
+      ?.map((row) => ({
+        team: row.match(
+          /(?<=<tr[\s\S]*?id="team[\s\S]*?"[\s\S]*?data-team-name=")[\s\S]*?(?=")/gm,
+        )![0],
+        round1: parseInt(
+          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![0].replace(".", ""),
         ),
-        round2: parseFloat(
-          cells[5]
-            .match(CompetietieRegex.LinkRegex)![0]
-            .replace(/\./g, "")
-            .replace(/,/g, "."),
+        round2: parseInt(
+          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![1].replace(".", ""),
         ),
-        round3: parseFloat(
-          cells[7]
-            .match(CompetietieRegex.LinkRegex)![0]
-            .replace(/\./g, "")
-            .replace(/,/g, "."),
+        round3: parseInt(
+          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![2].replace(".", ""),
         ),
-        round4: parseFloat(
-          cells[9]
-            .match(CompetietieRegex.LinkRegex)![0]
-            .replace(/\./g, "")
-            .replace(/,/g, "."),
+        round4: parseInt(
+          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![3].replace(".", ""),
         ),
-        round5: parseFloat(
-          cells[11]
-            .match(CompetietieRegex.LinkRegex)![0]
-            .replace(/\./g, "")
-            .replace(/,/g, "."),
+        round5: parseInt(
+          row.match(/(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm)![4].replace(".", ""),
         ),
-        total: parseFloat(cells[13].replace(/\./g, "").replace(/,/g, ".")),
-      };
-    });
-  return rows;
+        total: parseInt(
+          row.match(/(?<=<strong>)\d(\.\d+)?/gm)![0].replace(".", ""),
+        ),
+      })) ?? ([] as CompetitieStand[])
+  );
 }
 
 export async function time<T>(
