@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from "react";
 import { Time } from "../enums";
 import { DateRegexes } from "../regex";
 
@@ -58,4 +59,20 @@ export function findMultipleEntries(times: Time[]) {
   return times.filter(
     ({ event, poolSize }) => (counts.get(`${event}|${poolSize}`) ?? 0) > 1,
   );
+}
+
+export function getEventComparisonEvents(
+  times: Time[],
+  swimmerSelected: string,
+) {
+  return findMultipleEntries(
+    times
+      .filter(({ swimmer }) => swimmer === swimmerSelected)
+      .filter(isFastestFromYear),
+  )
+    .map(
+      ({ event, poolSize }) => `${event} ${poolSize === "25m" ? "SC" : "LC"}`,
+    )
+    .filter((e) => !e.includes("Lap"))
+    .filter((event, index, array) => array.indexOf(event) === index);
 }

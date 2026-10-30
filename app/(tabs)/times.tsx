@@ -19,6 +19,7 @@ import {
   textColor,
   yearProgress,
   logAndReturn,
+  getEventComparisonEvents,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -80,6 +81,24 @@ export default function Times() {
         setTimesInputted(
           !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
         );
+
+        const comparisonEvents = getEventComparisonEvents(
+          tms,
+          pr?.username ?? "",
+        );
+        setSelectedEvent({
+          event: comparisonEvents[0].substring(
+            0,
+            comparisonEvents[0].length - 3,
+          ),
+          poolSize:
+            comparisonEvents[0].substring(
+              comparisonEvents[0].length - 2,
+              comparisonEvents[0].length,
+            ) == "LC"
+              ? "50m"
+              : "25m",
+        });
       };
       asyncer();
     }, []),
@@ -303,19 +322,7 @@ export default function Times() {
             />
             <View style={{}} collapsable={false}>
               <Dropdown
-                data={findMultipleEntries(
-                  times
-                    .filter(({ swimmer }) => swimmer === swimmerSelected)
-                    .filter(isFastestFromYear),
-                )
-                  .map(
-                    ({ event, poolSize }) =>
-                      `${event} ${poolSize === "25m" ? "SC" : "LC"}`,
-                  )
-                  .filter((e) => !e.includes("Lap"))
-                  .filter(
-                    (event, index, array) => array.indexOf(event) === index,
-                  )}
+                data={getEventComparisonEvents(times, swimmerSelected)}
                 onPress={(item) => {
                   const poolSize = item.includes("LC") ? "50m" : "25m";
                   setSelectedEvent({
