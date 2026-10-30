@@ -10,6 +10,7 @@ import {
   convertTimeNumberToString,
   convertTimestringToNumber,
   filterFastestFromArray,
+  findMultipleEntries,
   getFastestFromArray,
   getSpecialityDataFromTimes,
   handleFileUpload,
@@ -17,6 +18,7 @@ import {
   isFastestFromYear,
   textColor,
   yearProgress,
+  logAndReturn,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -41,6 +43,7 @@ import { DateRegexes } from "@/constants/regex";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
 import { useFocusEffect } from "expo-router";
 import Chip from "@/components/Chip";
+import EvalComponent from "@/components/EvalComponent";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
@@ -300,8 +303,11 @@ export default function Times() {
             />
             <View style={{}} collapsable={false}>
               <Dropdown
-                data={times
-                  .filter(({ swimmer }) => swimmer === swimmerSelected)
+                data={findMultipleEntries(
+                  times
+                    .filter(({ swimmer }) => swimmer === swimmerSelected)
+                    .filter(isFastestFromYear),
+                )
                   .map(
                     ({ event, poolSize }) =>
                       `${event} ${poolSize === "25m" ? "SC" : "LC"}`,

@@ -34,8 +34,10 @@ export function isFastestFromYear(time: Time, index: number, times: Time[]) {
   const yearTimes = times
     .filter(
       (t) =>
+        t.event === time.event &&
+        t.poolSize === time.poolSize &&
         t.date?.match(DateRegexes.Number4Regex)?.[0] ===
-        time.date?.match(DateRegexes.Number4Regex)?.[0],
+          time.date?.match(DateRegexes.Number4Regex)?.[0],
     )
     .sort(
       (a, b) =>
@@ -43,4 +45,17 @@ export function isFastestFromYear(time: Time, index: number, times: Time[]) {
     );
 
   return yearTimes[0].time === time.time;
+}
+
+export function findMultipleEntries(times: Time[]) {
+  const counts = new Map<string, number>();
+
+  for (const { event, poolSize } of times) {
+    const key = `${event}|${poolSize}`;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+
+  return times.filter(
+    ({ event, poolSize }) => (counts.get(`${event}|${poolSize}`) ?? 0) > 1,
+  );
 }

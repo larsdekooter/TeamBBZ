@@ -26,8 +26,13 @@ export function getWeekNumber(date: Date): number {
   return Math.floor(days / 7) + 1;
 }
 
-function log<T>(val: T, index: number, array: T[]) {
+export function arrayLog<T>(val: T, index: number, array: T[]) {
   console.log({ val, index });
+  return val;
+}
+
+export function logAndReturn<T>(val: T) {
+  console.log(val);
   return val;
 }
 
