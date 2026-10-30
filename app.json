@@ -4,7 +4,7 @@
     "slug": "TeamBBZ",
     "version": "2.5.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon-light.png",
+    "icon": "./assets/images/android-icon-foreground.png",
     "scheme": "teambbz",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -13,17 +13,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon-light.png",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.ldekooter.TeamBBZ",
       "intentFilters": [
         {
           "action": "VIEW",
-          "category": [
-            "DEFAULT",
-            "BROWSABLE"
-          ],
+          "category": ["DEFAULT", "BROWSABLE"],
           "data": [
             {
               "scheme": "content",
@@ -54,12 +51,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon-light.png",
+          "image": "./assets/images/android-icon-foreground.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "image": "./assets/images/teambbz-light.png",
+            "image": "./assets/images/android-icon-foreground.png",
             "backgroundColor": "#181c20"
           }
         }
