@@ -13,8 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundColor": "#ffffff"
+       "foregroundImage": "./assets/images/android-icon-foreground.png",
+       "backgroundColor": "#000000"
       },
       "package": "com.ldekooter.TeamBBZ",
       "intentFilters": [
@@ -51,12 +51,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/android-icon-foreground.png",
+          "image": "./assets/images/icon-light.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "image": "./assets/images/android-icon-foreground.png",
+            "image": "./assets/images/teambbz-light.png",
             "backgroundColor": "#181c20"
           }
         }
