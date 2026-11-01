@@ -18,8 +18,9 @@ import {
   Wedstrijd,
 } from "../types";
 import { getWeekNumber, time } from "./GeneralFunctions";
-import { Profile } from "../enums";
+import { AutoSaveTime, Profile, Time } from "../enums";
 import TeamBBZSQLite from "../TeamBBZSQLite";
+import { formatEvent } from "./TimeFunctions";
 
 export async function getResult(id: string): Promise<Result[]> {
   const page = await fetch(
@@ -48,7 +49,9 @@ export async function getResult(id: string): Promise<Result[]> {
       percentages: [] as string[],
       points: [] as string[],
     };
-    textMatches[4].split("<br>").forEach((m, i) => (obj.events[i] = m));
+    textMatches[4]
+      .split("<br>")
+      .forEach((m, i) => (obj.events[i] = formatEvent(m)));
     table
       .match(/(?<=<td align=right width=4%>)[\s\S]*?(?=<\/td>)/gm)![0]
       .match(/<[\s\S]*?>\d*/gm)!
@@ -68,52 +71,70 @@ export async function getResult(id: string): Promise<Result[]> {
     textMatches[textMatches.length - 1]
       .split("<br>")
       .forEach((m, i) =>
-        m.length > 0 ? (obj.points[i] = m.replace("&nbsp;Pnt.", "")) : null,
+        m.length > 0 ? (obj.points[i] = m.replace(/[^\d]/gm, "")) : null,
       );
-
     data.push(obj);
   }
-  console.log(
-    "CHECK FOR ENABLED",
-    (
-      (await TeamBBZSQLite.db.getFirstAsync(
-        "SELECT * FROM profile WHERE id = 1",
-      )) as Profile
-    ).autoSaveTimes,
+
+  const autoSaveTimes = (
+    (await TeamBBZSQLite.db.getFirstAsync(
+      "SELECT * FROM profile WHERE id = 1",
+    )) as Profile
+  ).autoSaveTimes;
+
+  if (autoSaveTimes === AutoSaveTime.Always) {
+    await updateDatabaseFromResultPage(page, data);
+  } else if (autoSaveTimes === AutoSaveTime.Update) {
+    const globalTimes = await TeamBBZSQLite.sql<Time>`SELECT * FROM TIMES`;
+    const swimmers = globalTimes.map(({ swimmer }) => swimmer);
+    const times = data.filter(({ name }) => swimmers.includes(name));
+
+    await updateDatabaseFromResultPage(page, times);
+  }
+  return data;
+}
+
+async function updateDatabaseFromResultPage(
+  page: string,
+  data: {
+    name: string;
+    birtDate: string;
+    id: string;
+    team: string;
+    events: string[];
+    places: string[];
+    times: string[];
+    pbs: string[];
+    percentages: string[];
+    points: string[];
+  }[],
+) {
+  const isLongCourse = page
+    .match(ResultRegexes.PoolSizeRegex)![0]
+    .includes("Lange baan");
+  const isOpenWater = page
+    .match(ResultRegexes.PoolSizeRegex)![0]
+    .includes("Open Water");
+  if (isOpenWater) return data;
+
+  const date = page.match(DateRegexes.DateRegex)![0];
+  const meet = page.match(ResultRegexes.MeetRegex)![0];
+  const location = page.match(ResultRegexes.LocationRegex)![0];
+  if (!date || !meet || !location) throw new Error(date + meet + location);
+
+  const statement = await TeamBBZSQLite.db.prepareAsync(
+    "INSERT OR IGNORE INTO times (event, time, poolSize, points, date, meet, location, swimmer) VALUES ($event, $time, $poolSize, $points, $date, $meet, $location, $swimmer)",
   );
-  if (
-    (
-      (await TeamBBZSQLite.db.getFirstAsync(
-        "SELECT * FROM profile WHERE id = 1",
-      )) as Profile
-    ).autoSaveTimes
-  ) {
-    console.log("ENABLED");
-    const isLongCourse = page
-      .match(ResultRegexes.PoolSizeRegex)![0]
-      .includes("Lange baan");
-    const isOpenWater = page
-      .match(ResultRegexes.PoolSizeRegex)![0]
-      .includes("Open Water");
-    if (isOpenWater) return data;
 
-    const date = page.match(DateRegexes.Number4Regex)![0];
-    const meet = page.match(ResultRegexes.MeetRegex)![0];
-    const location = page.match(ResultRegexes.LocationRegex)![0];
-    if (!date || !meet || !location) throw new Error(date + meet + location);
-
-    const statement = await TeamBBZSQLite.db.prepareAsync(
-      "INSERT INTO times (event, time, poolSize, points, date, meet, location, swimmer) VALUES ($event, $time, $poolSize, $points, $date, $meet, $location, $swimmer)",
-    );
-
-    try {
-      for (const result of data) {
-        for (
-          let i = 0;
-          i < result.events.filter((event) => event.length > 0).length;
-          i++
-        ) {
-          await statement.executeAsync({
+  try {
+    for (const result of data) {
+      for (
+        let i = 0;
+        i < result.events.filter((event) => event.length > 0).length;
+        i++
+      ) {
+        await statement
+          .executeAsync({
             $event: result.events[i],
             $time: result.times[i],
             $poolSize: isLongCourse ? "50m" : "25m",
@@ -122,16 +143,16 @@ export async function getResult(id: string): Promise<Result[]> {
             $meet: meet,
             $location: location,
             $swimmer: result.name,
-          });
-        }
+          })
+          .catch((e) => console.error(e));
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      await statement.finalizeAsync();
     }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await statement.finalizeAsync();
+    return data;
   }
-  return data;
 }
 
 export async function getResultMeets(): Promise<

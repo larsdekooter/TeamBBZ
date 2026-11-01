@@ -48,15 +48,13 @@ export async function handleFileUpload(
   fileName?: string,
   shouldWait?: boolean,
 ) {
-  console.log(url);
   const file = new File(url);
-  console.log(file.uri);
   if (
     fileName &&
     !fileName.match(/Persoonlijke_Records([\s\S]*?).json/gm)?.[0] &&
     !fileName.match(/Geschiedenis_([\s\S]*?).json/gm)?.[0]
   )
-    return console.log("SOME TING WONG"); //TODO: Show the error to the user
+    return console.error("SOME TING WONG"); //TODO: Show the error to the user
   if (shouldWait) await wait(500);
   const fileText = await file.text();
   return fileText;

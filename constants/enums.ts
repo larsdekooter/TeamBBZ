@@ -71,7 +71,7 @@ export interface Profile {
   country: string;
   secondSwimmer?: string;
   devMode?: number;
-  autoSaveTimes?: boolean;
+  autoSaveTimes?: number;
 }
 
 export interface Settings {
@@ -88,4 +88,10 @@ export interface Time {
   date?: string;
   meet?: string;
   location?: string;
+}
+
+export enum AutoSaveTime {
+  "Never" = 0,
+  "Update" = 1,
+  "Always" = 2,
 }

@@ -82,8 +82,9 @@ export default function Times() {
           !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
         );
 
-        if (pr) {
+        if (pr && tms.length > 0) {
           const comparisonEvents = getEventComparisonEvents(tms, pr.username);
+          if (comparisonEvents.length === 0) return;
           setSelectedEvent({
             event: comparisonEvents[0].substring(
               0,
@@ -245,136 +246,149 @@ export default function Times() {
                 marginBottom: -10,
               }}
             />
-            <LineChart
-              data={times
-                .filter(
-                  (time) =>
-                    time.swimmer === swimmerSelected &&
-                    time.event === selectedEvent.event &&
-                    time.poolSize === selectedEvent.poolSize,
-                )
-                .filter(isFastestFromYear)
-                .sort(
-                  (a, b) =>
-                    parseInt(
-                      a.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
-                    ) -
-                    parseInt(
-                      b.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
-                    ),
-                )
-                .map((time, _, arr) =>
-                  usePointGraph
-                    ? time.points
-                    : getFastestFromArray(arr).time -
-                      convertTimestringToNumber(time.time),
-                )}
-              labels={times
-                .filter(
-                  (time) =>
-                    time.swimmer === swimmerSelected &&
-                    time.event === selectedEvent.event &&
-                    time.poolSize === selectedEvent.poolSize,
-                )
-                .filter(isFastestFromYear)
-                .sort(
-                  (a, b) =>
-                    parseInt(
-                      a.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
-                    ) -
-                    parseInt(
-                      b.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
-                    ),
-                )
-                .map(
-                  ({ date }) =>
-                    date?.match(DateRegexes.Number4Regex)![0] ?? "0000",
-                )}
-              size={{ width: Dimensions.get("window").width, height: 300 }}
-              lineColor={
-                swimmerSelected === profile.username
-                  ? colorScheme === "light"
-                    ? "rgba(162,94,23,0.5)"
-                    : "rgba(162, 94, 23, 0.8)"
-                  : undefined
-              }
-              pointColor={
-                swimmerSelected === profile.username
-                  ? Colors.Orange
-                  : Colors.Blue
-              }
-              displayDataLabels={(labelBefore) =>
-                usePointGraph
-                  ? labelBefore
-                  : convertTimeNumberToString(
-                      getFastestFromArray(
-                        times.filter(
-                          (time) =>
-                            time.swimmer === swimmerSelected &&
-                            time.event === selectedEvent.event &&
-                            time.poolSize === selectedEvent.poolSize,
-                        ),
-                      ).time - convertTimestringToNumber(labelBefore),
-                    )
-              }
-              yAxisLabel={usePointGraph ? "Punten" : "Tijd"}
-            />
-            <View style={{}} collapsable={false}>
-              <Dropdown
-                data={getEventComparisonEvents(times, swimmerSelected)}
-                onPress={(item) => {
-                  const poolSize = item.includes("LC") ? "50m" : "25m";
-                  setSelectedEvent({
-                    event: item.replace(/\sLC|\sSC/gm, ""),
-                    poolSize,
-                  });
-                }}
-                renderItem={({ item, index }) => {
-                  return (
-                    <View
-                      key={index}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: "grey",
-                        paddingVertical: 5,
-                        paddingHorizontal: 10,
-                        margin: 5,
-                        borderRadius: 6,
+            {selectedEvent.event &&
+              times.find(
+                ({ event, poolSize }) =>
+                  event === selectedEvent.event &&
+                  poolSize === selectedEvent.poolSize,
+              ) && (
+                <Fragment>
+                  <LineChart
+                    data={times
+                      .filter(
+                        (time) =>
+                          time.swimmer === swimmerSelected &&
+                          time.event === selectedEvent.event &&
+                          time.poolSize === selectedEvent.poolSize,
+                      )
+                      .filter(isFastestFromYear)
+                      .sort(
+                        (a, b) =>
+                          parseInt(
+                            a.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                          ) -
+                          parseInt(
+                            b.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                          ),
+                      )
+                      .map((time, _, arr) =>
+                        usePointGraph
+                          ? time.points
+                          : getFastestFromArray(arr).time -
+                            convertTimestringToNumber(time.time),
+                      )}
+                    labels={times
+                      .filter(
+                        (time) =>
+                          time.swimmer === swimmerSelected &&
+                          time.event === selectedEvent.event &&
+                          time.poolSize === selectedEvent.poolSize,
+                      )
+                      .filter(isFastestFromYear)
+                      .sort(
+                        (a, b) =>
+                          parseInt(
+                            a.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                          ) -
+                          parseInt(
+                            b.date?.match(DateRegexes.Number4Regex)?.[0] ?? "0",
+                          ),
+                      )
+                      .map(
+                        ({ date }) =>
+                          date?.match(DateRegexes.Number4Regex)![0] ?? "0000",
+                      )}
+                    size={{
+                      width: Dimensions.get("window").width,
+                      height: 300,
+                    }}
+                    lineColor={
+                      swimmerSelected === profile.username
+                        ? colorScheme === "light"
+                          ? "rgba(162,94,23,0.5)"
+                          : "rgba(162, 94, 23, 0.8)"
+                        : undefined
+                    }
+                    pointColor={
+                      swimmerSelected === profile.username
+                        ? Colors.Orange
+                        : Colors.Blue
+                    }
+                    displayDataLabels={(labelBefore) =>
+                      usePointGraph
+                        ? labelBefore
+                        : convertTimeNumberToString(
+                            getFastestFromArray(
+                              times.filter(
+                                (time) =>
+                                  time.swimmer === swimmerSelected &&
+                                  time.event === selectedEvent.event &&
+                                  time.poolSize === selectedEvent.poolSize,
+                              ),
+                            ).time - convertTimestringToNumber(labelBefore),
+                          )
+                    }
+                    yAxisLabel={usePointGraph ? "Punten" : "Tijd"}
+                  />
+                  <View style={{}} collapsable={false}>
+                    <Dropdown
+                      data={getEventComparisonEvents(times, swimmerSelected)}
+                      onPress={(item) => {
+                        const poolSize = item.includes("LC") ? "50m" : "25m";
+                        setSelectedEvent({
+                          event: item.replace(/\sLC|\sSC/gm, ""),
+                          poolSize,
+                        });
+                      }}
+                      renderItem={({ item, index }) => {
+                        return (
+                          <View
+                            key={index}
+                            style={{
+                              borderWidth: 1,
+                              borderColor: "grey",
+                              paddingVertical: 5,
+                              paddingHorizontal: 10,
+                              margin: 5,
+                              borderRadius: 6,
+                              backgroundColor:
+                                colorScheme === "dark"
+                                  ? Colors.DarkBackground
+                                  : Colors.LightBackground,
+                            }}
+                          >
+                            <Text style={[textColor(colorScheme)]}>{item}</Text>
+                          </View>
+                        );
+                      }}
+                      dropdownStyle={{
                         backgroundColor:
                           colorScheme === "dark"
                             ? Colors.DarkBackground
                             : Colors.LightBackground,
                       }}
-                    >
-                      <Text style={[textColor(colorScheme)]}>{item}</Text>
-                    </View>
-                  );
-                }}
-                dropdownStyle={{
-                  backgroundColor:
-                    colorScheme === "dark"
-                      ? Colors.DarkBackground
-                      : Colors.LightBackground,
-                }}
-                maxHeight={200}
-              />
-            </View>
-            <Chip
-              label="Gebruik World Aquatics punten"
-              state={usePointGraph}
-              onPress={() => setUsePointGraph(!usePointGraph)}
-              style={{ marginTop: 20 }}
-            />
-            <View
-              style={{
-                width: "90%",
-                height: 5,
-                backgroundColor: "grey",
-                borderRadius: 10,
-                marginTop: 10,
-                marginBottom: -10,
-              }}
-            />
+                      maxHeight={200}
+                    />
+                  </View>
+                  <Chip
+                    label="Gebruik World Aquatics punten"
+                    state={usePointGraph}
+                    onPress={() => setUsePointGraph(!usePointGraph)}
+                    style={{ marginTop: 20 }}
+                  />
+                  <View
+                    style={{
+                      width: "90%",
+                      height: 5,
+                      backgroundColor: "grey",
+                      borderRadius: 10,
+                      marginTop: 10,
+                      marginBottom: -10,
+                    }}
+                  />
+                </Fragment>
+              )}
+
             <LineChart
               data={
                 useAverageTimeGraph

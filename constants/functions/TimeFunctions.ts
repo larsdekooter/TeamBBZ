@@ -76,3 +76,13 @@ export function getEventComparisonEvents(
     .filter((e) => !e.includes("Lap"))
     .filter((event, index, array) => array.indexOf(event) === index);
 }
+
+export function formatEvent(event: string) {
+  if (event.length === 0) return event;
+  const digits = event.match(/\d+/g)![0];
+  const name = event.substring(digits.length + 1, event.length);
+  return `${digits}m ${name
+    .split(/\s/g)
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join(" ")}`;
+}

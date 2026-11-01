@@ -20,7 +20,7 @@ import { Host, Switch } from "@expo/ui/jetpack-compose";
 import { Colors, Profile, Time } from "@/constants/enums";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
-import { size } from "@expo/ui/jetpack-compose/modifiers";
+import SegmentedControl from "@expo/ui/community/segmented-control";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -29,6 +29,7 @@ export default function Settings() {
     Profile | { username: ""; email: ""; secondSwimmer: "" }
   >({ username: "", email: "", secondSwimmer: "" });
   const [devModeChecked, setDevModeChecked] = useState(false);
+  const [autoSaveTimesIndex, setAutoSaveTimesIndex] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -39,6 +40,9 @@ export default function Settings() {
         if (profileDB) {
           setProfile(profileDB);
           setDevModeChecked(profileDB.devMode === 1);
+          setAutoSaveTimesIndex(
+            profileDB.autoSaveTimes ? profileDB.autoSaveTimes : 0,
+          );
         }
         const times = await TeamBBZSQLite.sql<Time>`SELECT * FROM times`;
         const sws = times.map((time) => time.swimmer).filter(filterDuplicates);
@@ -121,7 +125,7 @@ export default function Settings() {
                 ...swimmers,
               ]
                 .filter(filterDuplicates)
-                .filter((v) => v !== undefined)}
+                .filter((v): v is string => v !== undefined)}
               renderItem={({ item }) => (
                 <View
                   style={{
@@ -218,14 +222,38 @@ export default function Settings() {
               </Text>
             </ButtonComponent>
           </View>
+
+          <View
+            style={{
+              flexDirection: "column",
+              paddingHorizontal: 15,
+              borderTopColor: "grey",
+              borderTopWidth: 1,
+              paddingTop: 10,
+              justifyContent: "center",
+              marginBottom: 10,
+            }}
+          >
+            <Text style={[textColor(colorScheme), { textAlign: "center" }]}>
+              Voeg tijden toe vanuit de resultatenpagina
+            </Text>
+            <SegmentedControl
+              values={["Nooit", "Bijwerken", "Altijd"]}
+              selectedIndex={autoSaveTimesIndex}
+              onChange={async (event) => {
+                await TeamBBZSQLite.sql`UPDATE profile SET autoSaveTimes = ${event.nativeEvent.selectedSegmentIndex} WHERE id = 1`;
+                setAutoSaveTimesIndex(event.nativeEvent.selectedSegmentIndex);
+              }}
+            />
+          </View>
           <View
             style={{
               flexDirection: "row",
               paddingHorizontal: 15,
               borderTopColor: "grey",
               borderTopWidth: 1,
-              paddingTop: 10,
               alignItems: "center",
+              paddingTop: 5,
             }}
           >
             <Text
@@ -276,42 +304,3 @@ export default function Settings() {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalLightView: {
-    margin: 20,
-    backgroundColor: Colors.ModalLightBackground,
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    borderColor: Colors.Orange,
-    borderWidth: 1,
-  },
-  modalDarkView: {
-    margin: 20,
-    backgroundColor: Colors.ModalDarkBackground,
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    borderColor: Colors.Orange,
-    borderWidth: 1,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-});
