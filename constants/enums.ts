@@ -71,6 +71,7 @@ export interface Profile {
   country: string;
   secondSwimmer?: string;
   devMode?: number;
+  autoSaveTimes?: boolean;
 }
 
 export interface Settings {

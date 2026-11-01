@@ -82,23 +82,22 @@ export default function Times() {
           !!(await TeamBBZSQLite.db.getFirstAsync<Time>("SELECT * FROM times")),
         );
 
-        const comparisonEvents = getEventComparisonEvents(
-          tms,
-          pr?.username ?? "",
-        );
-        setSelectedEvent({
-          event: comparisonEvents[0].substring(
-            0,
-            comparisonEvents[0].length - 3,
-          ),
-          poolSize:
-            comparisonEvents[0].substring(
-              comparisonEvents[0].length - 2,
-              comparisonEvents[0].length,
-            ) == "LC"
-              ? "50m"
-              : "25m",
-        });
+        if (pr) {
+          const comparisonEvents = getEventComparisonEvents(tms, pr.username);
+          setSelectedEvent({
+            event: comparisonEvents[0].substring(
+              0,
+              comparisonEvents[0].length - 3,
+            ),
+            poolSize:
+              comparisonEvents[0].substring(
+                comparisonEvents[0].length - 2,
+                comparisonEvents[0].length,
+              ) == "LC"
+                ? "50m"
+                : "25m",
+          });
+        }
       };
       asyncer();
     }, []),

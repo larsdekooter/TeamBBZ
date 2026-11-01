@@ -5,6 +5,7 @@ import {
   GeneralRegexes,
   MeetRegexes,
   PostRegexes,
+  ResultRegexes,
   SchemaRegexes,
 } from "../regex";
 import {
@@ -71,6 +72,64 @@ export async function getResult(id: string): Promise<Result[]> {
       );
 
     data.push(obj);
+  }
+  console.log(
+    "CHECK FOR ENABLED",
+    (
+      (await TeamBBZSQLite.db.getFirstAsync(
+        "SELECT * FROM profile WHERE id = 1",
+      )) as Profile
+    ).autoSaveTimes,
+  );
+  if (
+    (
+      (await TeamBBZSQLite.db.getFirstAsync(
+        "SELECT * FROM profile WHERE id = 1",
+      )) as Profile
+    ).autoSaveTimes
+  ) {
+    console.log("ENABLED");
+    const isLongCourse = page
+      .match(ResultRegexes.PoolSizeRegex)![0]
+      .includes("Lange baan");
+    const isOpenWater = page
+      .match(ResultRegexes.PoolSizeRegex)![0]
+      .includes("Open Water");
+    if (isOpenWater) return data;
+
+    const date = page.match(DateRegexes.Number4Regex)![0];
+    const meet = page.match(ResultRegexes.MeetRegex)![0];
+    const location = page.match(ResultRegexes.LocationRegex)![0];
+    if (!date || !meet || !location) throw new Error(date + meet + location);
+
+    const statement = await TeamBBZSQLite.db.prepareAsync(
+      "INSERT INTO times (event, time, poolSize, points, date, meet, location, swimmer) VALUES ($event, $time, $poolSize, $points, $date, $meet, $location, $swimmer)",
+    );
+
+    try {
+      for (const result of data) {
+        for (
+          let i = 0;
+          i < result.events.filter((event) => event.length > 0).length;
+          i++
+        ) {
+          await statement.executeAsync({
+            $event: result.events[i],
+            $time: result.times[i],
+            $poolSize: isLongCourse ? "50m" : "25m",
+            $points: result.points[i],
+            $date: date,
+            $meet: meet,
+            $location: location,
+            $swimmer: result.name,
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      await statement.finalizeAsync();
+    }
   }
   return data;
 }
