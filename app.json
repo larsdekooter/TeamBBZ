@@ -2,7 +2,7 @@
   "expo": {
     "name": "TeamBBZ",
     "slug": "TeamBBZ",
-    "version": "2.7.0",
+    "version": "2.7.1",
     "orientation": "portrait",
     "icon": "./assets/images/android-icon-foreground.png",
     "scheme": "teambbz",
