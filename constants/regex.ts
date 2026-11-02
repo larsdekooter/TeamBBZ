@@ -52,7 +52,7 @@ export class ResultRegexes {
   static MeetRegex =
     /(?<=<td width=72%><b>De Biesboschzwemmers<\/b><br><b>)[\s\S]*?(?=<)/gm;
   static LocationRegex =
-    /(?<=<td align=right width=28%><br><b>)[\s\S]*?(?=  \d{2}-\d{2}-\d{4})/gm;
+    /(?<=<td align=right width=28%><br><b>)[\s\S]*?(?=(  |&nbsp;&nbsp;)\d{1,2}-\d{1,2}-\d{4})/gm;
   static PoolSizeRegex =
     /<td width=80%>Uitslag overzicht<\/td><td align=right width=20%>[\s\S]*?<\/td>/gm;
 }
@@ -61,7 +61,7 @@ export class DateRegexes {
   static MonthRegex =
     /Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|jan|feb|mrt|apr|mei|jun|jul|aug|sep|okt|nov|dec/gm;
   static Number4Regex = /\b\d{4}\b/;
-  static DateRegex = /\d{2}-\d{2}-\d{4}/g;
+  static DateRegex = /\d{1,2}-\d{1,2}-\d{4}/g;
 }
 
 export class SchemaRegexes {
