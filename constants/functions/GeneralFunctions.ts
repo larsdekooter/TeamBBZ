@@ -31,8 +31,8 @@ export function arrayLog<T>(val: T, index: number, array: T[]) {
   return val;
 }
 
-export function logAndReturn<T>(val: T) {
-  console.log(val);
+export function logAndReturn<T>(val: T, field?: keyof T) {
+  console.log(field ? val[field] : val);
   return val;
 }
 

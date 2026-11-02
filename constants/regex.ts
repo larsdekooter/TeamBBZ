@@ -62,6 +62,7 @@ export class DateRegexes {
     /Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|jan|feb|mrt|apr|mei|jun|jul|aug|sep|okt|nov|dec/gm;
   static Number4Regex = /\b\d{4}\b/;
   static DateRegex = /\d{1,2}-\d{1,2}-\d{4}/g;
+  static ReplaceRegex = /(^|-)(\d)(?=-|$)/gm;
 }
 
 export class SchemaRegexes {

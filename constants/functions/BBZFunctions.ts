@@ -117,7 +117,9 @@ async function updateDatabaseFromResultPage(
     .includes("Open Water");
   if (isOpenWater) return data;
 
-  const date = page.match(DateRegexes.DateRegex)![0];
+  const date = page
+    .match(DateRegexes.DateRegex)![0]
+    .replace(/(^|-)(\d)(?=-|$)/gm, "$10$2");
   const meet = page.match(ResultRegexes.MeetRegex)![0];
   const location = page.match(ResultRegexes.LocationRegex)![0];
   if (!date || !meet || !location) throw new Error(date + meet + location);
