@@ -120,42 +120,6 @@ export default function Settings() {
             >
               2e zwemmer
             </Text>
-            {/* <AbsoluteDropdown
-              data={[
-                profile.secondSwimmer ? profile.secondSwimmer : undefined,
-                ...swimmers,
-              ]
-                .filter(filterDuplicates)
-                .filter((v): v is string => v !== undefined)}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "grey",
-                    borderRadius: 6,
-                    marginVertical: 5,
-                    padding: 5,
-                  }}
-                >
-                  <Text style={[textColor(colorScheme)]}>{item}</Text>
-                </View>
-              )}
-              style={{ width: "60%" }}
-              dropdownStyle={{
-                backgroundColor:
-                  colorScheme === "light"
-                    ? Colors.LightBackground
-                    : Colors.DarkBackground,
-              }}
-              textStyle={{ width: "80%" }}
-              closeWhenSelected
-              onPress={async (item) => {
-                if (item.length === 0) return;
-                await TeamBBZSQLite.sql`UPDATE profile SET secondSwimmer = ${item} WHERE id = 1`;
-                setProfile({ ...profile, secondSwimmer: item } as Profile);
-              }}
-              emptySelected={!profile.secondSwimmer}
-            /> */}
             <Picker
               selectedValue={
                 profile.secondSwimmer
