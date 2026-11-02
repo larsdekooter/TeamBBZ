@@ -21,6 +21,7 @@ import { Colors, Profile, Time } from "@/constants/enums";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
 import SegmentedControl from "@expo/ui/community/segmented-control";
+import { Picker } from "@expo/ui/community/picker";
 
 export default function Settings() {
   const colorScheme = useColorScheme();
@@ -119,7 +120,7 @@ export default function Settings() {
             >
               2e zwemmer
             </Text>
-            <AbsoluteDropdown
+            {/* <AbsoluteDropdown
               data={[
                 profile.secondSwimmer ? profile.secondSwimmer : undefined,
                 ...swimmers,
@@ -154,7 +155,35 @@ export default function Settings() {
                 setProfile({ ...profile, secondSwimmer: item } as Profile);
               }}
               emptySelected={!profile.secondSwimmer}
-            />
+            /> */}
+            <Picker
+              selectedValue={
+                profile.secondSwimmer
+                  ? profile.secondSwimmer
+                  : swimmers
+                      .filter(filterDuplicates)
+                      .filter((v): v is string => v != undefined)[0]
+              }
+              onValueChange={async (value) => {
+                if (value.length === 0) return;
+                await TeamBBZSQLite.sql`UPDATE profile SET secondSwimmer = ${value} WHERE id = 1`;
+                setProfile({ ...profile, secondSwimmer: value } as Profile);
+              }}
+              style={{
+                width: "60%",
+              }}
+            >
+              {[
+                profile.secondSwimmer ? profile.secondSwimmer : undefined,
+                ...swimmers,
+              ]
+                .filter(filterDuplicates)
+                .filter((v): v is string => v !== undefined)
+                .sort()
+                .map((swimmer) => (
+                  <Picker.Item label={swimmer} value={swimmer} />
+                ))}
+            </Picker>
           </View>
           <View
             style={{
