@@ -26,9 +26,9 @@ import { Picker } from "@expo/ui/community/picker";
 export default function Settings() {
   const colorScheme = useColorScheme();
   const [swimmers, setSwimmers] = useState<string[]>([]);
-  const [profile, setProfile] = useState<
-    Profile | { username: ""; email: ""; secondSwimmer: "" }
-  >({ username: "", email: "", secondSwimmer: "" });
+  const [profile, setProfile] = useState<Profile | { username: ""; email: "" }>(
+    { username: "", email: "" },
+  );
   const [devModeChecked, setDevModeChecked] = useState(false);
   const [autoSaveTimesIndex, setAutoSaveTimesIndex] = useState(0);
 
@@ -91,7 +91,7 @@ export default function Settings() {
             <ButtonComponent
               onPress={async () => {
                 await TeamBBZSQLite.sql`DELETE FROM profile WHERE id = 1`;
-                setProfile({ username: "", email: "", secondSwimmer: "" });
+                setProfile({ username: "", email: "" });
               }}
               style={{
                 paddingHorizontal: 15,
@@ -103,51 +103,6 @@ export default function Settings() {
                 Log uit
               </Text>
             </ButtonComponent>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              paddingHorizontal: 15,
-              borderTopColor: "grey",
-              borderTopWidth: 1,
-              paddingVertical: 10,
-              paddingBottom: 10,
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={[textColor(colorScheme), { textAlign: "left", flex: 1 }]}
-            >
-              2e zwemmer
-            </Text>
-            <Picker
-              selectedValue={
-                profile.secondSwimmer
-                  ? profile.secondSwimmer
-                  : swimmers
-                      .filter(filterDuplicates)
-                      .filter((v): v is string => v != undefined)[0]
-              }
-              onValueChange={async (value) => {
-                if (value.length === 0) return;
-                await TeamBBZSQLite.sql`UPDATE profile SET secondSwimmer = ${value} WHERE id = 1`;
-                setProfile({ ...profile, secondSwimmer: value } as Profile);
-              }}
-              style={{
-                width: "60%",
-              }}
-            >
-              {[
-                profile.secondSwimmer ? profile.secondSwimmer : undefined,
-                ...swimmers,
-              ]
-                .filter(filterDuplicates)
-                .filter((v): v is string => v !== undefined)
-                .sort()
-                .map((swimmer) => (
-                  <Picker.Item label={swimmer} value={swimmer} />
-                ))}
-            </Picker>
           </View>
           <View
             style={{

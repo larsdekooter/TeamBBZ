@@ -88,12 +88,12 @@ export default function Club() {
       id: string; //
     }[],
   );
-  const [usernames, setUsernames] = useState<Array<string>>([]);
 
   const [loading, setLoading] = useState(true);
   const [loadingTime, setLoadingTime] = useState(0);
   const [componentsLoaded, setComponentsLoaded] = useState(0);
   const [devMode, setDevMode] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   async function load<T>(func: () => Promise<T>): Promise<T> {
     const result = await time(func);
@@ -121,35 +121,25 @@ export default function Club() {
         setLoadingTime(elapsed);
       }, 100);
 
-      const [schem, wden, crs, compStanden, res, profile, secondSwimmer] =
-        await Promise.all([
-          load(getSchemaData),
-          load(getMeetCalendar),
-          load(getClubRecords),
-          load(getCompetitieStand),
-          load(getResultMeets),
-          time(() =>
-            TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile"),
-          ),
-          time(() =>
-            TeamBBZSQLite.db.getFirstAsync<{
-              id: Number;
-              name: string;
-            }>("SELECT * FROM swimmers"),
-          ),
-        ]);
+      const [schem, wden, crs, compStanden, res, pr] = await Promise.all([
+        load(getSchemaData),
+        load(getMeetCalendar),
+        load(getClubRecords),
+        load(getCompetitieStand),
+        load(getResultMeets),
+        time(() =>
+          TeamBBZSQLite.db.getFirstAsync<Profile>("SELECT * FROM profile"),
+        ),
+      ]);
 
       setSchema(schem);
       setWedstrijden(wden);
       setClubrecords(crs);
       setCompetitieStanden(compStanden);
       setResultsMeets(res);
+      setProfile(pr);
       setLoading(false);
       clearInterval(updateTimeInterval);
-      const swimmerArray = [];
-      if (profile) swimmerArray.push(profile.username);
-      if (secondSwimmer) swimmerArray.push(secondSwimmer.name);
-      setUsernames(swimmerArray);
     };
     if (loading) {
       time(getS);
@@ -170,7 +160,7 @@ export default function Club() {
         colorScheme={colorScheme}
         wedstrijden={wedstrijden}
         loading={loading}
-        usernames={usernames}
+        profile={profile}
       />
       <ClubrecordsComponent
         colorScheme={colorScheme}
@@ -797,12 +787,12 @@ function WedstrijdenComponent({
   colorScheme,
   wedstrijden,
   loading,
-  usernames,
+  profile,
 }: {
   colorScheme: ColorSchemeName | null;
   wedstrijden: Wedstrijd[];
   loading?: boolean;
-  usernames: Array<string>;
+  profile: Profile | null;
 }) {
   const [modalShown, setModalShown] = useState(false);
   const [selectedWedstrijd, setSelectedWedstrijd] = useState({} as Wedstrijd);
@@ -997,15 +987,10 @@ function WedstrijdenComponent({
                         borderWidth: filterSwimmers(
                           selectedWedstrijd,
                           item.no,
-                        )?.find((swimmer) => usernames.includes(swimmer.name))
+                        )?.find((swimmer) => swimmer.name === profile?.username)
                           ? 3
                           : 1,
-                        borderColor: filterSwimmers(
-                          selectedWedstrijd,
-                          item.no,
-                        )?.find((swimmer) => usernames[1] === swimmer.name)
-                          ? Colors.Blue
-                          : Colors.Orange,
+                        borderColor: Colors.Orange,
                       },
                     ]}
                     numberOfTitleLines={1}
@@ -1014,7 +999,7 @@ function WedstrijdenComponent({
                       textDecorationLine: filterSwimmers(
                         selectedWedstrijd,
                         item.no,
-                      )?.find((swimmer) => usernames.includes(swimmer.name))
+                      )?.find((swimmer) => swimmer.name === profile?.username)
                         ? "underline"
                         : undefined,
                     }}

@@ -20,6 +20,7 @@ import {
   yearProgress,
   logAndReturn,
   getEventComparisonEvents,
+  filterDuplicates,
 } from "@/constants/functions";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
@@ -45,6 +46,7 @@ import AbsoluteDropdown from "@/components/AbsoluteDropdown";
 import { useFocusEffect } from "expo-router";
 import Chip from "@/components/Chip";
 import EvalComponent from "@/components/EvalComponent";
+import Picker from "@expo/ui/community/picker";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
@@ -120,6 +122,7 @@ export default function Times() {
           setActiveTab={setActiveTab}
           swimmerSelected={swimmerSelected}
           setSwimmerSelected={setSwimmerSelected}
+          times={times}
         />
         {activeTab === Tabs.Input && (
           <Fragment>
@@ -1162,6 +1165,7 @@ function TimesHeader({
   setActiveTab,
   setSwimmerSelected,
   swimmerSelected,
+  times,
 }: {
   profile: Profile;
   timesInputted: boolean;
@@ -1169,6 +1173,7 @@ function TimesHeader({
   setActiveTab: React.Dispatch<React.SetStateAction<Tabs>>;
   swimmerSelected: string;
   setSwimmerSelected: React.Dispatch<React.SetStateAction<string>>;
+  times: Time[];
 }) {
   const colorScheme = useColorScheme();
   const mainSwimmerSelected = profile.username === swimmerSelected;
@@ -1189,47 +1194,39 @@ function TimesHeader({
         top: 0,
       }}
     >
-      <Pressable
+      <View
         style={{
-          width: "100%",
+          // flex: 1,
           paddingVertical: 5,
-          flexDirection: "row",
+          margin: 10,
+          flexDirection: "column",
           justifyContent: "center",
-        }}
-        onPress={async () => {
-          const secondSwimmer = (
-            await TeamBBZSQLite.db.getFirstAsync<Profile>(
-              "SELECT * FROM profile",
-            )
-          )?.secondSwimmer;
-          if (!secondSwimmer) return;
-          setSwimmerSelected(
-            mainSwimmerSelected ? secondSwimmer : profile.username,
-          );
+          alignItems: "center",
+          // backgroundColor: "white",
+          borderWidth: 1,
+          borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
+          borderRadius: 6,
+          paddingHorizontal: 10,
         }}
       >
-        <Text
-          style={[
-            {
-              flexDirection: "column",
-              flex: 1,
-              width: "90%",
-              marginVertical: 10,
-              borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
-              borderWidth: 1,
-              borderRadius: 6,
-              paddingHorizontal: 20,
-              paddingVertical: 16,
-              textAlign: "center",
-              fontWeight: "bold",
-            },
-            textColor(colorScheme),
-          ]}
+        <Picker
+          selectedValue={swimmerSelected}
+          onValueChange={(value) => {
+            if (value.length === 0) return;
+            setSwimmerSelected(value);
+          }}
+          style={{ width: "75%" }}
         >
-          {swimmerSelected}
-        </Text>
-      </Pressable>
-
+          {times
+            .map(({ swimmer }) => swimmer)
+            .filter(filterDuplicates)
+            .filter((v): v is string => v != undefined)
+            .sort()
+            .map((swimmer) => (
+              <Picker.Item label={swimmer} value={swimmer} />
+            ))}
+        </Picker>
+      </View>
       <View
         style={{
           flexDirection: "row",

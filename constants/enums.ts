@@ -69,7 +69,6 @@ export interface Profile {
   birthdate: string;
   club: string;
   country: string;
-  secondSwimmer?: string;
   devMode?: number;
   autoSaveTimes?: number;
 }
