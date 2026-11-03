@@ -248,9 +248,10 @@ export default function Times() {
             />
             {selectedEvent.event &&
               times.find(
-                ({ event, poolSize }) =>
+                ({ event, poolSize, swimmer }) =>
                   event === selectedEvent.event &&
-                  poolSize === selectedEvent.poolSize,
+                  poolSize === selectedEvent.poolSize &&
+                  swimmer === swimmerSelected,
               ) && (
                 <Fragment>
                   <LineChart
