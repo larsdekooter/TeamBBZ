@@ -873,7 +873,7 @@ function InputTimesModal({
             alignItems: "flex-end",
           }}
         >
-          <AbsoluteDropdown
+          {/* <AbsoluteDropdown
             data={
               selectedStroke === "Vrije Slag"
                 ? [
@@ -919,8 +919,34 @@ function InputTimesModal({
                   | 2000,
               )
             }
-          />
-          <AbsoluteDropdown
+          /> */}
+          <Picker
+            style={{ width: "35%" }}
+            selectedValue={"25m"}
+            onValueChange={(value) =>
+              setDistance(
+                parseInt(value) as
+                  | 50
+                  | 100
+                  | 200
+                  | 300
+                  | 400
+                  | 800
+                  | 1500
+                  | 2000,
+              )
+            }
+          >
+            {(selectedStroke === "Vrije Slag"
+              ? ["25m", "50m", "100m", "200m", "400m", "800m", "1500m", "2000m"]
+              : selectedStroke === "Wisselslag"
+                ? ["100m", "200m", "300m", "400m"]
+                : ["25m", "50m", "100m", "200m"]
+            ).map((distance) => (
+              <Picker.Item value={distance} label={distance} />
+            ))}
+          </Picker>
+          {/* <AbsoluteDropdown
             data={[
               "Vlinderslag",
               "Rugslag",
@@ -954,7 +980,22 @@ function InputTimesModal({
               )
             }
             closeWhenSelected
-          />
+          /> */}
+          <Picker
+            style={{ width: "45%" }}
+            selectedValue={"Vlinderslag"}
+            onValueChange={(value) => setSelectedStroke(value)}
+          >
+            {[
+              "Vlinderslag",
+              "Rugslag",
+              "Schoolslag",
+              "Vrije Slag",
+              "Wisselslag",
+            ].map((event) => (
+              <Picker.Item label={event} value={event} />
+            ))}
+          </Picker>
         </View>
         <View
           style={{
