@@ -1,3 +1,5 @@
+import { SwitchColors } from "@expo/ui/jetpack-compose";
+
 export enum SwimrakingEventId {
   "25m vrije slag" = 47,
   "50m vrije slag" = 1,
@@ -93,4 +95,19 @@ export enum AutoSaveTime {
   "Never" = 0,
   "Update" = 1,
   "Always" = 2,
+}
+
+export interface SwitchProps {
+  /**
+   * Value on android, isOn on ios
+   */
+  value: boolean;
+  /**
+   * The listener of the state change
+   */
+  onCheckedChange?: (value: boolean) => void;
+  /**
+   * Android colors
+   */
+  colors?: SwitchColors;
 }

@@ -16,7 +16,7 @@ import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Socials from "@/components/Socials";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
-import { Host, Switch } from "@expo/ui/jetpack-compose";
+import Switch from "@/components/Switch";
 import { Colors, Profile, Time } from "@/constants/enums";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import AbsoluteDropdown from "@/components/AbsoluteDropdown";
@@ -209,23 +209,21 @@ export default function Settings() {
             >
               Dev Mode
             </Text>
-            <Host matchContents>
-              <Switch
-                onCheckedChange={async () => {
-                  await TeamBBZSQLite.sql`UPDATE profile SET devMode = ${devModeChecked ? 0 : 1} WHERE id = 1`;
-                  setDevModeChecked((prev) => !prev);
-                }}
-                value={devModeChecked}
-                colors={{
-                  checkedTrackColor:
-                    colorScheme === "dark"
-                      ? Colors.TransparantDarkOrange
-                      : Colors.Orange,
-                  checkedThumbColor:
-                    colorScheme === "dark" ? Colors.Orange : Colors.DarkOrange,
-                }}
-              />
-            </Host>
+            <Switch
+              onCheckedChange={async () => {
+                await TeamBBZSQLite.sql`UPDATE profile SET devMode = ${devModeChecked ? 0 : 1} WHERE id = 1`;
+                setDevModeChecked((prev) => !prev);
+              }}
+              value={devModeChecked}
+              colors={{
+                checkedTrackColor:
+                  colorScheme === "dark"
+                    ? Colors.TransparantDarkOrange
+                    : Colors.Orange,
+                checkedThumbColor:
+                  colorScheme === "dark" ? Colors.Orange : Colors.DarkOrange,
+              }}
+            />
           </View>
         </View>
 
