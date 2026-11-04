@@ -656,11 +656,37 @@ function TimeTable({
             {historyShown?.poolSize === "25m" ? "SC" : "LC"}
           </Text>
           <FlatList
-            data={times.filter(
-              ({ event, poolSize }) =>
-                event === historyShown?.event &&
-                poolSize === historyShown.poolSize,
-            )}
+            data={times
+              .filter(
+                ({ event, poolSize }) =>
+                  event === historyShown?.event &&
+                  poolSize === historyShown.poolSize,
+              )
+              .sort((a, b) => {
+                const [dayA, monthA, yearA] = a.date?.split("-") ?? [
+                  "0",
+                  "0",
+                  "0",
+                ];
+                const [dayB, monthB, yearB] = b.date?.split("-") ?? [
+                  "0",
+                  "0",
+                  "0",
+                ];
+
+                const dateA = new Date(
+                  parseInt(yearA),
+                  parseInt(monthA) - 1,
+                  parseInt(dayA),
+                ).getTime();
+                const dateB = new Date(
+                  parseInt(yearB),
+                  parseInt(monthB) - 1,
+                  parseInt(dayB),
+                ).getTime();
+
+                return dateB - dateA;
+              })}
             style={{ marginBottom: 50 }}
             contentContainerStyle={{
               // flex: 1,
