@@ -1196,13 +1196,12 @@ function TimesHeader({
     >
       <View
         style={{
-          // flex: 1,
           paddingVertical: 5,
-          margin: 10,
+          marginHorizontal: 50,
+          marginVertical: 10,
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          // backgroundColor: "white",
           borderWidth: 1,
           borderColor: mainSwimmerSelected ? Colors.Orange : Colors.Blue,
           borderRadius: 6,

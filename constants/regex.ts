@@ -52,7 +52,7 @@ export class ResultRegexes {
   static MeetRegex =
     /(?<=<td width=72%><b>De Biesboschzwemmers<\/b><br><b>)[\s\S]*?(?=<)/gm;
   static LocationRegex =
-    /(?<=<td align=right width=28%><br><b>)[\s\S]*?(?=(  |&nbsp;&nbsp;)\d{1,2}-\d{1,2}-\d{4})/gm;
+    /(?<=<td align=right width=28%><br><b>)[\s\S]*?(?=(  |&nbsp;&nbsp;)\d{1,2}-(\/\d{1,2}-)?\d{1,2}-\d{4})/gm;
   static PoolSizeRegex =
     /<td width=80%>Uitslag overzicht<\/td><td align=right width=20%>[\s\S]*?<\/td>/gm;
 }
