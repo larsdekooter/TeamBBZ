@@ -46,7 +46,7 @@ import AbsoluteDropdown from "@/components/AbsoluteDropdown";
 import { useFocusEffect } from "expo-router";
 import Chip from "@/components/Chip";
 import EvalComponent from "@/components/EvalComponent";
-import Picker from "@expo/ui/community/picker";
+import { Host, Picker } from "@expo/ui";
 
 export default function Times() {
   const [profile, setProfile] = useState<Profile | null>({} as Profile);
@@ -920,32 +920,47 @@ function InputTimesModal({
               )
             }
           /> */}
-          <Picker
+          <Host
+            matchContents={{ vertical: true }}
             style={{ width: "35%" }}
-            selectedValue={"25m"}
-            onValueChange={(value) =>
-              setDistance(
-                parseInt(value) as
-                  | 50
-                  | 100
-                  | 200
-                  | 300
-                  | 400
-                  | 800
-                  | 1500
-                  | 2000,
-              )
-            }
+            seedColor={Colors.Orange}
           >
-            {(selectedStroke === "Vrije Slag"
-              ? ["25m", "50m", "100m", "200m", "400m", "800m", "1500m", "2000m"]
-              : selectedStroke === "Wisselslag"
-                ? ["100m", "200m", "300m", "400m"]
-                : ["25m", "50m", "100m", "200m"]
-            ).map((distance) => (
-              <Picker.Item value={distance} label={distance} />
-            ))}
-          </Picker>
+            <Picker
+              // style={{ width: "35%" }}
+              selectedValue={"25m"}
+              onValueChange={(value) =>
+                setDistance(
+                  parseInt(value) as
+                    | 50
+                    | 100
+                    | 200
+                    | 300
+                    | 400
+                    | 800
+                    | 1500
+                    | 2000,
+                )
+              }
+            >
+              {(selectedStroke === "Vrije Slag"
+                ? [
+                    "25m",
+                    "50m",
+                    "100m",
+                    "200m",
+                    "400m",
+                    "800m",
+                    "1500m",
+                    "2000m",
+                  ]
+                : selectedStroke === "Wisselslag"
+                  ? ["100m", "200m", "300m", "400m"]
+                  : ["25m", "50m", "100m", "200m"]
+              ).map((distance) => (
+                <Picker.Item value={distance} label={distance} />
+              ))}
+            </Picker>
+          </Host>
           {/* <AbsoluteDropdown
             data={[
               "Vlinderslag",
@@ -981,21 +996,27 @@ function InputTimesModal({
             }
             closeWhenSelected
           /> */}
-          <Picker
+          <Host
+            matchContents={{ vertical: true }}
             style={{ width: "45%" }}
-            selectedValue={"Vlinderslag"}
-            onValueChange={(value) => setSelectedStroke(value)}
+            seedColor={Colors.Orange}
           >
-            {[
-              "Vlinderslag",
-              "Rugslag",
-              "Schoolslag",
-              "Vrije Slag",
-              "Wisselslag",
-            ].map((event) => (
-              <Picker.Item label={event} value={event} />
-            ))}
-          </Picker>
+            <Picker
+              // style={{ width: "45%" }}
+              selectedValue={"Vlinderslag"}
+              onValueChange={(value) => setSelectedStroke(value)}
+            >
+              {[
+                "Vlinderslag",
+                "Rugslag",
+                "Schoolslag",
+                "Vrije Slag",
+                "Wisselslag",
+              ].map((event) => (
+                <Picker.Item label={event} value={event} />
+              ))}
+            </Picker>
+          </Host>
         </View>
         <View
           style={{
@@ -1275,23 +1296,29 @@ function TimesHeader({
           paddingHorizontal: 10,
         }}
       >
-        <Picker
-          selectedValue={swimmerSelected}
-          onValueChange={(value) => {
-            if (value.length === 0) return;
-            setSwimmerSelected(value);
-          }}
+        <Host
           style={{ width: "75%" }}
+          matchContents={{ vertical: true }}
+          seedColor={mainSwimmerSelected ? Colors.Orange : Colors.Blue}
         >
-          {times
-            .map(({ swimmer }) => swimmer)
-            .filter(filterDuplicates)
-            .filter((v): v is string => v != undefined)
-            .sort()
-            .map((swimmer) => (
-              <Picker.Item label={swimmer} value={swimmer} />
-            ))}
-        </Picker>
+          <Picker
+            selectedValue={swimmerSelected}
+            onValueChange={(value) => {
+              if (value.length === 0) return;
+              setSwimmerSelected(value);
+            }}
+            // style={{ width: "75%" }}
+          >
+            {times
+              .map(({ swimmer }) => swimmer)
+              .filter(filterDuplicates)
+              .filter((v): v is string => v != undefined)
+              .sort()
+              .map((swimmer) => (
+                <Picker.Item label={swimmer} value={swimmer} />
+              ))}
+          </Picker>
+        </Host>
       </View>
       <View
         style={{
