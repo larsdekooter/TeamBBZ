@@ -926,8 +926,7 @@ function InputTimesModal({
             seedColor={Colors.Orange}
           >
             <Picker
-              // style={{ width: "35%" }}
-              selectedValue={"25m"}
+              selectedValue={`${distance}m`}
               onValueChange={(value) =>
                 setDistance(
                   parseInt(value) as
@@ -1003,7 +1002,7 @@ function InputTimesModal({
           >
             <Picker
               // style={{ width: "45%" }}
-              selectedValue={"Vlinderslag"}
+              selectedValue={selectedStroke}
               onValueChange={(value) => setSelectedStroke(value)}
             >
               {[
