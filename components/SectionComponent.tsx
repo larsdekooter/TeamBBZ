@@ -1,5 +1,4 @@
 import {
-  Animated,
   Pressable,
   Dimensions,
   View,
@@ -15,6 +14,13 @@ import { textColor } from "@/constants/functions";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import SkeletonLoader from "./SkeletonLoader";
 import { Colors } from "@/constants/enums";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { rotate } from "@expo/ui/jetpack-compose/modifiers";
 
 export default function SectionComponent({
   children,
@@ -44,32 +50,27 @@ export default function SectionComponent({
   disabled?: boolean;
 }) {
   const [isExpanded, setExpanded] = useState(false);
-  const rotateAnim = useState(new Animated.Value(0))[0];
-  const heightAnim = useState(new Animated.Value(0))[0];
+  const rotateAnim = useSharedValue("0deg");
+  const heightAnim = useSharedValue(0);
   const colorScheme = useColorScheme();
-
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "180deg"],
-  });
 
   const toggleExpand = () => {
     if (disabled) return;
     setExpanded(!isExpanded);
 
-    Animated.parallel([
-      Animated.timing(rotateAnim, {
-        toValue: isExpanded ? 0 : 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(heightAnim, {
-        toValue: isExpanded ? 0 : 1,
-        duration: 250,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    rotateAnim.value = withTiming(isExpanded ? "0deg" : "180deg", {
+      duration: 100,
+    });
+    heightAnim.value = withTiming(isExpanded ? 0 : 1, { duration: 250 });
   };
+
+  const rotateAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: rotateAnim.value }],
+  }));
+  const heightAnimatedStyle = useAnimatedStyle(() => ({
+    maxHeight: interpolate(heightAnim.value, [0, 1], [0, height]),
+    marginTop: interpolate(heightAnim.value, [0, 1], [0, 10]),
+  }));
 
   if (loading) {
     return <SkeletonLoader />;
@@ -113,7 +114,7 @@ export default function SectionComponent({
           {title}
         </Text>
         {!disabled && (
-          <Animated.View style={{ transform: [{ rotate }] }}>
+          <Animated.View style={[rotateAnimatedStyle]}>
             <FontAwesome
               name="chevron-down"
               size={15}
@@ -125,17 +126,10 @@ export default function SectionComponent({
       <Animated.View
         style={[
           {
-            maxHeight: heightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, height],
-            }),
             opacity: heightAnim,
-            marginTop: heightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 10],
-            }),
           },
           style,
+          heightAnimatedStyle,
         ]}
       >
         {children}

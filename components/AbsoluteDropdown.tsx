@@ -4,7 +4,6 @@ import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { ReactNode, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Animated,
   GestureResponderEvent,
   Pressable,
   StyleProp,
@@ -14,6 +13,12 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 interface AbsoluteDropdownProps {
   data: Array<string>;
@@ -52,8 +57,8 @@ export default function AbsoluteDropdown({
   emptySelected,
 }: AbsoluteDropdownProps) {
   const [isOpened, setOpened] = useState(false);
-  const rotateAnim = useState(new Animated.Value(0))[0];
-  const heightAnim = useState(new Animated.Value(0))[0];
+  const rotateAnim = useSharedValue("0deg");
+  const heightAnim = useSharedValue(0);
   const [selected, setSelected] = useState<string | undefined>(data[0]);
 
   useEffect(() => {
@@ -62,27 +67,25 @@ export default function AbsoluteDropdown({
     }
   }, [data]);
 
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "180deg"],
-  });
-
   const toggleExpand = () => {
     setOpened(!isOpened);
 
-    Animated.parallel([
-      Animated.timing(rotateAnim, {
-        toValue: isOpened ? 0 : 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(heightAnim, {
-        toValue: isOpened ? 0 : 1,
-        duration: isOpened ? 200 : 500,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    rotateAnim.value = withTiming(isOpened ? "0deg" : "180deg", {
+      duration: 200,
+    });
+    heightAnim.value = withTiming(isOpened ? 0 : 1, {
+      duration: isOpened ? 200 : 500,
+    });
   };
+
+  const rotateAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: rotateAnim.value }],
+  }));
+
+  const heightAnimatedStyle = useAnimatedStyle(() => ({
+    maxHeight: interpolate(heightAnim.value, [0, 1], [0, maxHeight]),
+    marginTop: interpolate(heightAnim.value, [0, 1], [0, 10]),
+  }));
 
   const colorScheme = useColorScheme();
 
@@ -125,14 +128,16 @@ export default function AbsoluteDropdown({
           <ActivityIndicator color={Colors.Orange} size={"small"} />
         )}
         <Animated.View
-          style={{
-            transform: [{ rotate }],
-            marginLeft: 10,
-            width: 15,
-            height: 15,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          style={[
+            {
+              marginLeft: 10,
+              width: 15,
+              height: 15,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            rotateAnimatedStyle,
+          ]}
         >
           <FontAwesome
             name="chevron-down"
@@ -145,15 +150,7 @@ export default function AbsoluteDropdown({
       <Animated.ScrollView
         style={[
           {
-            maxHeight: heightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, maxHeight],
-            }),
             opacity: heightAnim,
-            marginTop: heightAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 10],
-            }),
             position: "absolute",
             top: "150%",
             left: 0,
@@ -170,6 +167,7 @@ export default function AbsoluteDropdown({
             paddingHorizontal: 5,
           },
           dropdownStyle,
+          heightAnimatedStyle,
         ]}
         nestedScrollEnabled
       >

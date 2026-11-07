@@ -27,7 +27,6 @@ import {
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
-import Entypo from "@react-native-vector-icons/entypo";
 import {
   Fragment,
   SetStateAction,
@@ -40,12 +39,17 @@ import {
   Pressable,
   Text,
   useColorScheme,
-  Animated,
   View,
   ColorSchemeName,
   ActivityIndicator,
   FlatList,
 } from "react-native";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import SectionComponent from "@/components/SectionComponent";
 import Dropdown from "@/components/Dropdown";
 import SwipeModal from "@/components/SwipeModal";
@@ -610,24 +614,26 @@ function SchemaComponent({
   const currentDate = new Date();
   const [shown, setShown] = useState(false);
   const [height, setHeight] = useState(0);
-  const rotateAnim = useState(new Animated.Value(0))[0];
+  const rotateAnim = useSharedValue("0deg");
   const [datePickerShown, setDatePickerShown] = useState(false);
   const [date, setDate] = useState(new Date());
   const [schemaLoading, setSchemaLoading] = useState(false);
 
   const toggleExpand = () => {
     setShown(!shown);
-    Animated.timing(rotateAnim, {
-      toValue: shown ? 0 : 1,
+    rotateAnim.value = withTiming(shown ? "0deg" : "180deg", {
       duration: 200,
-      useNativeDriver: true,
-    }).start();
+    });
   };
 
-  const rotate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "180deg"],
-  });
+  const rotateAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: rotateAnim.value }],
+  }));
+
+  // const rotate = interpolate(rotateAnim.value,
+  //   [0, 1],
+  //   ["0deg", "180deg"]
+  // );
 
   if (loading) {
     return <SkeletonLoader />;
@@ -665,7 +671,10 @@ function SchemaComponent({
               onPress={() => setDatePickerShown(true)}
               style={{
                 aspectRatio: 1 / 1,
-                backgroundColor: Colors.ModalDarkBackground,
+                backgroundColor:
+                  colorScheme === "dark"
+                    ? Colors.ModalDarkBackground
+                    : Colors.ModalLightBackground,
                 height: 50,
                 padding: 10,
                 marginLeft: 20,
@@ -673,7 +682,11 @@ function SchemaComponent({
                 alignItems: "center",
               }}
             >
-              <FontAwesome name="calendar" size={25} color={"white"} />
+              <FontAwesome
+                name="calendar"
+                size={25}
+                color={textColor(colorScheme).color}
+              />
             </ButtonComponent>
           </View>
         }
@@ -770,7 +783,7 @@ function SchemaComponent({
             Schema van {currentDate.getDate()}-{currentDate.getMonth() + 1}-
             {currentDate.getFullYear()}
           </Text>
-          <Animated.View style={{ transform: [{ rotate }] }}>
+          <Animated.View style={rotateAnimatedStyle}>
             <FontAwesome
               name="chevron-down"
               size={15}

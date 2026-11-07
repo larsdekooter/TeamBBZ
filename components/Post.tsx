@@ -4,8 +4,13 @@ import { PostRegexes } from "@/constants/regex";
 import { Post } from "@/constants/types";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Image, Text, useColorScheme, View } from "react-native";
+import { Image, Text, useColorScheme, View } from "react-native";
 import { Pressable } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 export default function PostComponent({
   post,
@@ -15,32 +20,22 @@ export default function PostComponent({
   compact?: boolean;
 }) {
   const colorScheme = useColorScheme();
-  const scalingHeightAnim = useRef(new Animated.Value(0)).current;
-  const scalingWidthtAnim = useRef(new Animated.Value(0)).current;
+  const scalingHeightAnim = useSharedValue(0);
+  const scalingWidthtAnim = useSharedValue(0);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(scalingHeightAnim, {
-        toValue: compact ? 0 : 1,
-        duration: 100,
-        useNativeDriver: false,
-      }),
-      Animated.timing(scalingWidthtAnim, {
-        toValue: compact ? 0 : 1,
-        duration: 100,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    scalingHeightAnim.value = withTiming(compact ? 300 / 5 : 300 / 2, {
+      duration: 100,
+    });
+    scalingWidthtAnim.value = withTiming(compact ? 453 / 5 : 453 / 2, {
+      duration: 100,
+    });
   }, [compact]);
 
-  const scaleHeight = scalingHeightAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [300 / 5, 300 / 2],
-  });
-  const scaleWidth = scalingHeightAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [453 / 5, 453 / 2],
-  });
+  const sizeAnimatedStyle = useAnimatedStyle(() => ({
+    height: scalingHeightAnim.value,
+    width: scalingWidthtAnim.value,
+  }));
 
   return (
     <Pressable
@@ -69,11 +64,12 @@ export default function PostComponent({
       >
         <Animated.Image
           source={{ uri: post.image }}
-          style={{
-            width: scaleWidth,
-            height: scaleHeight,
-            borderRadius: 10,
-          }}
+          style={[
+            {
+              borderRadius: 10,
+            },
+            sizeAnimatedStyle,
+          ]}
           // borderRadius={10}
         />
         <Text
