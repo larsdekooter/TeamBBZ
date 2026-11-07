@@ -11,9 +11,9 @@ import {
   ViewStyle,
 } from "react-native";
 import {
-  Gesture,
   GestureDetector,
   GestureHandlerRootView,
+  usePanGesture,
 } from "react-native-gesture-handler";
 import Animated, {
   AnimatedStyle,
@@ -79,12 +79,11 @@ export default function SwipeModal({
     }, animationDuration);
   };
 
-  const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
+  const panGesture = usePanGesture({
+    onUpdate: (e) => {
       const { translationY } = e;
-      if (translationY < 0) {
-        return;
-      }
+      if (translationY < 0) return;
+
       if (top.value < closeHeight && translationY > closeHeight) {
         // When the modal is swiped down to closeHeight or lower
         opened.value = withTiming(0, { duration: animationDuration });
@@ -93,16 +92,16 @@ export default function SwipeModal({
         opened.value = withTiming(1, { duration: animationDuration });
       }
       top.value = translationY;
-    })
-    .onEnd(() => {
-      if (top.value > closeHeight) {
-        handleClose();
-      } else {
-        top.value = 0;
-      }
-    })
-    .runOnJS(true)
-    .activeOffsetY([-20, 20]);
+    },
+
+    onDeactivate: () => {
+      if (top.value > closeHeight) handleClose();
+      else top.value = 0;
+    },
+
+    runOnJS: true,
+    activeOffsetY: [-20, 20],
+  });
 
   const modalAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: top.value }],
