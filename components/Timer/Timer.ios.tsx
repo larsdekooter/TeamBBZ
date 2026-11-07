@@ -36,7 +36,7 @@ export default function Timer({
       <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
         {time}
       </Text>
-      <Host matchContents>
+      <Host style={{ width: "100%" }}>
         <ProgressView value={progress ?? 0} modifiers={[tint(Colors.Orange)]} />
       </Host>
     </View>

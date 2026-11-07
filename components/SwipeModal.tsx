@@ -22,7 +22,10 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import ButtonComponent from "./ButtonComponent";
 import { textColor } from "@/constants/functions";
 import { Colors } from "@/constants/enums";
@@ -114,7 +117,7 @@ export default function SwipeModal({
   }));
 
   const colorScheme = useColorScheme();
-
+  const insets = useSafeAreaInsets();
   const flex = customHeight ? customHeight / height : 1 / 2;
 
   return (
@@ -128,7 +131,7 @@ export default function SwipeModal({
         opened.value = withTiming(1, { duration: animationDuration });
       }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <Animated.View style={[{ flex: 1 }, backgroundAnimatedStyle]}>
             <Pressable
@@ -178,6 +181,7 @@ export default function SwipeModal({
                       alignItems: "center",
                       padding: 20,
                       flex: 1,
+                      paddingBottom: Math.max(insets.bottom, 20),
                     },
                   ]}
                 >
