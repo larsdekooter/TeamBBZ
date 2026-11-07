@@ -6,6 +6,7 @@ import {
   useColorScheme,
   View,
   Appearance,
+  Platform,
 } from "react-native";
 import Page from "../../components/Page";
 import { filterDuplicates, textColor } from "@/constants/functions";
@@ -185,6 +186,7 @@ export default function Settings() {
             <Text style={[textColor(colorScheme), { textAlign: "center" }]}>
               Voeg tijden toe vanuit de resultatenpagina
             </Text>
+            {Platform.OS === "ios" && <View style={{ paddingVertical: 5 }} />}
             <SegmentedControl
               values={["Nooit", "Bijwerken", "Altijd"]}
               selectedIndex={autoSaveTimesIndex}

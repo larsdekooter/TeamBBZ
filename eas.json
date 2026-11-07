@@ -5,7 +5,10 @@
         "buildType": "apk"
       },
       "autoIncrement": true,
-      "env": { "APP_VARIANT": "production" }
+      "env": { "APP_VARIANT": "production" },
+      "ios": {
+        "simulator": true
+      }
     },
     "preview2": {
       "android": {
