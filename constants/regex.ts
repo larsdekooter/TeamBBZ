@@ -110,7 +110,7 @@ export class CompetietieRegex {
   static TeamNameRegex =
     /(?<=<tr[\s\S]*?id="team[\s\S]*?"[\s\S]*?data-team-name=")[\s\S]*?(?=")/gm;
   static RoundPointsRegex = /(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm;
-  static TotalPointsRegex = /(?<=<strong>)\d(\.\d+)?/gm;
+  static TotalPointsRegex = /(?<=<strong>)\d{1,3}(\.\d+)?/gm;
 }
 
 export class FileRegex {
