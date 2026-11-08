@@ -188,6 +188,7 @@ export default function Settings() {
             </Text>
             {Platform.OS === "ios" && <View style={{ paddingVertical: 5 }} />}
             <SegmentedControl
+              appearance={colorScheme ?? "light"}
               values={["Nooit", "Bijwerken", "Altijd"]}
               selectedIndex={autoSaveTimesIndex}
               onChange={async (event) => {
