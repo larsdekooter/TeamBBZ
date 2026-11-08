@@ -106,11 +106,11 @@ export class CompetietieRegex {
   static TableRegex =
     /<table class="stand-table"[^>]*>[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/gm;
   static TableRowRegex =
-    /<tr\r\n[\s]*?id="[\s\S]*?"[\s]*?data-team-name=".*?"[\s]*?data-team-context="B-klasse 2"[\s]*?>[\s]*?<[\s\S]*?<\/tr>/gm;
+    /<tr[\r\n\s]*?id="[\s\S]*?"[\s]*?data-team-name=".*?"[\s]*?data-team-context="B-klasse\s2"[\s\S]*?>[\s]*?<[\s\S]*?<\/tr>/gm;
   static TeamNameRegex =
     /(?<=<tr[\s\S]*?id="team[\s\S]*?"[\s\S]*?data-team-name=")[\s\S]*?(?=")/gm;
   static RoundPointsRegex = /(?<=<a[\s\S]*?>)\d+(\.\d+)?/gm;
-  static TotalPointsRegex = /(?<=<strong>)\d{1,3}(\.\d+)?/gm;
+  static TotalPointsRegex = /(?<=<strong>)\d{1,2}(\.\d+)?/gm;
 }
 
 export class FileRegex {
