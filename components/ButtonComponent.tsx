@@ -36,6 +36,9 @@ export default function ButtonComponent({
         },
         style,
       ]}
+      android_ripple={{
+        color: Colors.Orange,
+      }}
     >
       {children}
     </Pressable>
