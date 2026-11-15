@@ -7,19 +7,13 @@ import { Colors } from "@/constants/enums";
  * Used to do it with RNGH, but didnt work after upgrading to expo-sdk@54
  */
 
-export default function ButtonComponent({
-  children,
-  onPress,
-  style,
-}: {
-  children?: React.ReactNode;
-  onPress: PressableProps["onPress"];
-  style?: StyleProp<ViewStyle>;
-}) {
+type ButtonComponentProps = PressableProps & { style: StyleProp<ViewStyle> };
+
+export default function ButtonComponent(props: ButtonComponentProps) {
   const colorScheme = useColorScheme();
   return (
     <Pressable
-      onPress={onPress}
+      {...props}
       style={[
         {
           backgroundColor:
@@ -34,13 +28,8 @@ export default function ButtonComponent({
           borderColor: Colors.Orange,
           borderWidth: 1,
         },
-        style,
+        props.style,
       ]}
-      android_ripple={{
-        color: Colors.Orange,
-      }}
-    >
-      {children}
-    </Pressable>
+    />
   );
 }
