@@ -3,11 +3,36 @@ import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import { Tabs } from "expo-router";
 import { Image, StyleSheet, useColorScheme, View } from "react-native";
 import { Colors } from "@/constants/enums";
+import { Platform } from "react-native";
+import { NativeTabs } from "expo-router/build/native-tabs/NativeTabs.js";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const iconSize = 35;
-
+  if (Platform.OS === "ios") {
+    return (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Icon sf="house.fill" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="times">
+          <NativeTabs.Trigger.Icon sf="figure.pool.swim" />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="club">
+          <NativeTabs.Trigger.Icon
+            src={
+              colorScheme === "dark"
+                ? require("../../assets/images/teambbz.png")
+                : require("../../assets/images/teambbz-dark.png")
+            }
+          />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="settings">
+          <NativeTabs.Trigger.Icon sf="gear" />
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    );
+  }
   return (
     <Tabs
       screenOptions={{
