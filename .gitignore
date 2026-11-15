@@ -41,3 +41,4 @@ app-example
 android/
 
 .env
+.env.eas-simulator
