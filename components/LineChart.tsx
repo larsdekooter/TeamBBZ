@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, useColorScheme } from "react-native";
 import Svg, { Line, Path, Text, Circle } from "react-native-svg";
 
@@ -28,10 +28,17 @@ const LineChart: React.FC<LineChartProps> = ({
   const padding = { top: 50, right: 20, bottom: 40, left: 45 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
+  const [pointLabelShownIndex, setPointLabelShownIndex] = useState<
+    number | null
+  >(null);
 
   const maxValue = Math.max(...data);
   const minValue = Math.min(...data);
   const valueRange = maxValue - minValue;
+
+  useEffect(() => {
+    setPointLabelShownIndex(null);
+  }, [data, labels]);
 
   const allSameValue = valueRange === 0 || data.length === 1;
 
@@ -49,7 +56,6 @@ const LineChart: React.FC<LineChartProps> = ({
 
   const createSmoothPath = () => {
     if (data.length === 1) {
-      // If there's only one point, draw a small horizontal line
       const x = getX(0);
       const y = getY(data[0]);
       return `M ${x} ${y} L ${x} ${y}`;
@@ -59,7 +65,7 @@ const LineChart: React.FC<LineChartProps> = ({
       x: getX(index),
       y: getY(value),
     }));
-    const tension = 0.5; // Adjust this value to control the smoothness (0.0 to 1.0)
+    const tension = 0.5;
 
     const catmullRomSpline = (
       p0: any,
@@ -109,7 +115,7 @@ const LineChart: React.FC<LineChartProps> = ({
 
       let value: number;
       if (allSameValue) {
-        const range = maxValue * 0.2; // 20% range
+        const range = maxValue * 0.2;
         value = maxValue - range + (i / (yAxisTicks - 1)) * (2 * range);
       } else {
         value = minValue + (i / (yAxisTicks - 1)) * valueRange;
@@ -144,13 +150,11 @@ const LineChart: React.FC<LineChartProps> = ({
       <Svg width={width} height={height}>
         {yAxisLabel && (
           <Text
-            x={yAxisLabel.length * 5} // Horizontal position near the left edge
+            x={yAxisLabel.length * 5}
             y={40} // Vertical center
             fill={colorScheme === "light" ? "black" : "white"}
             fontSize="15"
-            // fontWeight="bold"
             textAnchor="middle"
-            // transform={`rotate(-90, 15, ${height / 2})`}
           >
             {yAxisLabel}
           </Text>
@@ -172,7 +176,28 @@ const LineChart: React.FC<LineChartProps> = ({
         />
         {data.map((value, index) => (
           <React.Fragment key={`point-${index}`}>
+            {pointLabelShownIndex === index && (
+              <Text
+                x={
+                  index === data.length - 1
+                    ? getX(index) - 30
+                    : getX(index) -
+                      displayDataLabels(value.toFixed(1)).length * 2
+                }
+                y={getY(value) - 10}
+                fill={colorScheme === "light" ? "black" : "white"}
+              >
+                {displayDataLabels(value.toFixed(1))}
+              </Text>
+            )}
             <Circle cx={getX(index)} cy={getY(value)} r="4" fill={pointColor} />
+            <Circle
+              cx={getX(index)}
+              cy={getY(value)}
+              r="25"
+              fill="transparent"
+              onPress={() => setPointLabelShownIndex(index)}
+            />
             <Text
               x={getX(index)}
               y={height - padding.bottom + 20}
