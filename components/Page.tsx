@@ -1,4 +1,10 @@
-import { StyleProp, StyleSheet, useColorScheme, ViewStyle } from "react-native";
+import {
+  Platform,
+  StyleProp,
+  StyleSheet,
+  useColorScheme,
+  ViewStyle,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/enums";
@@ -11,6 +17,20 @@ export default function Page({
   style?: StyleProp<ViewStyle>;
 }) {
   const colorScheme = useColorScheme();
+  // if (Platform.OS === "ios") {
+  //   return (
+  //     <GestureHandlerRootView
+  //       style={[
+  //         colorScheme === "light"
+  //           ? stylesLight.container
+  //           : stylesDark.container,
+  //         style,
+  //       ]}
+  //     >
+  //       {children}
+  //     </GestureHandlerRootView>
+  //   );
+  // }
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>

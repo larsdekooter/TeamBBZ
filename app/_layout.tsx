@@ -5,6 +5,9 @@ import { useEffect } from "react";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import { handleFileUpload, handleTimeUpload } from "@/constants/functions";
 import * as Linking from "expo-linking";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   useEffect(() => {
@@ -30,6 +33,8 @@ export default function Layout() {
       `;
       if (!(await TeamBBZSQLite.db.getFirstAsync("SELECT * FROM settings")))
         await TeamBBZSQLite.sql`INSERT INTO settings (darkMode) VALUES (${colorScheme === "dark" ? 1 : 0})`;
+
+      SplashScreen.hide();
     };
 
     async function handleUrl(url: string) {
