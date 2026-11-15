@@ -165,6 +165,9 @@ export default function Settings() {
                 await TeamBBZSQLite.sql`DELETE FROM times WHERE id > 0`;
               }}
               style={{ width: "90%", paddingVertical: 10, marginTop: 10 }}
+              android_ripple={{
+                color: Colors.Orange,
+              }}
             >
               <Text style={[textColor(colorScheme), { fontWeight: "bold" }]}>
                 Verwijder alle tijden
