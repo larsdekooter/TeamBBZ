@@ -22,8 +22,8 @@ export default function TabLayout() {
           <NativeTabs.Trigger.Icon
             src={
               colorScheme === "dark"
-                ? require("../../assets/images/teambbz.png")
-                : require("../../assets/images/teambbz-dark.png")
+                ? require("../../assets/images/icons/teambbz.png")
+                : require("../../assets/images/icons/teambbz-dark.png")
             }
           />
         </NativeTabs.Trigger>
