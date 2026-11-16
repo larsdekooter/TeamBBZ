@@ -33,7 +33,15 @@ export default function Page({
   // }
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor:
+            colorScheme === "light"
+              ? Colors.LightBackground
+              : Colors.DarkBackground,
+        }}
+      >
         <GestureHandlerRootView
           style={[
             colorScheme === "light"

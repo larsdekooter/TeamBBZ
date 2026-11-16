@@ -11,7 +11,8 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "update": "node update-version.js",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "buildIOS": "eas build -p ios --profile preview"
   },
   "jest": {
     "preset": "jest-expo"

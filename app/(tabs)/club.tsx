@@ -60,6 +60,7 @@ import { useFocusEffect } from "expo-router";
 import TeamBBZSQLite from "@/constants/TeamBBZSQLite";
 import Timer from "@/components/Timer";
 import DateTimePicker from "@expo/ui/community/datetime-picker";
+import { useTeamBBZSQLite } from "@/constants/context/TeamBBZSQLiteContext";
 
 export default function Club() {
   const [schema, setSchema] = useState(
@@ -93,6 +94,8 @@ export default function Club() {
     }[],
   );
 
+  const { isReady: isDBReady } = useTeamBBZSQLite();
+
   const [loading, setLoading] = useState(true);
   const [loadingTime, setLoadingTime] = useState(0);
   const [componentsLoaded, setComponentsLoaded] = useState(0);
@@ -107,6 +110,7 @@ export default function Club() {
 
   useFocusEffect(
     useCallback(() => {
+      if (!isDBReady) return;
       const getDevMode = async () => {
         const profile = await TeamBBZSQLite.db.getFirstAsync<Profile>(
           "SELECT * FROM profile",
@@ -114,11 +118,12 @@ export default function Club() {
         setDevMode(profile?.devMode === 1);
       };
       getDevMode();
-    }, []),
+    }, [isDBReady]),
   );
 
   useEffect(() => {
     const getS = async () => {
+      if (!isDBReady) return;
       const start = Date.now();
       const updateTimeInterval = setInterval(() => {
         const elapsed = Date.now() - start;
@@ -148,7 +153,7 @@ export default function Club() {
     if (loading) {
       time(getS);
     }
-  }, []);
+  }, [isDBReady]);
 
   const colorScheme = useColorScheme();
 
