@@ -5,24 +5,32 @@
         "buildType": "apk"
       },
       "autoIncrement": true,
-      "env": { "APP_VARIANT": "production" },
+      "env": {
+        "APP_VARIANT": "production"
+      },
       "ios": {
         "simulator": true
-      }
+      },
+      "channel": "preview"
     },
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
-      }
+      },
+      "channel": "preview2"
     },
     "preview3": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "preview3"
     },
     "preview4": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "preview4"
     },
-    "production": {}
+    "production": {
+      "channel": "production"
+    }
   },
   "cli": {
     "appVersionSource": "remote"
