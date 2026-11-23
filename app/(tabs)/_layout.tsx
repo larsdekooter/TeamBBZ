@@ -83,7 +83,7 @@ export default function TabLayout() {
               size={iconSize}
               name="home"
               color={color}
-              style={styles.icon}
+              style={{ height: 40, marginTop: 20, marginBottom: 10, width: 40 }}
             />
           ),
           headerShown: false,
@@ -98,7 +98,10 @@ export default function TabLayout() {
               size={iconSize}
               name="swimmer"
               color={color}
-              style={[styles.icon, { transform: [{ rotateY: "180deg" }] }]}
+              style={[
+                { height: 40, marginTop: 20, marginBottom: 10, width: 40 },
+                { transform: [{ rotateY: "180deg" }] },
+              ]}
               iconStyle="solid"
             />
           ),
@@ -115,7 +118,10 @@ export default function TabLayout() {
               size={iconSize}
               name="swimmer"
               color={color}
-              style={[styles.icon, { transform: [{ rotateY: "180deg" }] }]}
+              style={[
+                { height: 40, marginTop: 20, marginBottom: 10, width: 40 },
+                { transform: [{ rotateY: "180deg" }] },
+              ]}
               iconStyle="solid"
             />
           ),
@@ -140,7 +146,7 @@ export default function TabLayout() {
                     width: iconSize,
                     tintColor: !focused ? "grey" : undefined,
                   },
-                  styles.icon,
+                  { height: 40, marginTop: 20, marginBottom: 10, width: 40 },
                 ]}
               />
             );
@@ -157,7 +163,7 @@ export default function TabLayout() {
               size={iconSize}
               name="cog"
               color={color}
-              style={styles.icon}
+              style={{ height: 40, marginTop: 20, marginBottom: 10, width: 40 }}
             />
           ),
           headerShown: false,
@@ -166,13 +172,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  icon: {
-    height: 40,
-    marginTop: 20,
-    marginBottom: 10,
-    width: 40,
-    // backgroundColor: "red",
-  },
-});

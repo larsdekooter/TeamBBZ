@@ -7,8 +7,15 @@ import { handleFileUpload, handleTimeUpload } from "@/constants/functions";
 import * as Linking from "expo-linking";
 import * as SplashScreen from "expo-splash-screen";
 import { TeamBBZSQLiteProvider } from "@/constants/context/TeamBBZSQLiteContext";
+import { useUpdates, reloadAsync } from "expo-updates";
 
 export default function Layout() {
+  const { isUpdatePending } = useUpdates();
+
+  useEffect(() => {
+    if (isUpdatePending) reloadAsync();
+  }, [isUpdatePending]);
+
   useEffect(() => {
     async function handleUrl(url: string) {
       try {
