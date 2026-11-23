@@ -131,8 +131,8 @@ export default function TabLayout() {
               <Image
                 source={
                   colorScheme === "dark"
-                    ? require("../../assets/images/icons/teambbz.png")
-                    : require("../../assets/images/icons/teambbz-dark.png")
+                    ? require("../../assets/images/teambbz.png")
+                    : require("../../assets/images/teambbz-dark.png")
                 }
                 style={[
                   {
