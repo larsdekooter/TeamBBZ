@@ -146,7 +146,7 @@ const LineChart: React.FC<LineChartProps> = ({
             textAnchor="end"
             alignmentBaseline="middle"
           >
-            {displayDataLabels(value.toFixed(1))}
+            {displayDataLabels(value.toFixed(2))}
           </Text>
         </React.Fragment>
       );
@@ -190,14 +190,14 @@ const LineChart: React.FC<LineChartProps> = ({
                   index === data.length - 1
                     ? getX(index) - 30 + hoverOffset
                     : getX(index) -
-                      displayDataLabels(value.toFixed(1)).length * 2 +
+                      displayDataLabels(value.toFixed(2)).length * 2 +
                       hoverOffset
                 }
                 y={getY(value) - 10}
                 fill={colorScheme === "light" ? "black" : "white"}
               >
                 {(showXOnHover ? labels[index] + ": " : "") +
-                  displayDataLabels(value.toFixed(1))}
+                  displayDataLabels(value.toFixed(2))}
               </Text>
             )}
             <Circle cx={getX(index)} cy={getY(value)} r="4" fill={pointColor} />
@@ -205,7 +205,7 @@ const LineChart: React.FC<LineChartProps> = ({
               cx={getX(index)}
               cy={getY(value)}
               r="25"
-              fill="transparant"
+              fill="transparent"
               onPress={() => setPointLabelShownIndex(index)}
             />
             {!hideXAxisLabel && (

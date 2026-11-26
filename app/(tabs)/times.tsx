@@ -329,7 +329,7 @@ export default function Times() {
                                   time.event === selectedEvent.event &&
                                   time.poolSize === selectedEvent.poolSize,
                               ),
-                            ).time - convertTimestringToNumber(labelBefore),
+                            ).time - parseFloat(labelBefore),
                           )
                     }
                     yAxisLabel={usePointGraph ? "Punten" : "Tijd"}
