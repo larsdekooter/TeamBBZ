@@ -410,7 +410,14 @@ export async function getSchemaData(group?: string, date = new Date()) {
       return { schema: "Geen trainen vandaag!", groups: [] };
     }
     if (!id) {
-      return { schema: "Schema bekijken niet toegestaan", groups: [] };
+      const schemaType = tdMatch[index]
+        .split("\n")[2]
+        .replace(/<td>([\s\S]*?)<\/td>/gm, "$1")
+        .trim();
+      return {
+        schema: `${schemaType}\nSchema bekijken niet toegestaan`,
+        groups: [],
+      };
     }
     const schemaPage = await (
       await fetch(`https://www.b-b-z.nl/training/schema/?actie=bekijk&id=${id}`)
