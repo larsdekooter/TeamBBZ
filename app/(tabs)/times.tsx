@@ -527,6 +527,7 @@ function TimeTable({
   const colorScheme = useColorScheme();
   const [overviewShown, setOverviewShown] = useState<Time | null>(null);
   const [historyShown, setHistoryShown] = useState<Time | null>(null);
+  const [graphShown, setGraphShown] = useState(false);
 
   return (
     <Fragment>
@@ -626,6 +627,89 @@ function TimeTable({
           </ButtonComponent>
         </View>
       </SwipeModal>
+      <SwipeModal visible={graphShown} onClose={() => setGraphShown(false)}>
+        <LineChart
+          data={times
+            .filter(
+              ({ event, poolSize }) =>
+                event === historyShown?.event &&
+                poolSize === historyShown?.poolSize,
+            )
+            .sort((a, b) => {
+              const [dayA, monthA, yearA] = a.date?.split("-") ?? [
+                "0",
+                "0",
+                "0",
+              ];
+              const [dayB, monthB, yearB] = b.date?.split("-") ?? [
+                "0",
+                "0",
+                "0",
+              ];
+
+              const dateA = new Date(
+                parseInt(yearA),
+                parseInt(monthA) - 1,
+                parseInt(dayA),
+              ).getTime();
+              const dateB = new Date(
+                parseInt(yearB),
+                parseInt(monthB) - 1,
+                parseInt(dayB),
+              ).getTime();
+
+              return dateA - dateB;
+            })
+            .map(({ time }) => convertTimestringToNumber(time))}
+          labels={times
+            .filter(
+              ({ event, poolSize }) =>
+                event === historyShown?.event &&
+                poolSize === historyShown?.poolSize,
+            )
+            .sort((a, b) => {
+              const [dayA, monthA, yearA] = a.date?.split("-") ?? [
+                "0",
+                "0",
+                "0",
+              ];
+              const [dayB, monthB, yearB] = b.date?.split("-") ?? [
+                "0",
+                "0",
+                "0",
+              ];
+
+              const dateA = new Date(
+                parseInt(yearA),
+                parseInt(monthA) - 1,
+                parseInt(dayA),
+              ).getTime();
+              const dateB = new Date(
+                parseInt(yearB),
+                parseInt(monthB) - 1,
+                parseInt(dayB),
+              ).getTime();
+
+              return dateA - dateB;
+            })
+            .map(({ date }) => date ?? "")}
+          size={{ width: Dimensions.get("window").width, height: 300 }}
+          yAxisLabel="Tijd"
+          xAxisRotation={-45}
+          hideXAxisLabel={
+            times.filter(
+              ({ event, poolSize }) =>
+                event === historyShown?.event &&
+                poolSize === historyShown?.poolSize,
+            ).length > 25
+          }
+          displayDataLabels={(labelBefore) =>
+            convertTimeNumberToString(labelBefore)
+          }
+          showXOnHover
+          hoverOffset={-60}
+        />
+      </SwipeModal>
       <SwipeModal
         visible={historyShown !== null}
         onClose={() => setHistoryShown(null)}
@@ -637,7 +721,29 @@ function TimeTable({
         buttonStyle={{
           borderColor:
             swimmerSelected === profile.username ? Colors.Orange : Colors.Blue,
+          width: "auto",
+          flex: 1,
         }}
+        buttonChildren={
+          <ButtonComponent
+            style={{
+              paddingVertical: 10,
+              backgroundColor:
+                colorScheme === "light"
+                  ? Colors.ModalLightBackground
+                  : Colors.ModalDarkBackground,
+              marginHorizontal: 10,
+              paddingHorizontal: 10,
+            }}
+            onPress={() => setGraphShown(true)}
+          >
+            <Octicons
+              name="graph"
+              color={textColor(colorScheme).color}
+              size={25}
+            />
+          </ButtonComponent>
+        }
       >
         <View style={{ flex: 1, justifyContent: "center" }}>
           <Text
@@ -873,53 +979,6 @@ function InputTimesModal({
             alignItems: "flex-end",
           }}
         >
-          {/* <AbsoluteDropdown
-            data={
-              selectedStroke === "Vrije Slag"
-                ? [
-                    "25m",
-                    "50m",
-                    "100m",
-                    "200m",
-                    "400m",
-                    "800m",
-                    "1500m",
-                    "2000m",
-                  ]
-                : selectedStroke === "Wisselslag"
-                  ? ["100m", "200m", "300m", "400m"]
-                  : ["25m", "50m", "100m", "200m"]
-            }
-            renderItem={({ item }) => (
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: "grey",
-                  borderRadius: 6,
-                  padding: 5,
-                  marginVertical: 5,
-                }}
-              >
-                <Text style={[textColor(colorScheme)]}>{item}</Text>
-              </View>
-            )}
-            style={{ width: "35%" }}
-            textStyle={{ width: "70%" }}
-            closeWhenSelected
-            onPress={(item) =>
-              setDistance(
-                parseInt(item) as
-                  | 50
-                  | 100
-                  | 200
-                  | 300
-                  | 400
-                  | 800
-                  | 1500
-                  | 2000,
-              )
-            }
-          /> */}
           <Host
             matchContents={{ vertical: true }}
             style={{ width: "35%" }}
@@ -960,48 +1019,12 @@ function InputTimesModal({
               ))}
             </Picker>
           </Host>
-          {/* <AbsoluteDropdown
-            data={[
-              "Vlinderslag",
-              "Rugslag",
-              "Schoolslag",
-              "Vrije Slag",
-              "Wisselslag",
-            ]}
-            renderItem={({ item }) => (
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: "grey",
-                  borderRadius: 6,
-                  padding: 5,
-                  marginVertical: 5,
-                }}
-              >
-                <Text style={[textColor(colorScheme)]}>{item}</Text>
-              </View>
-            )}
-            style={{ width: "45%" }}
-            textStyle={{ width: "82%" }}
-            onPress={(item) =>
-              setSelectedStroke(
-                item as
-                  | "Vlinderslag"
-                  | "Rugslag"
-                  | "Schoolslag"
-                  | "Vrije Slag"
-                  | "Wisselslag",
-              )
-            }
-            closeWhenSelected
-          /> */}
           <Host
             matchContents={{ vertical: true }}
             style={{ width: "45%" }}
             seedColor={Colors.Orange}
           >
             <Picker
-              // style={{ width: "45%" }}
               selectedValue={selectedStroke}
               onValueChange={(value) => setSelectedStroke(value)}
             >

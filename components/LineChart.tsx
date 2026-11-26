@@ -11,6 +11,10 @@ interface LineChartProps {
   lineColor?: string;
   displayDataLabels?: (labelBefore: string) => string;
   yAxisLabel: string;
+  xAxisRotation?: number;
+  hideXAxisLabel?: boolean;
+  showXOnHover?: boolean;
+  hoverOffset?: number;
 }
 
 const LineChart: React.FC<LineChartProps> = ({
@@ -22,6 +26,10 @@ const LineChart: React.FC<LineChartProps> = ({
   lineColor = "rgb(0, 150, 200)",
   displayDataLabels = (labelBefore) => labelBefore,
   yAxisLabel,
+  xAxisRotation = 0,
+  hideXAxisLabel,
+  showXOnHover,
+  hoverOffset = 0,
 }) => {
   const colorScheme = useColorScheme();
   const { width, height } = size;
@@ -180,14 +188,16 @@ const LineChart: React.FC<LineChartProps> = ({
               <Text
                 x={
                   index === data.length - 1
-                    ? getX(index) - 30
+                    ? getX(index) - 30 + hoverOffset
                     : getX(index) -
-                      displayDataLabels(value.toFixed(1)).length * 2
+                      displayDataLabels(value.toFixed(1)).length * 2 +
+                      hoverOffset
                 }
                 y={getY(value) - 10}
                 fill={colorScheme === "light" ? "black" : "white"}
               >
-                {displayDataLabels(value.toFixed(1))}
+                {(showXOnHover ? labels[index] + ": " : "") +
+                  displayDataLabels(value.toFixed(1))}
               </Text>
             )}
             <Circle cx={getX(index)} cy={getY(value)} r="4" fill={pointColor} />
@@ -195,18 +205,21 @@ const LineChart: React.FC<LineChartProps> = ({
               cx={getX(index)}
               cy={getY(value)}
               r="25"
-              fill="transparent"
+              fill="transparant"
               onPress={() => setPointLabelShownIndex(index)}
             />
-            <Text
-              x={getX(index)}
-              y={height - padding.bottom + 20}
-              fill={colorScheme === "light" ? "black" : "white"}
-              fontSize="10"
-              textAnchor="middle"
-            >
-              {labels[index]}
-            </Text>
+            {!hideXAxisLabel && (
+              <Text
+                x={getX(index)}
+                y={height - padding.bottom + 20}
+                fill={colorScheme === "light" ? "black" : "white"}
+                fontSize="10"
+                textAnchor="middle"
+                transform={`rotate(${xAxisRotation}, ${getX(index)}, ${height - padding.bottom + 20})`}
+              >
+                {labels[index]}
+              </Text>
+            )}
           </React.Fragment>
         ))}
       </Svg>
